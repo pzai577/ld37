@@ -469,6 +469,7 @@ public class Player {
 			++stateFrameDuration;
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
+				activeHurtboxes.clear();
 			}
 		}
 		else {
