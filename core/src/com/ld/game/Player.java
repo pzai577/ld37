@@ -157,7 +157,7 @@ public class Player {
 				}
 			}
 			else if (rightCell != null) {
-				position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH;
+				position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 				playerHorizVelocity = 0;
 				if (playerState != PlayerState.GROUND) {
 					playerState = PlayerState.WALL_RIGHT;
@@ -195,7 +195,7 @@ public class Player {
 					position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
 				}
 				else if (rightCell != null) {
-					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH;
+					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 				}
 				else if (bottomCell == null) {
 					playerState = PlayerState.AIR;
@@ -210,18 +210,43 @@ public class Player {
 				}
 			}
 			else {
-				updateActiveHurtboxes();
-				for (float[] hurtboxData : (isDSmash ? dsmashAnimationFrames : fsmashAnimationFrames)) {
-					if (hurtboxData[0] == frameNumber) {
-						activeHurtboxes.add(new Hurtbox(hurtboxData[1],
-														hurtboxData[2],
-														hurtboxData[3],
-														(int)hurtboxData[4]));
+				// TODO: this is copied from the if/else branch above, de-duplicate
+				position.x += playerHorizVelocity;
+	
+				EnhancedCell leftCell = getCollidingLeftCell();
+				EnhancedCell rightCell = getCollidingRightCell();
+				EnhancedCell bottomCell = getCollidingBottomCell();
+				
+				if (leftCell != null) {
+					position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
+				}
+				else if (rightCell != null) {
+					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
+				}
+				else if (bottomCell == null) {
+					playerState = PlayerState.AIR;
+					playerFastFalling = false;
+					playerHasDoubleJump = true;
+					playerVertVelocity = 0;
+				}
+				
+				if (playerState == PlayerState.GROUND_ANIM) {
+					updateActiveHurtboxes();
+					for (float[] hurtboxData : (isDSmash ? dsmashAnimationFrames : fsmashAnimationFrames)) {
+						if (hurtboxData[0] == frameNumber) {
+							activeHurtboxes.add(new Hurtbox(hurtboxData[1],
+															hurtboxData[2],
+															hurtboxData[3],
+															(int)hurtboxData[4]));
+						}
+					}
+					++frameNumber;
+					if (frameNumber == (isDSmash ? dsmashDurationFrames : fsmashDurationFrames)) {
+						playerState = PlayerState.GROUND;
 					}
 				}
-				++frameNumber;
-				if (frameNumber == (isDSmash ? dsmashDurationFrames : fsmashDurationFrames)) {
-					playerState = PlayerState.GROUND;
+				else {
+					activeHurtboxes.clear();
 				}
 			}
 		}
@@ -301,42 +326,42 @@ public class Player {
 	 */
 	public EnhancedCell getCollidingLeftCell() {
         for (float step = 1f; step < PLAYER_HEIGHT; step += collisionLayer.getTileHeight() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX()-1, getY()+step);
+        	EnhancedCell cell = getEnhancedCell(getX() - 1, getY() + step);
         	if (cell != null) {
         		return cell;
         	}
         }
-        return null;
+        return getEnhancedCell(getX() - 1, getY() + PLAYER_HEIGHT);
 	}
 	
 	public EnhancedCell getCollidingRightCell() {
         for (float step = 1f; step < PLAYER_HEIGHT; step += collisionLayer.getTileHeight() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX()+PLAYER_WIDTH+1, getY()+step);
+        	EnhancedCell cell = getEnhancedCell(getX() + PLAYER_WIDTH + 1, getY() + step);
         	if (cell != null) {
         		return cell;
         	}
         }
-        return null;
+        return getEnhancedCell(getX() + PLAYER_WIDTH + 1, getY() + PLAYER_HEIGHT);
 	}
 	
 	public EnhancedCell getCollidingTopCell() {
         for (float step = 0.1f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + step, getY()+PLAYER_HEIGHT);
+        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() + PLAYER_HEIGHT);
         	if (cell != null) {
         		return cell;
         	}
         }
-        return null;
+		return getEnhancedCell(getX() + PLAYER_WIDTH, getY() + PLAYER_HEIGHT);
 	}
 	
 	public EnhancedCell getCollidingBottomCell() {
 		for (float step = 0.5f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + step, getY()-5);
+        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() - 5);
         	if (cell != null) {
         		return cell;
         	}
         }
-        return null;
+		return getEnhancedCell(getX() + PLAYER_WIDTH, getY() - 5);
 	}
 	
 	private EnhancedCell getEnhancedCell(float x, float y) {
