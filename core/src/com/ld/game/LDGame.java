@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -22,6 +23,7 @@ public class LDGame extends ApplicationAdapter {
 
 	private TiledMap tileMap;
 	private OrthogonalTiledMapRenderer tileMapRenderer;
+	private TiledMapTileLayer collisionLayer;
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 
@@ -36,7 +38,7 @@ public class LDGame extends ApplicationAdapter {
 	
 	private static final double WALL_FRICTION = 0.08;
 	
-	Rectangle player = new Rectangle(200, 200, 112, 112);
+	Rectangle player = new Rectangle(200, 200, 48, 48);
 	Texture playerImg;
 	PlayerState playerState = PlayerState.AIR;
 	double playerHorizVelocity = 0.0;
@@ -49,6 +51,7 @@ public class LDGame extends ApplicationAdapter {
 		cam.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 		batch.setProjectionMatrix(cam.combined);
 		tileMap = new TmxMapLoader().load("test_level.tmx");
+
 		tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
 		playerImg = new Texture("mayuri.jpg");
 	}
