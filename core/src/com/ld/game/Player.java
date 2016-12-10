@@ -13,6 +13,7 @@ enum PlayerState {
 	GROUND,
 	GROUND_ANIM,
 	AIR,
+	AIR_ANIM,
 	WALL_LEFT,
 	WALL_RIGHT;
 }
@@ -32,7 +33,7 @@ public class Player {
 	private static final double PLAYER_JUMP_SPEED = 8;
 	
 	private static final double WALL_FRICTION = 0.08;
-	private static final double FLOOR_FRICTION = 0.15;
+	private static final double FLOOR_FRICTION = 0.12;
 
 	private static final float GAME_WIDTH = 1280;
 	private static final float GAME_HEIGHT = 800;
@@ -74,7 +75,7 @@ public class Player {
 	
 	public void updateState() {
 		
-		if (playerState == PlayerState.AIR) {
+		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
 			if (Gdx.input.isKeyJustPressed(Keys.DOWN) && playerVertVelocity > 0) {
 				playerFastFalling = true;
 			}
@@ -86,18 +87,22 @@ public class Player {
 				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
 				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
 			}
-			if (Gdx.input.isKeyJustPressed(Keys.UP) && playerHasDoubleJump) {
-				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-					playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+			boolean wasInAirAnim = true;
+			if (playerState == PlayerState.AIR) {
+				if (Gdx.input.isKeyJustPressed(Keys.UP) && playerHasDoubleJump) {
+					if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+						playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+					}
+					else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+						playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+					}
+					playerHasDoubleJump = false;
+					playerRotating = true;
+					playerFastFalling = false;
+					playerRotatingLeft = (playerHorizVelocity <= 0);
+					playerVertVelocity = -8;
 				}
-				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-					playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
-				}
-				playerHasDoubleJump = false;
-				playerRotating = true;
-				playerFastFalling = false;
-				playerRotatingLeft = (playerHorizVelocity <= 0);
-				playerVertVelocity = -8;
+				wasInAirAnim = false;
 			}
 			if (playerRotating) {
 				playerRotation += 15 * (playerRotatingLeft ? 1 : -1);
@@ -120,7 +125,7 @@ public class Player {
 
 			if (topCell != null) {
 				if (playerVertVelocity < 0) {
-					position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT;
+					position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
 					playerVertVelocity = 0;
 				}
 			}
@@ -148,6 +153,14 @@ public class Player {
 				if (playerState != PlayerState.GROUND) {
 					playerState = PlayerState.WALL_RIGHT;
 				}
+			}
+			if (playerState == PlayerState.AIR && Gdx.input.isKeyPressed(Keys.Z)) {
+				playerState = PlayerState.AIR_ANIM;
+				frameNumber = 0;
+				loadHurtboxData(AnimationType.GROUND_DSMASH);
+			}
+			if (wasInAirAnim) {
+				updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
 			}
 		}
 		else if (playerState == PlayerState.GROUND || playerState == PlayerState.GROUND_ANIM) {
@@ -219,24 +232,7 @@ public class Player {
 					playerHorizVelocity = 0;
 				}
 				
-				if (playerState == PlayerState.GROUND_ANIM) {
-					updateActiveHurtboxes();
-					for (float[] hurtboxData : currentAnimationFrames) {
-						if (hurtboxData[0] == frameNumber) {
-							activeHurtboxes.add(new Hurtbox(hurtboxData[1],
-															hurtboxData[2],
-															hurtboxData[3],
-															(int)hurtboxData[4]));
-						}
-					}
-					++frameNumber;
-					if (frameNumber == currentDuration) {
-						playerState = PlayerState.GROUND;
-					}
-				}
-				else {
-					activeHurtboxes.clear();
-				}
+				updateAnimationFramesIfInState(PlayerState.GROUND_ANIM, PlayerState.GROUND);
 			}
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
@@ -382,6 +378,27 @@ public class Player {
 	
 	public List<Hurtbox> getActiveHurtboxes() {
 		return activeHurtboxes;
+	}
+	
+	public void updateAnimationFramesIfInState(PlayerState state, PlayerState endState) {
+		if (playerState == state) {
+			updateActiveHurtboxes();
+			for (float[] hurtboxData : currentAnimationFrames) {
+				if (hurtboxData[0] == frameNumber) {
+					activeHurtboxes.add(new Hurtbox(hurtboxData[1],
+													hurtboxData[2],
+													hurtboxData[3],
+													(int)hurtboxData[4]));
+				}
+			}
+			++frameNumber;
+			if (frameNumber == currentDuration) {
+				playerState = endState;
+			}
+		}
+		else {
+			activeHurtboxes.clear();
+		}
 	}
 	
 	public void updateActiveHurtboxes() {
