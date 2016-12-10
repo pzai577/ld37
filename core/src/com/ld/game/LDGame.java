@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -38,9 +39,14 @@ public class LDGame extends ApplicationAdapter {
 	
 	Rectangle player = new Rectangle(200, 200, 112, 112);
 	Texture playerImg;
+	TextureRegion imgRegion;
 	PlayerState playerState = PlayerState.AIR;
 	double playerHorizVelocity = 0.0;
 	double playerFallingVelocity = 0.0;
+	float playerRotation = 0.0f;
+	boolean playerHasDoubleJump = false;
+	boolean playerRotating = false;
+	boolean playerRotatingLeft = false;
 	
 	@Override
 	public void create () {
@@ -51,6 +57,7 @@ public class LDGame extends ApplicationAdapter {
 		tileMap = new TmxMapLoader().load("test_level.tmx");
 		tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
 		playerImg = new Texture("mayuri.jpg");
+		imgRegion = new TextureRegion(playerImg);
 	}
 
 	@Override
@@ -71,6 +78,19 @@ public class LDGame extends ApplicationAdapter {
 				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
 				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
 			}
+			if (Gdx.input.isKeyJustPressed(Keys.UP) && playerHasDoubleJump) {
+				playerHasDoubleJump = false;
+				playerRotating = true;
+				playerRotatingLeft = (playerHorizVelocity <= 0);
+				playerFallingVelocity = -7;
+			}
+			if (playerRotating) {
+				playerRotation += 15 * (playerRotatingLeft ? 1 : -1);
+				if (Math.abs(playerRotation) >= 360) {
+					playerRotation = 0;
+					playerRotating = false;
+				}
+			}
 			player.x += playerHorizVelocity;
 			player.y -= playerFallingVelocity;
 			playerFallingVelocity += FALL_ACCELERATION;
@@ -78,6 +98,9 @@ public class LDGame extends ApplicationAdapter {
 			if (player.y < 0) {
 				player.y = 0;
 				playerState = PlayerState.GROUND;
+				playerRotation = 0;
+				playerRotating = false;
+				playerHasDoubleJump = true;
 			}
 			else if (player.x < 0) {
 				player.x = 0;
@@ -127,6 +150,9 @@ public class LDGame extends ApplicationAdapter {
 			if (player.y < 0) {
 				player.y = 0;
 				playerState = PlayerState.GROUND;
+				playerRotation = 0;
+				playerRotating = false;
+				playerHasDoubleJump = true;
 			}
 			player.x += playerHorizVelocity;
 		}
@@ -148,12 +174,16 @@ public class LDGame extends ApplicationAdapter {
 			if (player.y < 0) {
 				player.y = 0;
 				playerState = PlayerState.GROUND;
+				playerRotation = 0;
+				playerRotating = false;
+				playerHasDoubleJump = true;
 			}
 			player.x += playerHorizVelocity;
 		}
 
 		batch.begin();
-		batch.draw(playerImg, player.x, player.y);
+		batch.draw(imgRegion, player.x, player.y, player.width/2, player.height/2,
+					player.width, player.height, 1f, 1f, playerRotation);
 		batch.end();
 
 	}
