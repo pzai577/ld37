@@ -96,12 +96,12 @@ public class MapRenderer {
 //    	float dx = map.player.position.x - (cam.position.x + GAME_WIDTH/2 - CAM_BORDER);
 //    	if (dx > 0)
 //    		cam.translate(dx, 0);
-    	if(map.player.position.x + map.player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDER)
-    		cam.position.x = map.player.position.x + map.player.PLAYER_WIDTH + CAM_BORDER - GAME_WIDTH/2;
+    	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDER)
+    		cam.position.x = map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDER - GAME_WIDTH/2;
     	if(map.player.position.x < cam.position.x - GAME_WIDTH/2 + CAM_BORDER)
     		cam.position.x = map.player.position.x - CAM_BORDER + GAME_WIDTH/2;
-    	if(map.player.position.y + map.player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDER)
-    		cam.position.y = map.player.position.y + map.player.PLAYER_HEIGHT + CAM_BORDER - GAME_HEIGHT/2;
+    	if(map.player.position.y + Player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDER)
+    		cam.position.y = map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDER - GAME_HEIGHT/2;
     	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDER)
     		cam.position.y = Math.max(map.player.position.y - CAM_BORDER + GAME_HEIGHT/2, LOWER_CAM_BOUNDARY);
     	
