@@ -13,15 +13,17 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class MapRenderer {
-    private Map map;
-    private SpriteBatch batch;
-    private OrthographicCamera cam;
+    Map map;
+    SpriteBatch batch;
+    OrthographicCamera cam;
     
-    private OrthogonalTiledMapRenderer tileMapRenderer;
-    private static final float GAME_WIDTH = 1280;
-    private static final float GAME_HEIGHT = 800;
-    private Texture playerImg;
-    private TextureRegion imgRegion;
+    OrthogonalTiledMapRenderer tileMapRenderer;
+    static final float GAME_WIDTH = 1280;
+    static final float GAME_HEIGHT = 800;
+    Texture targetImg;
+    Texture playerImg;
+    TextureRegion imgRegion;
+    
     
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
@@ -31,7 +33,8 @@ public class MapRenderer {
         batch.setProjectionMatrix(cam.combined);
         
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
-        playerImg = new Texture("mayuri.jpg");
+        targetImg = new Texture(Gdx.files.internal("target.png"));
+        playerImg = new Texture(Gdx.files.internal("mayuri.jpg"));
         imgRegion = new TextureRegion(playerImg);
     }
     
@@ -47,6 +50,9 @@ public class MapRenderer {
         batch.begin();
         batch.draw(imgRegion, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, 1f, 1f, map.player.getRotation());
+        for (Target t: map.targets) {
+            batch.draw(targetImg, t.x, t.y, t.width, t.height);
+        }
         batch.end();
         ShapeRenderer r = new ShapeRenderer();
         r.begin(ShapeType.Filled);
