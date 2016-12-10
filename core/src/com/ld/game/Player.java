@@ -346,7 +346,7 @@ public class Player {
 	
 	public EnhancedCell getCollidingBottomCell() {
 		for (float step = 0.5f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() - 5);
+        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() - 1);
         	if (cell != null) {
         		return cell;
         	}
