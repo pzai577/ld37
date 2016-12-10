@@ -27,6 +27,7 @@ public class MapRenderer {
     Texture playerImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun;
+  
     
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
@@ -76,8 +77,8 @@ public class MapRenderer {
     }
     
     private void moveCamera(){
-    	System.out.println();
-    	System.out.println(cam.position);
+//    	System.out.println();
+//    	System.out.println(cam.position);
     	
 //    	float dx = map.player.position.x - (cam.position.x + GAME_WIDTH/2 - CAM_BORDER);
 //    	if (dx > 0)
@@ -89,9 +90,9 @@ public class MapRenderer {
     	if(map.player.position.y + map.player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDER)
     		cam.position.y = map.player.position.y + map.player.PLAYER_HEIGHT + CAM_BORDER - GAME_HEIGHT/2;
     	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDER)
-    		cam.position.y = map.player.position.y - CAM_BORDER + GAME_HEIGHT/2;
+    		cam.position.y = Math.max(map.player.position.y - CAM_BORDER + GAME_HEIGHT/2, LOWER_CAM_BOUNDARY);
     	
-    	System.out.println(cam.position);
-    	System.out.println(map.player.position);
+//    	System.out.println(cam.position);
+//    	System.out.println(map.player.position);
     }
 }
