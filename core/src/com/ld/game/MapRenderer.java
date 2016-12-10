@@ -22,7 +22,7 @@ public class MapRenderer {
     private static final float GAME_HEIGHT = 800;
     private static final float CAM_BORDER = 70;
     private Texture playerImg;
-    private TextureRegion imgRegion;
+    private TextureRegion playerStand, playerRun;
     
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
@@ -32,8 +32,11 @@ public class MapRenderer {
         batch.setProjectionMatrix(cam.combined);
         
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
-        playerImg = new Texture("mayuri.jpg");
-        imgRegion = new TextureRegion(playerImg);
+        playerImg = new Texture("samurai.png");
+        
+        playerStand = new TextureRegion(playerImg, 0, 0, playerImg.getWidth() / 4, playerImg.getHeight());
+        playerRun = new TextureRegion(playerImg, playerImg.getWidth() / 4, 0,
+        							  playerImg.getWidth() / 4, playerImg.getHeight());
     }
     
     public void render() {
@@ -46,8 +49,9 @@ public class MapRenderer {
         int width = 56;
         int height = 56;
         
+        TextureRegion textureToDraw = (map.player.playerStanding ? playerStand : playerRun);
         batch.begin();
-        batch.draw(imgRegion, map.player.getX() - cam.position.x + GAME_WIDTH/2, map.player.getY() - cam.position.y + GAME_HEIGHT/2, width/2, height/2,
+        batch.draw(textureToDraw, map.player.getX() - cam.position.x + GAME_WIDTH/2, map.player.getY() - cam.position.y + GAME_HEIGHT/2, width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
         batch.end();
         ShapeRenderer r = new ShapeRenderer();

@@ -36,7 +36,7 @@ public class Player {
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
 	
-	public static final int PLAYER_WIDTH = 56;
+	public static final int PLAYER_WIDTH = 40;
 	public static final int PLAYER_HEIGHT = 56;
 	
 	public Rectangle position;
@@ -54,6 +54,7 @@ public class Player {
 	private boolean currentAnimationIsFlipped;
 	private float[][] currentAnimationFrames;
 	private int currentDuration;
+	public boolean playerStanding = true;
 	
 	// TODO: setState() function that resets frameNumber
 	private int frameNumber = 0;
@@ -170,17 +171,20 @@ public class Player {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 										+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
 					playerFacingLeft = true;
+					playerStanding = false;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 							+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
 					playerFacingLeft = false;
+					playerStanding = false;
 				}
 				else {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
 					if (Math.abs(playerHorizVelocity) < 1) {
 						playerHorizVelocity = 0;
 					}
+					playerStanding = true;
 				}
 				if (Gdx.input.isKeyPressed(Keys.UP)) {
 					playerVertVelocity = -PLAYER_JUMP_SPEED;
