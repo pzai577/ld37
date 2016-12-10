@@ -59,15 +59,17 @@ public class MapRenderer {
         
         TextureRegion textureToDraw = (map.player.playerStanding ? playerStand : playerRun);
         
+        batch.setProjectionMatrix(cam.combined);
         batch.begin();
         for (Target t: map.targets) {
             batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
-        batch.draw(textureToDraw, map.player.getX() - cam.position.x + GAME_WIDTH/2, map.player.getY() - cam.position.y + GAME_HEIGHT/2, width/2, height/2,
+        batch.draw(textureToDraw, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
         batch.end();
         
         ShapeRenderer r = new ShapeRenderer();
+        r.setProjectionMatrix(cam.combined);
         r.begin(ShapeType.Filled);
         r.setColor(Color.RED);
         for (Hurtbox box : map.player.getActiveHurtboxes()) {
