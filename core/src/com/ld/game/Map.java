@@ -1,13 +1,13 @@
 package com.ld.game;
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.utils.Array;
 
 public class Map {
@@ -37,7 +37,29 @@ public class Map {
         player = new Player(collisionLayer);
     }
 
+    public void checkTargetHits() {
+        Array<Circle> allHurtboxes = new Array<Circle>();
+        //convert hurtboxes to circles for Intersector
+        for (Hurtbox hb: player.getActiveHurtboxes()) {
+            allHurtboxes.add(new Circle(player.getX()+hb.x, player.getY()+hb.y, hb.radius));
+        }
+        for (Target t: targets) {
+            for (Circle c: allHurtboxes) {
+                if (Intersector.overlaps(c, t.rect)) {
+                    removeTarget(t);
+                }
+            }
+        }
+    }
+    
+    public void removeTarget(Target t) {
+        System.out.println("trying to remove");
+        targets.removeValue(t, true);
+        //probably want to increase score or play sound effects here as well
+    }
+    
     public void update() {
         player.updateState();
+        checkTargetHits();
     }
 }

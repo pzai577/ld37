@@ -9,4 +9,5 @@ public class Hurtbox {
 		this.radius = radius;
 		this.duration = duration;
 	}
+	
 }

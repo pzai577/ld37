@@ -12,6 +12,9 @@ public class Target extends RectangleObject {
         super(x, y, width, height);
     }
     
+    
+    
+    //toString is just for debug purposes
     @Override
     public String toString() {
         return x+" "+y;

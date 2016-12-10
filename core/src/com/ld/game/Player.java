@@ -62,7 +62,7 @@ public class Player {
 	private boolean isDSmash;
 	
 	private TiledMapTileLayer collisionLayer;
-	
+	// TODO: maybe change to Array to avoid excessive garbage collection? only applies for lots of hurtboxes
 	private ArrayList<Hurtbox> activeHurtboxes;
 	
 	public Player(TiledMapTileLayer collisionLayer) {
@@ -152,7 +152,7 @@ public class Player {
 					playerState = PlayerState.WALL_RIGHT;
 				}
 			}
-			if (playerState == PlayerState.AIR && Gdx.input.isKeyPressed(Keys.Z)) {
+			if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.Z)) {
 				playerState = PlayerState.AIR_ANIM;
 				frameNumber = 0;
 				loadHurtboxData(AnimationType.GROUND_DSMASH);
@@ -200,7 +200,7 @@ public class Player {
 					playerHasDoubleJump = true;
 					playerVertVelocity = 0;
 				}
-				if (playerState == PlayerState.GROUND && Gdx.input.isKeyPressed(Keys.Z)) {
+				if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.Z)) {
 					playerState = PlayerState.GROUND_ANIM;
 					frameNumber = 0;
 					loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
