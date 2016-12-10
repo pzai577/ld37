@@ -44,11 +44,14 @@ public class Player {
 	private double playerHorizVelocity = 0.0;
 	private double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
+	
+	private boolean playerFacingLeft = false;
 	private boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
 	private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
 	
+	private boolean currentAnimationIsFlipped;
 	private float[][] currentAnimationFrames;
 	private int currentDuration;
 	
@@ -166,10 +169,12 @@ public class Player {
 				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 										+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
+					playerFacingLeft = true;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 							+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
+					playerFacingLeft = false;
 				}
 				else {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
@@ -235,6 +240,7 @@ public class Player {
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
 			playerHorizVelocity = 0;
+			playerFacingLeft = false;
 			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
@@ -269,6 +275,7 @@ public class Player {
 		}
 		else if (playerState == PlayerState.WALL_RIGHT) {
 			playerHorizVelocity = 0;
+			playerFacingLeft = true;
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
@@ -339,7 +346,7 @@ public class Player {
 	
 	public EnhancedCell getCollidingBottomCell() {
 		for (float step = 0.5f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() - 5);
+        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() - 1);
         	if (cell != null) {
         		return cell;
         	}
@@ -365,6 +372,10 @@ public class Player {
 		return position.y;
 	}
 	
+	public boolean getFacingLeft() {
+		return playerFacingLeft;
+	}
+	
 	public float getRotation() {
 		return playerRotation;
 	}
@@ -372,6 +383,7 @@ public class Player {
 	public void loadHurtboxData(AnimationType type) {
 		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
 		currentDuration = HurtboxData.getDuration(type);
+		currentAnimationIsFlipped = playerFacingLeft;
 	}
 	
 	public List<Hurtbox> getActiveHurtboxes() {
@@ -383,8 +395,9 @@ public class Player {
 			updateActiveHurtboxes();
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (hurtboxData[0] == frameNumber) {
-					activeHurtboxes.add(new Hurtbox(hurtboxData[1],
-													hurtboxData[2],
+					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
+					activeHurtboxes.add(new Hurtbox(adjustedXPosition,
+													hurtboxData[2] + PLAYER_HEIGHT / 2,
 													hurtboxData[3],
 													(int)hurtboxData[4]));
 				}
