@@ -37,17 +37,17 @@ public class HurtboxData {
 
 	public void initializeData() {
 		hurtboxLocationMap.put(AnimationType.GROUND_DSMASH, new float[][]{
-			{3, -30 + 28, 70, 25, 4},
-			{7, 0 + 28, 76.15f, 25, 4},
-			{11, 30 + 28, 70, 25, 4},
+			{3, -30, 70, 25, 4},
+			{7, 0, 76.15f, 25, 4},
+			{11, 30, 70, 25, 4},
 		});
 		durationMap.put(AnimationType.GROUND_DSMASH, 16);
 		
 		hurtboxLocationMap.put(AnimationType.GROUND_FSMASH, new float[][]{
-			{5, 80, 28, 20, 22},
-			{8, 100, 28, 20, 16},
-			{11, 120, 28, 20, 10},
-			{15, 140, 28, 20, 4},
+			{5, 80, 0, 20, 22},
+			{8, 100, 0, 20, 16},
+			{11, 120, 0, 20, 10},
+			{15, 140, 0, 20, 4},
 		});
 		durationMap.put(AnimationType.GROUND_FSMASH, 32);
 	}

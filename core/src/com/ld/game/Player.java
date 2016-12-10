@@ -51,6 +51,7 @@ public class Player {
 	private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
 	
+	private boolean currentAnimationIsFlipped;
 	private float[][] currentAnimationFrames;
 	private int currentDuration;
 	
@@ -382,6 +383,7 @@ public class Player {
 	public void loadHurtboxData(AnimationType type) {
 		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
 		currentDuration = HurtboxData.getDuration(type);
+		currentAnimationIsFlipped = playerFacingLeft;
 	}
 	
 	public List<Hurtbox> getActiveHurtboxes() {
@@ -393,8 +395,9 @@ public class Player {
 			updateActiveHurtboxes();
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (hurtboxData[0] == frameNumber) {
-					activeHurtboxes.add(new Hurtbox(hurtboxData[1],
-													hurtboxData[2],
+					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
+					activeHurtboxes.add(new Hurtbox(adjustedXPosition,
+													hurtboxData[2] + PLAYER_HEIGHT / 2,
 													hurtboxData[3],
 													(int)hurtboxData[4]));
 				}
