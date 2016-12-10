@@ -19,6 +19,7 @@ enum PlayerState {
 
 public class Player {
 	// TODO: Maybe make all of the EnhancedCells class variables to avoid slowdown?
+    // TODO: Use delta time to account for varying frame rates
 
 	private static final double FALL_ACCELERATION = 0.33;
 	
@@ -32,9 +33,6 @@ public class Player {
 	private static final double PLAYER_JUMP_SPEED = 8;
 	
 	private static final double WALL_FRICTION = 0.08;
-
-	private static final float GAME_WIDTH = 1280;
-	private static final float GAME_HEIGHT = 800;
 	
 	private static final int PLAYER_WIDTH = 56;
 	private static final int PLAYER_HEIGHT = 56;
