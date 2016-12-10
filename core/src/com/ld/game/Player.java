@@ -58,6 +58,7 @@ public class Player {
 	//			   radius, duration }.
 	private boolean isDSmash;
 	
+	// TODO: organize this into something more generalized
 	private float[][] dsmashAnimationFrames =
 		{
 			{3, -30 + 28, 70, 25, 4},
