@@ -12,13 +12,18 @@ enum PlayerState {
 	WALL_LEFT,
 	WALL_RIGHT;
 }
+
 public class Player {
-	
+	// TODO: Maybe make all of the EnhancedCells class variables to avoid slowdown?
+
 	private static final double FALL_ACCELERATION = 0.2;
 	
-	private static final double PLAYER_GROUND_MOVESPEED = 6;
+	// note: if PLAYER_GROUND_MOVESPEED>PLAYER_AIR_MAX_MOVESPEED, things look weird if you run off a platform
+	private static final double PLAYER_GROUND_MOVESPEED = 5;
 	private static final double PLAYER_AIR_INFLUENCE = 0.3;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
+	
+	private static final double PLAYER_JUMP_SPEED = 8;
 	
 	private static final double WALL_FRICTION = 0.08;
 
@@ -31,7 +36,7 @@ public class Player {
 	private Rectangle position;
 	private PlayerState playerState = PlayerState.AIR;
 	private double playerHorizVelocity = 0.0;
-	private double playerFallingVelocity = 0.0;
+	private double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
 	private boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
@@ -59,7 +64,7 @@ public class Player {
 				playerHasDoubleJump = false;
 				playerRotating = true;
 				playerRotatingLeft = (playerHorizVelocity <= 0);
-				playerFallingVelocity = -8;
+				playerVertVelocity = -8;
 			}
 			if (playerRotating) {
 				playerRotation += 15 * (playerRotatingLeft ? 1 : -1);
@@ -68,24 +73,47 @@ public class Player {
 					playerRotating = false;
 				}
 			}
-			position.x += playerHorizVelocity;
-			position.y -= playerFallingVelocity;
-			playerFallingVelocity += FALL_ACCELERATION;
+			position.y -= playerVertVelocity;
+			playerVertVelocity += FALL_ACCELERATION;
 			
-			if (collidesBottom()) {
-				position.y = ((int)(getY()/collisionLayer.getTileHeight())+1)*collisionLayer.getTileHeight();
+			EnhancedCell topCell = getCollidingTopCell();
+			EnhancedCell bottomCell = getCollidingBottomCell();
+
+			if (topCell != null) {
+				if (playerVertVelocity < 0) {
+					position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT;
+					playerVertVelocity = 0;
+				}
+			}
+			
+			if (bottomCell != null) {
+				position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
 				playerState = PlayerState.GROUND;
 				playerRotation = 0;
 				playerRotating = false;
 				playerHasDoubleJump = true;
+				System.out.println("bottom!");
 			}
-			else if (position.x < 0) {
-				position.x = 0;
-				playerState = PlayerState.WALL_LEFT;
-			}
-			else if (position.x > GAME_WIDTH - position.width) {
-				position.x = GAME_WIDTH - position.width;
-				playerState = PlayerState.WALL_RIGHT;
+			else {
+				position.x += playerHorizVelocity;
+				EnhancedCell leftCell = getCollidingLeftCell();
+				EnhancedCell rightCell = getCollidingRightCell();
+				if (leftCell != null) {
+					position.x = (leftCell.x+1)*collisionLayer.getTileWidth();
+					if (!Gdx.input.isKeyPressed(Keys.RIGHT))
+						playerHorizVelocity = 0;
+					if (Gdx.input.isKeyPressed(Keys.LEFT))
+						playerState = PlayerState.WALL_LEFT;
+					System.out.println("left!");
+				}
+				else if (rightCell != null) {
+					position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH;
+					if (!Gdx.input.isKeyPressed(Keys.LEFT))
+						playerHorizVelocity = 0;
+					if (Gdx.input.isKeyPressed(Keys.RIGHT))
+						playerState = PlayerState.WALL_RIGHT;
+					System.out.println("right!");
+				}
 			}
 		}
 		else if (playerState == PlayerState.GROUND) {
@@ -97,16 +125,25 @@ public class Player {
 				playerHorizVelocity = PLAYER_GROUND_MOVESPEED;
 			}
 			if (Gdx.input.isKeyPressed(Keys.UP)) {
-				playerFallingVelocity = -11;
+				playerVertVelocity = -PLAYER_JUMP_SPEED;
 				playerState = PlayerState.AIR;
 			}
 			position.x += playerHorizVelocity;
 
-			if (position.x < 0) {
-				position.x = 0;
+			EnhancedCell leftCell = getCollidingLeftCell();
+			EnhancedCell rightCell = getCollidingRightCell();
+			EnhancedCell bottomCell = getCollidingBottomCell();
+			
+			if (leftCell != null) {
+				position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
 			}
-			else if (position.x > GAME_WIDTH - position.width) {
-				position.x = GAME_WIDTH - position.width;
+			else if (rightCell != null) {
+				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH;
+			}
+			else if (bottomCell == null) {
+				playerState = PlayerState.AIR;
+				playerVertVelocity = 0;
+				System.out.println("falling!");
 			}
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
@@ -115,24 +152,36 @@ public class Player {
 				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
 			}
-			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+			else if (Gdx.input.isKeyJustPressed(Keys.UP)) {
 				playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
-				playerFallingVelocity = -6;
+				playerVertVelocity = -6;
 				playerState = PlayerState.AIR;
 				playerHasDoubleJump = true;
 			}
-			else {
-				position.y -= playerFallingVelocity;
-				playerFallingVelocity = (1. - WALL_FRICTION) * playerFallingVelocity + WALL_FRICTION * 3;
+			else if (!Gdx.input.isKeyPressed(Keys.LEFT)) {
+				position.y -= playerVertVelocity;
+				playerState = PlayerState.AIR;
 			}
-			if (position.y < 0) {
-				position.y = 0;
+			else { // only slide on wall if key is held
+				position.y -= playerVertVelocity;
+				playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * 3;
+			}
+			
+			position.x += playerHorizVelocity;
+			
+			EnhancedCell leftCell = getCollidingLeftCell();
+			EnhancedCell bottomCell = getCollidingBottomCell();
+			
+			if (bottomCell != null) {
+				position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
 				playerState = PlayerState.GROUND;
 				playerRotation = 0;
 				playerRotating = false;
 				playerHasDoubleJump = true;
 			}
-			position.x += playerHorizVelocity;
+			else if (leftCell==null) {
+				playerState = PlayerState.AIR;
+			}
 		}
 		else if (playerState == PlayerState.WALL_RIGHT) {
 			playerHorizVelocity = 0;
@@ -140,48 +189,92 @@ public class Player {
 				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
 			}
-			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+			else if (Gdx.input.isKeyJustPressed(Keys.UP)) {
 				playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
-				playerFallingVelocity = -6;
+				playerVertVelocity = -6;
 				playerState = PlayerState.AIR;
 				playerHasDoubleJump = true;
 			}
-			else {
-				position.y -= playerFallingVelocity;
-				playerFallingVelocity = (1. - WALL_FRICTION) * playerFallingVelocity + WALL_FRICTION * 3;
+			else if (!Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				position.y -= playerVertVelocity;
+				playerState = PlayerState.AIR;
 			}
-			if (position.y < 0) {
-				position.y = 0;
+			else { // only slide on wall if key is held
+				position.y -= playerVertVelocity;
+				playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * 3;
+			}
+			
+			position.x += playerHorizVelocity;
+			
+			EnhancedCell rightCell = getCollidingRightCell();
+			EnhancedCell bottomCell = getCollidingBottomCell();
+			
+			if (bottomCell != null) {
+				position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
 				playerState = PlayerState.GROUND;
 				playerRotation = 0;
 				playerRotating = false;
 				playerHasDoubleJump = true;
 			}
-			position.x += playerHorizVelocity;
+			else if (rightCell==null) {
+				playerState = PlayerState.AIR;
+			}
 		}
 	}
-	
-	public boolean collidesBottom() {
-        for (float step = 0; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {
-        	if(isCellBlocked(getX() + step, getY())) {
-            	return true;
+	/*
+	 * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c
+	 * 
+	 * These four methods return a colliding cell in the corresponding direction
+	 * An "EnhancedCell" is just a cell with extra information about the x and y coordinates.
+	 */
+	public EnhancedCell getCollidingLeftCell() {
+        for (float step = 1f; step < PLAYER_HEIGHT; step += collisionLayer.getTileHeight() / 2) {        
+        	EnhancedCell cell = getEnhancedCell(getX()-1, getY()+step);
+        	if (cell != null) {
+        		return cell;
         	}
         }
-        return isCellBlocked(getX() + PLAYER_WIDTH, getY());
+        return null;
 	}
 	
-	private boolean isCellBlocked(float x, float y) {
-		return collisionLayer.getCell(getTileX(x), getTileY(y)) != null;
+	public EnhancedCell getCollidingRightCell() {
+        for (float step = 1f; step < PLAYER_HEIGHT; step += collisionLayer.getTileHeight() / 2) {        
+        	EnhancedCell cell = getEnhancedCell(getX()+PLAYER_WIDTH+1, getY()+step);
+        	if (cell != null) {
+        		return cell;
+        	}
+        }
+        return null;
 	}
 	
-	// Returns the column (0-indexed) that the given x-coordinate is contained in.
-	private int getTileX(float x) {
-		return (int)(x / collisionLayer.getTileWidth());
+	public EnhancedCell getCollidingTopCell() {
+        for (float step = 0.1f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
+        	EnhancedCell cell = getEnhancedCell(getX() + step, getY()+PLAYER_HEIGHT);
+        	if (cell != null) {
+        		return cell;
+        	}
+        }
+        return null;
 	}
 	
-	// Returns the row (0-indexed) that the given y-coordinate is contained in.
-	private int getTileY(float y) {
-		return (int)(y / collisionLayer.getTileHeight());
+	public EnhancedCell getCollidingBottomCell() {
+		for (float step = 0.5f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
+        	EnhancedCell cell = getEnhancedCell(getX() + step, getY()-5);
+        	if (cell != null) {
+        		return cell;
+        	}
+        }
+        return null;
+	}
+	
+	private EnhancedCell getEnhancedCell(float x, float y) {
+		int xCoord = (int) (x/collisionLayer.getTileWidth());
+		int yCoord = (int) (y/collisionLayer.getTileHeight());
+		Cell cell = collisionLayer.getCell(xCoord, yCoord);
+		if(cell == null) {
+			return null;
+		}
+		return new EnhancedCell(cell, xCoord, yCoord);		
 	}
 	
 	public float getX() {
