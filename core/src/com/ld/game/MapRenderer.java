@@ -46,7 +46,7 @@ public class MapRenderer {
         
         batch.begin();
         batch.draw(imgRegion, map.player.getX(), map.player.getY(), width/2, height/2,
-                    width, height, 1f, 1f, map.player.getRotation());
+                    width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
         batch.end();
         ShapeRenderer r = new ShapeRenderer();
         r.begin(ShapeType.Filled);

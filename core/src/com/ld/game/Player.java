@@ -44,6 +44,8 @@ public class Player {
 	private double playerHorizVelocity = 0.0;
 	private double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
+	
+	private boolean playerFacingLeft = false;
 	private boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
 	private boolean playerRotatingLeft = false;
@@ -166,10 +168,12 @@ public class Player {
 				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 										+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
+					playerFacingLeft = true;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 							+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
+					playerFacingLeft = false;
 				}
 				else {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
@@ -235,6 +239,7 @@ public class Player {
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
 			playerHorizVelocity = 0;
+			playerFacingLeft = false;
 			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
@@ -269,6 +274,7 @@ public class Player {
 		}
 		else if (playerState == PlayerState.WALL_RIGHT) {
 			playerHorizVelocity = 0;
+			playerFacingLeft = true;
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
@@ -363,6 +369,10 @@ public class Player {
 	
 	public float getY() {
 		return position.y;
+	}
+	
+	public boolean getFacingLeft() {
+		return playerFacingLeft;
 	}
 	
 	public float getRotation() {
