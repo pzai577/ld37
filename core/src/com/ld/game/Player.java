@@ -11,11 +11,19 @@ import com.badlogic.gdx.math.Rectangle;
 
 enum PlayerState {
 	GROUND,
+	GROUND_PREJUMP,
 	GROUND_ANIM,
 	AIR,
 	AIR_ANIM,
 	WALL_LEFT,
 	WALL_RIGHT;
+}
+
+enum PlayerFrame {
+	// TODO: maybe get rid of this enum
+	STAND,
+	RUN,
+	PREJUMP,
 }
 
 public class Player {
@@ -28,10 +36,13 @@ public class Player {
 	private static final double PLAYER_GROUND_MAX_MOVESPEED = 5;
 	private static final double PLAYER_AIR_INFLUENCE = 0.6;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
+	
 	private static final double PLAYER_MAX_SLOWFALL_SPEED = 7.8;
 	private static final double PLAYER_FASTFALL_SPEED = 11.8;
 	
-	private static final double PLAYER_JUMP_SPEED = 8;
+	private static final double PLAYER_JUMP_SPEED = 8.5;
+	private static final double PLAYER_SHORTHOP_SPEED = 6.5;
+	private static final double PLAYER_PREJUMP_FRAMES = 4;
 	
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
@@ -54,16 +65,10 @@ public class Player {
 	private boolean currentAnimationIsFlipped;
 	private float[][] currentAnimationFrames;
 	private int currentDuration;
-	public boolean playerStanding = true;
 	
-	// TODO: setState() function that resets frameNumber
-	private int frameNumber = 0;
+	private PlayerFrame playerFrame;
 	
-	// quick and dirty hitbox system
-	// All hitboxes are circles.
-	// arrays of { frame offset from start, X position, Y position (offset from center),
-	//			   radius, duration }.
-	private boolean isDSmash;
+	private int stateFrameDuration = 0;
 	
 	private TiledMapTileLayer collisionLayer;
 	// TODO: maybe change to Array to avoid excessive garbage collection? only applies for lots of hurtboxes
@@ -73,10 +78,10 @@ public class Player {
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
 		this.collisionLayer = collisionLayer;
 		this.activeHurtboxes = new ArrayList<Hurtbox>();
+		this.playerFrame = PlayerFrame.STAND;
 	}
 	
 	public void updateState() {
-		
 		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
 			if (Gdx.input.isKeyJustPressed(Keys.DOWN) && playerVertVelocity > 0) {
 				playerFastFalling = true;
@@ -91,7 +96,7 @@ public class Player {
 			}
 			boolean wasInAirAnim = true;
 			if (playerState == PlayerState.AIR) {
-				if (Gdx.input.isKeyJustPressed(Keys.UP) && playerHasDoubleJump) {
+				if (Gdx.input.isKeyJustPressed(Keys.Z) && playerHasDoubleJump) {
 					if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 						playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
 					}
@@ -156,39 +161,39 @@ public class Player {
 					playerState = PlayerState.WALL_RIGHT;
 				}
 			}
-			if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.Z)) {
-				playerState = PlayerState.AIR_ANIM;
-				frameNumber = 0;
+			if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
+				setState(PlayerState.AIR_ANIM);
 				loadHurtboxData(AnimationType.GROUND_DSMASH);
 			}
 			if (wasInAirAnim) {
 				updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
 			}
 		}
-		else if (playerState == PlayerState.GROUND || playerState == PlayerState.GROUND_ANIM) {
+		else if (playerState == PlayerState.GROUND || playerState == PlayerState.GROUND_ANIM
+				|| playerState == PlayerState.GROUND_PREJUMP) {
 			if (playerState == PlayerState.GROUND) {
 				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 										+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
 					playerFacingLeft = true;
-					playerStanding = false;
+					playerFrame = PlayerFrame.RUN;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
 							+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
 					playerFacingLeft = false;
-					playerStanding = false;
+					playerFrame = PlayerFrame.RUN;
 				}
 				else {
 					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
 					if (Math.abs(playerHorizVelocity) < 1) {
 						playerHorizVelocity = 0;
 					}
-					playerStanding = true;
+					playerFrame = PlayerFrame.STAND;
 				}
-				if (Gdx.input.isKeyPressed(Keys.UP)) {
-					playerVertVelocity = -PLAYER_JUMP_SPEED;
-					playerState = PlayerState.AIR;
+				if (Gdx.input.isKeyPressed(Keys.Z)) {
+					setState(PlayerState.GROUND_PREJUMP);
+					playerFrame = PlayerFrame.PREJUMP;
 					playerFastFalling = false;
 				}
 				position.x += playerHorizVelocity;
@@ -204,19 +209,52 @@ public class Player {
 					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 				}
 				else if (bottomCell == null) {
-					playerState = PlayerState.AIR;
+					setState(PlayerState.AIR);
 					playerFastFalling = false;
 					playerHasDoubleJump = true;
+					playerFrame = PlayerFrame.STAND;
 					playerVertVelocity = 0;
 				}
-				if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.Z)) {
-					playerState = PlayerState.GROUND_ANIM;
-					frameNumber = 0;
+				if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
+					setState(PlayerState.GROUND_ANIM);
 					loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
 							: AnimationType.GROUND_FSMASH);
 				}
 			}
-			else {
+			else if (playerState == PlayerState.GROUND_PREJUMP) {
+				// TODO: this is copied from the if/else branch above, de-duplicate
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
+				if (Math.abs(playerHorizVelocity) < 1) {
+					playerHorizVelocity = 0;
+				}
+				position.x += playerHorizVelocity;
+	
+				EnhancedCell leftCell = getCollidingLeftCell();
+				EnhancedCell rightCell = getCollidingRightCell();
+				EnhancedCell bottomCell = getCollidingBottomCell();
+				
+				if (leftCell != null) {
+					position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
+				}
+				else if (rightCell != null) {
+					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
+				}
+				else if (bottomCell == null) {
+					position.x -= playerHorizVelocity; // TODO: make notion of 'teeter' precise?
+					playerHorizVelocity = 0;
+				}
+				if (stateFrameDuration == PLAYER_PREJUMP_FRAMES) {
+					if (Gdx.input.isKeyPressed(Keys.Z)) {
+						playerVertVelocity = -PLAYER_JUMP_SPEED;
+					}
+					else {
+						playerVertVelocity = -PLAYER_SHORTHOP_SPEED;
+					}
+					setState(PlayerState.AIR);
+					playerFrame = PlayerFrame.STAND;
+				}
+			}
+			else { // PlayerState.GROUND_ANIM
 				// TODO: this is copied from the if/else branch above, de-duplicate
 				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
 				if (Math.abs(playerHorizVelocity) < 1) {
@@ -249,12 +287,17 @@ public class Player {
 				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
 			}
-			else if (Gdx.input.isKeyJustPressed(Keys.UP)) {
+			else if (Gdx.input.isKeyPressed(Keys.Z)) {
 				playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
-				playerState = PlayerState.AIR;
+				setState(PlayerState.AIR);
+				playerFrame = PlayerFrame.STAND;
 				playerFastFalling = false;
 				playerHasDoubleJump = true;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * -4;
+				position.y -= playerVertVelocity;
 			}
 			else {
 				position.y -= playerVertVelocity;
@@ -284,11 +327,17 @@ public class Player {
 				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
 			}
-			else if (Gdx.input.isKeyJustPressed(Keys.UP)) {
+			else if (Gdx.input.isKeyPressed(Keys.Z)) {
 				playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
-				playerState = PlayerState.AIR;
+				setState(PlayerState.AIR);
+				playerFrame = PlayerFrame.STAND;
+				playerFastFalling = false;
 				playerHasDoubleJump = true;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * -4;
+				position.y -= playerVertVelocity;
 			}
 			else {
 				position.y -= playerVertVelocity;
@@ -311,7 +360,14 @@ public class Player {
 				playerState = PlayerState.AIR;
 			}
 		}
+		++stateFrameDuration;
 	}
+	
+	public void setState(PlayerState state) {
+		playerState = state;
+		stateFrameDuration = 0;
+	}
+	
 	/*
 	 * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c
 	 * 
@@ -384,6 +440,10 @@ public class Player {
 		return playerRotation;
 	}
 	
+	public PlayerFrame getPlayerFrame() {
+		return playerFrame;
+	}
+	
 	public void loadHurtboxData(AnimationType type) {
 		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
 		currentDuration = HurtboxData.getDuration(type);
@@ -398,7 +458,7 @@ public class Player {
 		if (playerState == state) {
 			updateActiveHurtboxes();
 			for (float[] hurtboxData : currentAnimationFrames) {
-				if (hurtboxData[0] == frameNumber) {
+				if (hurtboxData[0] == stateFrameDuration) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
 					activeHurtboxes.add(new Hurtbox(adjustedXPosition,
 													hurtboxData[2] + PLAYER_HEIGHT / 2,
@@ -406,8 +466,8 @@ public class Player {
 													(int)hurtboxData[4]));
 				}
 			}
-			++frameNumber;
-			if (frameNumber == currentDuration) {
+			++stateFrameDuration;
+			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
 			}
 		}

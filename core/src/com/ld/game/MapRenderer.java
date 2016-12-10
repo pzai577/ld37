@@ -26,7 +26,7 @@ public class MapRenderer {
     Texture targetImg;
     Texture playerImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun;
+    TextureRegion playerStand, playerRun, playerPrejump;
   
     
     public MapRenderer (Map map, SpriteBatch batch) {
@@ -45,6 +45,8 @@ public class MapRenderer {
         playerStand = new TextureRegion(playerImg, 0, 0, playerImg.getWidth() / 4, playerImg.getHeight());
         playerRun = new TextureRegion(playerImg, playerImg.getWidth() / 4, 0,
         							  playerImg.getWidth() / 4, playerImg.getHeight());
+        playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4, 0,
+				  playerImg.getWidth() / 4, playerImg.getHeight());
     }
     
     public void render() {
@@ -57,7 +59,16 @@ public class MapRenderer {
         int width = 56;
         int height = 56;
         
-        TextureRegion textureToDraw = (map.player.playerStanding ? playerStand : playerRun);
+        TextureRegion textureToDraw;
+        if (map.player.getPlayerFrame() == PlayerFrame.RUN) {
+        	textureToDraw = playerRun;
+        }
+        else if (map.player.getPlayerFrame() == PlayerFrame.PREJUMP) {
+        	textureToDraw = playerPrejump;
+        }
+        else {
+            textureToDraw = playerStand;
+        }
         
         batch.begin();
         for (Target t: map.targets) {
