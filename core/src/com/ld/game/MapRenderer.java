@@ -26,7 +26,7 @@ public class MapRenderer {
     Texture targetImg;
     Texture playerImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun, playerPrejump;
+    TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
   
     
     public MapRenderer (Map map, SpriteBatch batch) {
@@ -47,6 +47,8 @@ public class MapRenderer {
         							  playerImg.getWidth() / 4, playerImg.getHeight());
         playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4, 0,
 				  playerImg.getWidth() / 4, playerImg.getHeight());
+        playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4, 0,
+				  playerImg.getWidth() / 4, playerImg.getHeight());
     }
     
     public void render() {
@@ -65,6 +67,9 @@ public class MapRenderer {
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.PREJUMP) {
         	textureToDraw = playerPrejump;
+        }
+        else if (map.player.getPlayerFrame() == PlayerFrame.CLIMB) {
+        	textureToDraw = playerClimb;
         }
         else {
             textureToDraw = playerStand;
