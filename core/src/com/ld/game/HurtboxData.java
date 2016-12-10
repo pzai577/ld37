@@ -65,21 +65,21 @@ public class HurtboxData {
 			{15, -40, -16, 15, 6},
 			{16, -60, -24, 15, 3},
 		});
-		durationMap.put(AnimationType.AIR_NAIR, 27);
+		durationMap.put(AnimationType.AIR_NAIR, 20);
 		
 		hurtboxLocationMap.put(AnimationType.AIR_UAIR, new float[][]{
-				{3, 41.13f, 49.02f, 15, 4},
-				{6, 21.89f, 60.14f, 15, 4},
+				{3, 63.02f, 11.11f, 15, 4},
+				{6, 41.13f, 49.02f, 15, 4},
 				{9, 0, 64.15f, 15, 4},
-				{12, -21.89f, 60.14f, 15, 4},
-				{15, -41.13f, 49.02f, 15, 4},
+				{12, -41.13f, 49.02f, 15, 4},
+				{15, -63.02f, 11.11f, 15, 4},
 				
-				{3, 41.13f/2, 49.02f/2, 15, 4},
-				{6, 21.89f/2, 60.14f/2, 15, 4},
+				{3, 63.02f/2, 11.11f/2, 15, 4},
+				{6, 41.13f/2, 60.14f/2, 15, 4},
 				{9, 0, 64.15f/2, 15, 4},
-				{12, -21.89f/2, 60.14f/2, 15, 4},
-				{15, -41.13f/2, 49.02f/2, 15, 4},
+				{12, -41.13f/2, 49.02f/2, 15, 4},
+				{15, -63.02f/2, 11.11f/2, 15, 4},
 			});
-			durationMap.put(AnimationType.AIR_UAIR, 22);
+			durationMap.put(AnimationType.AIR_UAIR, 21);
 	}
 }
