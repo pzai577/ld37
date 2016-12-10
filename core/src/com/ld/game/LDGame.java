@@ -25,14 +25,16 @@ public class LDGame extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 
-
-	public static final double FALL_ACCELERATION = 0.2;
+	private static final float GAME_WIDTH = 1280;
+	private static final float GAME_HEIGHT = 800;
 	
-	public static final double PLAYER_GROUND_MOVESPEED = 6;
-	public static final double PLAYER_AIR_INFLUENCE = 0.3;
-	public static final double PLAYER_AIR_MAX_MOVESPEED = 5;
+	private static final double FALL_ACCELERATION = 0.2;
 	
-	public static final double WALL_FRICTION = 0.08;
+	private static final double PLAYER_GROUND_MOVESPEED = 6;
+	private static final double PLAYER_AIR_INFLUENCE = 0.3;
+	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
+	
+	private static final double WALL_FRICTION = 0.08;
 	
 	Rectangle player = new Rectangle(200, 200, 112, 112);
 	Texture playerImg;
@@ -44,7 +46,7 @@ public class LDGame extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		cam = new OrthographicCamera();
-		cam.setToOrtho(false, 480, 320);
+		cam.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 		batch.setProjectionMatrix(cam.combined);
 		tileMap = new TmxMapLoader().load("test_level.tmx");
 		tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
@@ -81,8 +83,8 @@ public class LDGame extends ApplicationAdapter {
 				player.x = 0;
 				playerState = PlayerState.WALL_LEFT;
 			}
-			else if (player.x > 1280 - player.width) {
-				player.x = 1280 - player.width;
+			else if (player.x > GAME_WIDTH - player.width) {
+				player.x = GAME_WIDTH - player.width;
 				playerState = PlayerState.WALL_RIGHT;
 			}
 		}
@@ -103,8 +105,8 @@ public class LDGame extends ApplicationAdapter {
 			if (player.x < 0) {
 				player.x = 0;
 			}
-			else if (player.x > 1280 - player.width) {
-				player.x = 1280 - player.width;
+			else if (player.x > GAME_WIDTH - player.width) {
+				player.x = GAME_WIDTH - player.width;
 			}
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
