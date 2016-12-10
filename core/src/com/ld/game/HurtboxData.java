@@ -6,6 +6,11 @@ enum AnimationType {
 	GROUND_FSMASH,
 	GROUND_DSMASH,
 	GROUND_USMASH,
+	
+	AIR_NAIR,
+	AIR_FAIR,
+	AIR_UAIR,
+	AIR_DAIR,
 }
 public class HurtboxData {
 	// Singleton
@@ -36,6 +41,7 @@ public class HurtboxData {
 	}
 
 	public void initializeData() {
+		// Format is { frame delay, X position, Y position, radius, duration }
 		hurtboxLocationMap.put(AnimationType.GROUND_DSMASH, new float[][]{
 			{3, -30, 70, 25, 4},
 			{7, 0, 76.15f, 25, 4},
@@ -50,5 +56,30 @@ public class HurtboxData {
 			{15, 140, 0, 20, 4},
 		});
 		durationMap.put(AnimationType.GROUND_FSMASH, 32);
+
+		hurtboxLocationMap.put(AnimationType.AIR_NAIR, new float[][]{
+			{6, 20, 8, 15, 9},
+			{8, 40, 16, 15, 6},
+			{9, 60, 24, 15, 3},
+			{13, -20, -8, 15, 9},
+			{15, -40, -16, 15, 6},
+			{16, -60, -24, 15, 3},
+		});
+		durationMap.put(AnimationType.AIR_NAIR, 27);
+		
+		hurtboxLocationMap.put(AnimationType.AIR_UAIR, new float[][]{
+				{3, 41.13f, 49.02f, 15, 4},
+				{6, 21.89f, 60.14f, 15, 4},
+				{9, 0, 64.15f, 15, 4},
+				{12, -21.89f, 60.14f, 15, 4},
+				{15, -41.13f, 49.02f, 15, 4},
+				
+				{3, 41.13f/2, 49.02f/2, 15, 4},
+				{6, 21.89f/2, 60.14f/2, 15, 4},
+				{9, 0, 64.15f/2, 15, 4},
+				{12, -21.89f/2, 60.14f/2, 15, 4},
+				{15, -41.13f/2, 49.02f/2, 15, 4},
+			});
+			durationMap.put(AnimationType.AIR_UAIR, 22);
 	}
 }

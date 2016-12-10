@@ -168,7 +168,7 @@ public class Player {
 			}
 			if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 				setState(PlayerState.AIR_ANIM);
-				loadHurtboxData(AnimationType.GROUND_DSMASH);
+				loadHurtboxData(Gdx.input.isKeyPressed(Keys.UP) ? AnimationType.AIR_UAIR : AnimationType.AIR_NAIR);
 			}
 			if (wasInAirAnim) {
 				updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
@@ -469,7 +469,7 @@ public class Player {
 		if (playerState == state) {
 			updateActiveHurtboxes();
 			for (float[] hurtboxData : currentAnimationFrames) {
-				if (hurtboxData[0] == stateFrameDuration) {
+				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
 					activeHurtboxes.add(new Hurtbox(adjustedXPosition,
 													hurtboxData[2] + PLAYER_HEIGHT / 2,
@@ -477,7 +477,6 @@ public class Player {
 													(int)hurtboxData[4]));
 				}
 			}
-			++stateFrameDuration;
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
 				activeHurtboxes.clear();
