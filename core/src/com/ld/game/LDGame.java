@@ -15,17 +15,21 @@ enum PlayerState {
 	WALL_RIGHT;
 }
 public class LDGame extends ApplicationAdapter {
-	public static final float FALL_ACCELERATION = 0.2f;
+	public static final double FALL_ACCELERATION = 0.2;
 	
-	public static final float PLAYER_GROUND_MOVESPEED = 6;
-	public static final float PLAYER_AIR_MOVESPEED = 5;
+	public static final double PLAYER_GROUND_MOVESPEED = 6;
+	public static final double PLAYER_AIR_INFLUENCE = 0.3;
+	public static final double PLAYER_AIR_MAX_MOVESPEED = 5;
+	
+	public static final double WALL_FRICTION = 0.08;
 	
 	SpriteBatch batch;
 	
 	Rectangle player = new Rectangle(200, 200, 112, 112);
 	Texture playerImg;
 	PlayerState playerState = PlayerState.AIR;
-	float playerFallingSpeed = 0.0f;
+	double playerHorizVelocity = 0.0;
+	double playerFallingVelocity = 0.0;
 	
 	@Override
 	public void create () {
@@ -40,13 +44,16 @@ public class LDGame extends ApplicationAdapter {
 		
 		if (playerState == PlayerState.AIR) {
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				player.x -= PLAYER_AIR_MOVESPEED;
+				playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
+				playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
 			}
 			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				player.x += PLAYER_AIR_MOVESPEED;
+				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
+				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
 			}
-			player.y -= playerFallingSpeed;
-			playerFallingSpeed += FALL_ACCELERATION;
+			player.x += playerHorizVelocity;
+			player.y -= playerFallingVelocity;
+			playerFallingVelocity += FALL_ACCELERATION;
 			
 			if (player.y < 0) {
 				player.y = 0;
@@ -62,21 +69,59 @@ public class LDGame extends ApplicationAdapter {
 			}
 		}
 		else if (playerState == PlayerState.GROUND) {
+			playerHorizVelocity = 0;
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				player.x -= PLAYER_GROUND_MOVESPEED;
+				playerHorizVelocity = -PLAYER_GROUND_MOVESPEED;
 			}
 			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				player.x += PLAYER_GROUND_MOVESPEED;
+				playerHorizVelocity = PLAYER_GROUND_MOVESPEED;
 			}
 			if (Gdx.input.isKeyPressed(Keys.UP)) {
-				playerFallingSpeed = -11;
+				playerFallingVelocity = -11;
 				playerState = PlayerState.AIR;
+			}
+			player.x += playerHorizVelocity;
+
+			if (player.x < 0) {
+				player.x = 0;
+			}
+			else if (player.x > 1280 - player.width) {
+				player.x = 1280 - player.width;
 			}
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
+			playerHorizVelocity = 0;
 			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				player.x += PLAYER_AIR_MOVESPEED;
+				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
+				playerState = PlayerState.AIR;
 			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+				playerFallingVelocity = -6;
+				playerState = PlayerState.AIR;
+			}
+			else {
+				player.y -= playerFallingVelocity;
+				playerFallingVelocity = (1. - WALL_FRICTION) * playerFallingVelocity + WALL_FRICTION * 3;
+			}
+			player.x += playerHorizVelocity;
+		}
+		else if (playerState == PlayerState.WALL_RIGHT) {
+			playerHorizVelocity = 0;
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
+				playerState = PlayerState.AIR;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+				playerFallingVelocity = -6;
+				playerState = PlayerState.AIR;
+			}
+			else {
+				player.y -= playerFallingVelocity;
+				playerFallingVelocity = (1. - WALL_FRICTION) * playerFallingVelocity + WALL_FRICTION * 3;
+			}
+			player.x += playerHorizVelocity;
 		}
 
 		batch.begin();
