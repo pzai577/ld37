@@ -2,7 +2,6 @@ package com.ld.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 
 public class LDGame extends ApplicationAdapter {
 
@@ -50,6 +48,7 @@ public class LDGame extends ApplicationAdapter {
 		tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
 		playerImg = new Texture("mayuri.jpg");
 		imgRegion = new TextureRegion(playerImg);
+		//(TiledMapTileLayer)tileMap.getLayers().get(0);
 		
 		player = new Player(collisionLayer);
 	}
@@ -63,8 +62,6 @@ public class LDGame extends ApplicationAdapter {
 		tileMapRenderer.setView(cam);
 		tileMapRenderer.render();
 		
-		
-
 		int width = 56;
 		int height = 56;
 		

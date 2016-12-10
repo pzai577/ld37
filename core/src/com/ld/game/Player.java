@@ -160,24 +160,28 @@ public class Player {
 			position.x += playerHorizVelocity;
 		}
 	}
-/*
- * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c
- */
 	
 	public boolean collidesBottom() {
-        for(float step = 0; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2)
-                if(isCellBlocked(getX() + step, getY()))
-                        return true;
-        return false;
+        for (float step = 0; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {
+        	if(isCellBlocked(getX() + step, getY())) {
+            	return true;
+        	}
+        }
+        return isCellBlocked(getX() + PLAYER_WIDTH, getY());
 	}
 	
-	private boolean isCellBlocked(float x, float y)
-	{
-		//System.out.println("checking x: "+ x+"y: "+y);
-		//System.out.println("height: "+collisionLayer.getHeight()+" width: "+collisionLayer.getWidth());
-		//System.out.println("tilex: "+ (int) (x/collisionLayer.getTileWidth())+" tiley: "+(int) (y/collisionLayer.getTileHeight()));
-		Cell cell = collisionLayer.getCell((int) (x/collisionLayer.getTileWidth()), (int) (y/collisionLayer.getTileHeight()));
-		return cell!=null; 
+	private boolean isCellBlocked(float x, float y) {
+		return collisionLayer.getCell(getTileX(x), getTileY(y)) != null;
+	}
+	
+	// Returns the column (0-indexed) that the given x-coordinate is contained in.
+	private int getTileX(float x) {
+		return (int)(x / collisionLayer.getTileWidth());
+	}
+	
+	// Returns the row (0-indexed) that the given y-coordinate is contained in.
+	private int getTileY(float y) {
+		return (int)(y / collisionLayer.getTileHeight());
 	}
 	
 	public float getX() {
