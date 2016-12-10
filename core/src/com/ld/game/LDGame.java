@@ -104,6 +104,10 @@ public class LDGame extends ApplicationAdapter {
 				player.y -= playerFallingVelocity;
 				playerFallingVelocity = (1. - WALL_FRICTION) * playerFallingVelocity + WALL_FRICTION * 3;
 			}
+			if (player.y < 0) {
+				player.y = 0;
+				playerState = PlayerState.GROUND;
+			}
 			player.x += playerHorizVelocity;
 		}
 		else if (playerState == PlayerState.WALL_RIGHT) {
@@ -120,6 +124,10 @@ public class LDGame extends ApplicationAdapter {
 			else {
 				player.y -= playerFallingVelocity;
 				playerFallingVelocity = (1. - WALL_FRICTION) * playerFallingVelocity + WALL_FRICTION * 3;
+			}
+			if (player.y < 0) {
+				player.y = 0;
+				playerState = PlayerState.GROUND;
 			}
 			player.x += playerHorizVelocity;
 		}
