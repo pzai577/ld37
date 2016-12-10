@@ -20,7 +20,8 @@ public class MapRenderer {
     private OrthogonalTiledMapRenderer tileMapRenderer;
     private static final float GAME_WIDTH = 1280;
     private static final float GAME_HEIGHT = 800;
-    private static final float CAM_BORDER = 70;
+    private static final float CAM_BORDER = 150;
+    private static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     private Texture playerImg;
     private TextureRegion playerStand, playerRun;
     
@@ -64,8 +65,8 @@ public class MapRenderer {
     }
     
     private void moveCamera(){
-    	System.out.println();
-    	System.out.println(cam.position);
+//    	System.out.println();
+//    	System.out.println(cam.position);
     	
 //    	float dx = map.player.position.x - (cam.position.x + GAME_WIDTH/2 - CAM_BORDER);
 //    	if (dx > 0)
@@ -77,9 +78,9 @@ public class MapRenderer {
     	if(map.player.position.y + map.player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDER)
     		cam.position.y = map.player.position.y + map.player.PLAYER_HEIGHT + CAM_BORDER - GAME_HEIGHT/2;
     	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDER)
-    		cam.position.y = map.player.position.y - CAM_BORDER + GAME_HEIGHT/2;
+    		cam.position.y = Math.max(map.player.position.y - CAM_BORDER + GAME_HEIGHT/2, LOWER_CAM_BOUNDARY);
     	
-    	System.out.println(cam.position);
-    	System.out.println(map.player.position);
+//    	System.out.println(cam.position);
+//    	System.out.println(map.player.position);
     }
 }
