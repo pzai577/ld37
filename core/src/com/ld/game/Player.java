@@ -151,17 +151,13 @@ public class Player {
 				EnhancedCell rightCell = getCollidingRightCell();
 				if (leftCell != null) {
 					position.x = (leftCell.x+1)*collisionLayer.getTileWidth();
-					if (!Gdx.input.isKeyPressed(Keys.RIGHT))
-						playerHorizVelocity = 0;
-					if (Gdx.input.isKeyPressed(Keys.LEFT))
-						playerState = PlayerState.WALL_LEFT;
+					playerHorizVelocity = 0;
+					playerState = PlayerState.WALL_LEFT;
 				}
 				else if (rightCell != null) {
 					position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH;
-					if (!Gdx.input.isKeyPressed(Keys.LEFT))
-						playerHorizVelocity = 0;
-					if (Gdx.input.isKeyPressed(Keys.RIGHT))
-						playerState = PlayerState.WALL_RIGHT;
+					playerHorizVelocity = 0;
+					playerState = PlayerState.WALL_RIGHT;
 				}
 			}
 		}
