@@ -1,5 +1,8 @@
 package com.ld.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -8,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 enum PlayerState {
 	GROUND,
+	GROUND_ANIM,
 	AIR,
 	WALL_LEFT,
 	WALL_RIGHT;
@@ -16,12 +20,14 @@ enum PlayerState {
 public class Player {
 	// TODO: Maybe make all of the EnhancedCells class variables to avoid slowdown?
 
-	private static final double FALL_ACCELERATION = 0.2;
+	private static final double FALL_ACCELERATION = 0.33;
 	
 	// note: if PLAYER_GROUND_MOVESPEED>PLAYER_AIR_MAX_MOVESPEED, things look weird if you run off a platform
 	private static final double PLAYER_GROUND_MOVESPEED = 5;
-	private static final double PLAYER_AIR_INFLUENCE = 0.3;
+	private static final double PLAYER_AIR_INFLUENCE = 0.6;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
+	private static final double PLAYER_MAX_SLOWFALL_SPEED = 7.8;
+	private static final double PLAYER_FASTFALL_SPEED = 11.8;
 	
 	private static final double PLAYER_JUMP_SPEED = 8;
 	
@@ -41,17 +47,49 @@ public class Player {
 	private boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
 	private boolean playerRotatingLeft = false;
+	private boolean playerFastFalling = false;
 	
+	// TODO: setState() function that resets frameNumber
+	private int frameNumber = 0;
+	
+	// quick and dirty hitbox system
+	// All hitboxes are circles.
+	// arrays of { frame offset from start, X position, Y position (offset from center),
+	//			   radius, duration }.
+	private boolean isDSmash;
+	
+	private float[][] dsmashAnimationFrames =
+		{
+			{3, -30 + 28, 70, 25, 4},
+			{7, 0 + 28, 76.15f, 25, 4},
+			{11, 30 + 28, 70, 25, 4},
+		};
+	private int dsmashDurationFrames = 16;
+	
+	private float[][] fsmashAnimationFrames =
+		{
+			{5, 80, 28, 20, 22},
+			{8, 100, 28, 20, 16},
+			{11, 120, 28, 20, 10},
+			{15, 140, 28, 20, 4},
+		};
+	private int fsmashDurationFrames = 32;
 	private TiledMapTileLayer collisionLayer;
+	
+	private ArrayList<Hurtbox> activeHurtboxes;
 	
 	public Player(TiledMapTileLayer collisionLayer) {
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
 		this.collisionLayer = collisionLayer;
+		this.activeHurtboxes = new ArrayList<Hurtbox>();
 	}
 	
 	public void updateState() {
 		
 		if (playerState == PlayerState.AIR) {
+			if (Gdx.input.isKeyJustPressed(Keys.DOWN) && playerVertVelocity > 0) {
+				playerFastFalling = true;
+			}
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 				playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
 				playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
@@ -61,8 +99,15 @@ public class Player {
 				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
 			}
 			if (Gdx.input.isKeyJustPressed(Keys.UP) && playerHasDoubleJump) {
+				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+					playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+				}
+				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+					playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+				}
 				playerHasDoubleJump = false;
 				playerRotating = true;
+				playerFastFalling = false;
 				playerRotatingLeft = (playerHorizVelocity <= 0);
 				playerVertVelocity = -8;
 			}
@@ -73,8 +118,14 @@ public class Player {
 					playerRotating = false;
 				}
 			}
-			position.y -= playerVertVelocity;
-			playerVertVelocity += FALL_ACCELERATION;
+			if (playerFastFalling) {
+				position.y -= PLAYER_FASTFALL_SPEED;
+			}
+			else {
+				position.y -= playerVertVelocity;
+				playerVertVelocity = Math.min(playerVertVelocity + FALL_ACCELERATION,
+											  PLAYER_MAX_SLOWFALL_SPEED);
+			}
 			
 			EnhancedCell topCell = getCollidingTopCell();
 			EnhancedCell bottomCell = getCollidingBottomCell();
@@ -92,7 +143,6 @@ public class Player {
 				playerRotation = 0;
 				playerRotating = false;
 				playerHasDoubleJump = true;
-				System.out.println("bottom!");
 			}
 			else {
 				position.x += playerHorizVelocity;
@@ -104,7 +154,6 @@ public class Player {
 						playerHorizVelocity = 0;
 					if (Gdx.input.isKeyPressed(Keys.LEFT))
 						playerState = PlayerState.WALL_LEFT;
-					System.out.println("left!");
 				}
 				else if (rightCell != null) {
 					position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH;
@@ -112,38 +161,61 @@ public class Player {
 						playerHorizVelocity = 0;
 					if (Gdx.input.isKeyPressed(Keys.RIGHT))
 						playerState = PlayerState.WALL_RIGHT;
-					System.out.println("right!");
 				}
 			}
 		}
-		else if (playerState == PlayerState.GROUND) {
+		else if (playerState == PlayerState.GROUND || playerState == PlayerState.GROUND_ANIM) {
 			playerHorizVelocity = 0;
-			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				playerHorizVelocity = -PLAYER_GROUND_MOVESPEED;
+			if (playerState == PlayerState.GROUND) {
+				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+					playerHorizVelocity = -PLAYER_GROUND_MOVESPEED;
+				}
+				if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+					playerHorizVelocity = PLAYER_GROUND_MOVESPEED;
+				}
+				if (Gdx.input.isKeyPressed(Keys.UP)) {
+					playerVertVelocity = -PLAYER_JUMP_SPEED;
+					playerState = PlayerState.AIR;
+					playerFastFalling = false;
+				}
+				position.x += playerHorizVelocity;
+	
+				EnhancedCell leftCell = getCollidingLeftCell();
+				EnhancedCell rightCell = getCollidingRightCell();
+				EnhancedCell bottomCell = getCollidingBottomCell();
+				
+				if (leftCell != null) {
+					position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
+				}
+				else if (rightCell != null) {
+					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH;
+				}
+				else if (bottomCell == null) {
+					playerState = PlayerState.AIR;
+					playerFastFalling = false;
+					playerHasDoubleJump = true;
+					playerVertVelocity = 0;
+				}
+				if (playerState == PlayerState.GROUND && Gdx.input.isKeyPressed(Keys.Z)) {
+					playerState = PlayerState.GROUND_ANIM;
+					frameNumber = 0;
+					isDSmash = Gdx.input.isKeyPressed(Keys.DOWN);
+				}
 			}
-			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				playerHorizVelocity = PLAYER_GROUND_MOVESPEED;
-			}
-			if (Gdx.input.isKeyPressed(Keys.UP)) {
-				playerVertVelocity = -PLAYER_JUMP_SPEED;
-				playerState = PlayerState.AIR;
-			}
-			position.x += playerHorizVelocity;
-
-			EnhancedCell leftCell = getCollidingLeftCell();
-			EnhancedCell rightCell = getCollidingRightCell();
-			EnhancedCell bottomCell = getCollidingBottomCell();
-			
-			if (leftCell != null) {
-				position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
-			}
-			else if (rightCell != null) {
-				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH;
-			}
-			else if (bottomCell == null) {
-				playerState = PlayerState.AIR;
-				playerVertVelocity = 0;
-				System.out.println("falling!");
+			else {
+				updateActiveHurtboxes();
+				for (float[] hurtboxData : (isDSmash ? dsmashAnimationFrames : fsmashAnimationFrames)) {
+					if (hurtboxData[0] == frameNumber) {
+						activeHurtboxes.add(new Hurtbox(hurtboxData[1],
+														hurtboxData[2],
+														hurtboxData[3],
+														(int)hurtboxData[4]));
+					}
+				}
+				++frameNumber;
+				if (frameNumber == (isDSmash ? dsmashDurationFrames : fsmashDurationFrames)) {
+					playerState = PlayerState.GROUND;
+				}
 			}
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
@@ -156,13 +228,10 @@ public class Player {
 				playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
 				playerState = PlayerState.AIR;
+				playerFastFalling = false;
 				playerHasDoubleJump = true;
 			}
-			else if (!Gdx.input.isKeyPressed(Keys.LEFT)) {
-				position.y -= playerVertVelocity;
-				playerState = PlayerState.AIR;
-			}
-			else { // only slide on wall if key is held
+			else {
 				position.y -= playerVertVelocity;
 				playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * 3;
 			}
@@ -173,7 +242,7 @@ public class Player {
 			EnhancedCell bottomCell = getCollidingBottomCell();
 			
 			if (bottomCell != null) {
-				position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
+				position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
 				playerState = PlayerState.GROUND;
 				playerRotation = 0;
 				playerRotating = false;
@@ -195,11 +264,7 @@ public class Player {
 				playerState = PlayerState.AIR;
 				playerHasDoubleJump = true;
 			}
-			else if (!Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				position.y -= playerVertVelocity;
-				playerState = PlayerState.AIR;
-			}
-			else { // only slide on wall if key is held
+			else {
 				position.y -= playerVertVelocity;
 				playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * 3;
 			}
@@ -210,7 +275,7 @@ public class Player {
 			EnhancedCell bottomCell = getCollidingBottomCell();
 			
 			if (bottomCell != null) {
-				position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
+				position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
 				playerState = PlayerState.GROUND;
 				playerRotation = 0;
 				playerRotating = false;
@@ -287,5 +352,19 @@ public class Player {
 	
 	public float getRotation() {
 		return playerRotation;
+	}
+	
+	public List<Hurtbox> getActiveHurtboxes() {
+		return activeHurtboxes;
+	}
+	
+	public void updateActiveHurtboxes() {
+		for (int i = 0; i < activeHurtboxes.size(); ++i) {
+			--activeHurtboxes.get(i).duration;
+			if (activeHurtboxes.get(i).duration == 0) {
+				activeHurtboxes.remove(i);
+				--i;
+			}
+		}
 	}
 }

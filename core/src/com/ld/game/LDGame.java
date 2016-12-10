@@ -2,11 +2,14 @@ package com.ld.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -71,7 +74,13 @@ public class LDGame extends ApplicationAdapter {
 		batch.draw(imgRegion, player.getX(), player.getY(), width/2, height/2,
 					width, height, 1f, 1f, player.getRotation());
 		batch.end();
-
+		ShapeRenderer r = new ShapeRenderer();
+		r.begin(ShapeType.Filled);
+		r.setColor(Color.RED);
+		for (Hurtbox box : player.getActiveHurtboxes()) {
+			r.arc(player.getX() + box.x, player.getY() + box.y, box.radius, 0, 360);
+		}
+		r.end();
 	}
 	
 	@Override
