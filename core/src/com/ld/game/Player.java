@@ -50,6 +50,9 @@ public class Player {
 	private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
 	
+	private float[][] currentAnimationFrames;
+	private int currentDuration;
+	
 	// TODO: setState() function that resets frameNumber
 	private int frameNumber = 0;
 	
@@ -59,23 +62,6 @@ public class Player {
 	//			   radius, duration }.
 	private boolean isDSmash;
 	
-	// TODO: organize this into something more generalized
-	private float[][] dsmashAnimationFrames =
-		{
-			{3, -30 + 28, 70, 25, 4},
-			{7, 0 + 28, 76.15f, 25, 4},
-			{11, 30 + 28, 70, 25, 4},
-		};
-	private int dsmashDurationFrames = 16;
-	
-	private float[][] fsmashAnimationFrames =
-		{
-			{5, 80, 28, 20, 22},
-			{8, 100, 28, 20, 16},
-			{11, 120, 28, 20, 10},
-			{15, 140, 28, 20, 4},
-		};
-	private int fsmashDurationFrames = 32;
 	private TiledMapTileLayer collisionLayer;
 	
 	private ArrayList<Hurtbox> activeHurtboxes;
@@ -206,11 +192,16 @@ public class Player {
 				if (playerState == PlayerState.GROUND && Gdx.input.isKeyPressed(Keys.Z)) {
 					playerState = PlayerState.GROUND_ANIM;
 					frameNumber = 0;
-					isDSmash = Gdx.input.isKeyPressed(Keys.DOWN);
+					loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
+							: AnimationType.GROUND_FSMASH);
 				}
 			}
 			else {
 				// TODO: this is copied from the if/else branch above, de-duplicate
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
+				if (Math.abs(playerHorizVelocity) < 1) {
+					playerHorizVelocity = 0;
+				}
 				position.x += playerHorizVelocity;
 	
 				EnhancedCell leftCell = getCollidingLeftCell();
@@ -224,15 +215,13 @@ public class Player {
 					position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 				}
 				else if (bottomCell == null) {
-					playerState = PlayerState.AIR;
-					playerFastFalling = false;
-					playerHasDoubleJump = true;
-					playerVertVelocity = 0;
+					position.x -= playerHorizVelocity; // TODO: make notion of 'teeter' precise?
+					playerHorizVelocity = 0;
 				}
 				
 				if (playerState == PlayerState.GROUND_ANIM) {
 					updateActiveHurtboxes();
-					for (float[] hurtboxData : (isDSmash ? dsmashAnimationFrames : fsmashAnimationFrames)) {
+					for (float[] hurtboxData : currentAnimationFrames) {
 						if (hurtboxData[0] == frameNumber) {
 							activeHurtboxes.add(new Hurtbox(hurtboxData[1],
 															hurtboxData[2],
@@ -241,7 +230,7 @@ public class Player {
 						}
 					}
 					++frameNumber;
-					if (frameNumber == (isDSmash ? dsmashDurationFrames : fsmashDurationFrames)) {
+					if (frameNumber == currentDuration) {
 						playerState = PlayerState.GROUND;
 					}
 				}
@@ -384,6 +373,11 @@ public class Player {
 	
 	public float getRotation() {
 		return playerRotation;
+	}
+	
+	public void loadHurtboxData(AnimationType type) {
+		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
+		currentDuration = HurtboxData.getDuration(type);
 	}
 	
 	public List<Hurtbox> getActiveHurtboxes() {
