@@ -36,10 +36,10 @@ public class Player {
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
 	
-	private static final int PLAYER_WIDTH = 56;
-	private static final int PLAYER_HEIGHT = 56;
+	public static final int PLAYER_WIDTH = 56;
+	public static final int PLAYER_HEIGHT = 56;
 	
-	private Rectangle position;
+	public Rectangle position;
 	private PlayerState playerState = PlayerState.AIR;
 	private double playerHorizVelocity = 0.0;
 	private double playerVertVelocity = 0.0;

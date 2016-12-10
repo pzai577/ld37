@@ -13,6 +13,7 @@ public class GameScreen extends ScreenAdapter {
         this.game = game;
         
         map = new Map("test_level.tmx");
+//        map = new Map("wide_level.tmx");
         renderer = new MapRenderer(map, game.batch);
     }
     
