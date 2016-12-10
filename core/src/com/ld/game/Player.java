@@ -191,7 +191,7 @@ public class Player {
 					}
 					playerFrame = PlayerFrame.STAND;
 				}
-				if (Gdx.input.isKeyPressed(Keys.Z)) {
+				if (Gdx.input.isKeyJustPressed(Keys.Z)) {
 					setState(PlayerState.GROUND_PREJUMP);
 					playerFrame = PlayerFrame.PREJUMP;
 					playerFastFalling = false;
@@ -244,7 +244,7 @@ public class Player {
 					playerHorizVelocity = 0;
 				}
 				if (stateFrameDuration == PLAYER_PREJUMP_FRAMES) {
-					if (Gdx.input.isKeyPressed(Keys.Z)) {
+					if (Gdx.input.isKeyJustPressed(Keys.Z)) {
 						playerVertVelocity = -PLAYER_JUMP_SPEED;
 					}
 					else {
@@ -287,7 +287,7 @@ public class Player {
 				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
 			}
-			else if (Gdx.input.isKeyPressed(Keys.Z)) {
+			else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
 				playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
 				setState(PlayerState.AIR);
@@ -327,7 +327,7 @@ public class Player {
 				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
 			}
-			else if (Gdx.input.isKeyPressed(Keys.Z)) {
+			else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
 				playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
 				setState(PlayerState.AIR);

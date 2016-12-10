@@ -53,7 +53,6 @@ public class Map {
     }
     
     public void removeTarget(Target t) {
-        System.out.println("trying to remove");
         targets.removeValue(t, true);
         //probably want to increase score or play sound effects here as well
     }
