@@ -23,7 +23,7 @@ public class Player {
 	private static final double FALL_ACCELERATION = 0.33;
 	
 	// note: if PLAYER_GROUND_MOVESPEED>PLAYER_AIR_MAX_MOVESPEED, things look weird if you run off a platform
-	private static final double PLAYER_GROUND_MOVESPEED = 5;
+	private static final double PLAYER_GROUND_MAX_MOVESPEED = 5;
 	private static final double PLAYER_AIR_INFLUENCE = 0.6;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
 	private static final double PLAYER_MAX_SLOWFALL_SPEED = 7.8;
@@ -32,6 +32,7 @@ public class Player {
 	private static final double PLAYER_JUMP_SPEED = 8;
 	
 	private static final double WALL_FRICTION = 0.08;
+	private static final double FLOOR_FRICTION = 0.15;
 
 	private static final float GAME_WIDTH = 1280;
 	private static final float GAME_HEIGHT = 800;
@@ -145,30 +146,39 @@ public class Player {
 				playerRotating = false;
 				playerHasDoubleJump = true;
 			}
-			else {
-				position.x += playerHorizVelocity;
-				EnhancedCell leftCell = getCollidingLeftCell();
-				EnhancedCell rightCell = getCollidingRightCell();
-				if (leftCell != null) {
-					position.x = (leftCell.x+1)*collisionLayer.getTileWidth();
-					playerHorizVelocity = 0;
+			position.x += playerHorizVelocity;
+			EnhancedCell leftCell = getCollidingLeftCell();
+			EnhancedCell rightCell = getCollidingRightCell();
+			if (leftCell != null) {
+				position.x = (leftCell.x+1)*collisionLayer.getTileWidth();
+				playerHorizVelocity = 0;
+				if (playerState != PlayerState.GROUND) {
 					playerState = PlayerState.WALL_LEFT;
 				}
-				else if (rightCell != null) {
-					position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH;
-					playerHorizVelocity = 0;
+			}
+			else if (rightCell != null) {
+				position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH;
+				playerHorizVelocity = 0;
+				if (playerState != PlayerState.GROUND) {
 					playerState = PlayerState.WALL_RIGHT;
 				}
 			}
 		}
 		else if (playerState == PlayerState.GROUND || playerState == PlayerState.GROUND_ANIM) {
-			playerHorizVelocity = 0;
 			if (playerState == PlayerState.GROUND) {
 				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-					playerHorizVelocity = -PLAYER_GROUND_MOVESPEED;
+					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+										+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
 				}
-				if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-					playerHorizVelocity = PLAYER_GROUND_MOVESPEED;
+				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+							+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
+				}
+				else {
+					playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
+					if (Math.abs(playerHorizVelocity) < 1) {
+						playerHorizVelocity = 0;
+					}
 				}
 				if (Gdx.input.isKeyPressed(Keys.UP)) {
 					playerVertVelocity = -PLAYER_JUMP_SPEED;
