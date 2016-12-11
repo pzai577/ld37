@@ -1,5 +1,6 @@
 package com.ld.game;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
 import com.badlogic.gdx.maps.MapLayer;
@@ -47,65 +48,74 @@ public class Map {
         pixelHeight = tileMap.getProperties().get("height", int.class) * tileMap.getProperties().get("tileheight", int.class);
         
         //this layer contains rectangles that kill you when they overlap you, meant for static hazards
-        MapLayer deathLayer = tileMap.getLayers().get("Death Layer");
-        if (deathLayer!=null) {
-            MapObjects deathObjects = deathLayer.getObjects();
-            for (MapObject d: deathObjects) {
-                MapProperties p = d.getProperties();
-                deathRects.add(new Rectangle(p.get("x",float.class),p.get("y",float.class),p.get("width",float.class),p.get("height",float.class)));
-            }
-        }
         
-        MapLayer cpLayer = tileMap.getLayers().get("Checkpoint Layer");
-        if (cpLayer!=null) {
-            MapObjects cpObjects = cpLayer.getObjects();
-            for (MapObject cp: cpObjects) {
-                MapProperties p = cp.getProperties();
-                Checkpoint checkpoint = new Checkpoint(p.get("x",float.class),p.get("y",float.class));
-                checkpoints.add(checkpoint);
+        for (MapObject d: getLayerObjects("Death Layer")) {
+            MapProperties p = d.getProperties();
+            deathRects.add(new Rectangle(p.get("x",float.class),p.get("y",float.class),p.get("width",float.class),p.get("height",float.class)));
+        }
+    
+        for (MapObject cp: getLayerObjects("Checkpoint Layer")) {
+            MapProperties p = cp.getProperties();
+            Checkpoint checkpoint = new Checkpoint(p.get("x",float.class),p.get("y",float.class));
+            checkpoints.add(checkpoint);
+        }
+//        handleRectangleLayer("Checkpoint Layer", Checkpoint.class, checkpoints);
+    
+        for (MapObject t: getLayerObjects("Targets Layer")) {
+            MapProperties p = t.getProperties();
+            Target target = new Target(p.get("x", float.class), p.get("y", float.class));
+            targets.add(target);      
+            /* Debugging code to print out all properties of an object
+            Iterator<String> keys = t.getProperties().getKeys();
+            while (keys.hasNext()) {
+                String property = keys.next();
+                System.out.println(property + ": "+p.get(property));
+            }*/
+        }
+    
+        for (MapObject l: getLayerObjects("Locations Layer")) {
+            MapProperties p = l.getProperties();
+            String name = l.getName();
+            if (name.equals("start")) {
+                startPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
+                player.position.x = startPos.x;
+                player.position.y = startPos.y;
             }
         }
-        
-        MapLayer targetLayer = tileMap.getLayers().get("Targets Layer");
-        if (targetLayer!=null) {
-            MapObjects targetObjects = targetLayer.getObjects();
-            for (MapObject t: targetObjects) {
-                MapProperties p = t.getProperties();
-                Target target = new Target(p.get("x", float.class), p.get("y", float.class));
-                targets.add(target);      
-                /* Debugging code to print out all properties of an object
-                Iterator<String> keys = t.getProperties().getKeys();
-                while (keys.hasNext()) {
-                    String property = keys.next();
-                    System.out.println(property + ": "+p.get(property));
-                }*/
-            }
+    
+        for (MapObject s: getLayerObjects("Sign Layer")) {
+            MapProperties p = s.getProperties();
+            String signText = p.get("text",String.class);
+            Sign sign = new Sign(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class), p.get("height", float.class), signText);
+            signs.add(sign);
         }
-        
-        MapLayer locsLayer = tileMap.getLayers().get("Locations Layer");
-        if (locsLayer!=null) {
-            MapObjects locObjects = locsLayer.getObjects();
-            for (MapObject l: locObjects) {
-                MapProperties p = l.getProperties();
-                String name = l.getName();
-                if (name.equals("start")) {
-                    startPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
-                    player.position.x = startPos.x;
-                    player.position.y = startPos.y;
-                }
-            }
-        }
-        
-        MapLayer signLayer = tileMap.getLayers().get("Sign Layer");
-        if (signLayer!=null) {
-            MapObjects signObjects = signLayer.getObjects();
-            for (MapObject s: signObjects) {
-                MapProperties p = s.getProperties();
-                String signText = p.get("text",String.class);
-                Sign sign = new Sign(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class), p.get("height", float.class), signText);
-                signs.add(sign);
-            }
-        }
+    }
+    
+    private MapObjects getLayerObjects(String name) {
+    	MapLayer layer = tileMap.getLayers().get(name);
+    	if (layer!=null) {
+    		return layer.getObjects();
+    	}
+    	else{
+    		return new MapObjects();
+    	}
+    }
+    
+    private void handleRectangleLayer(String name, Class<?> c, Array<? extends Rectangle> array) {
+    	MapObjects objects = getLayerObjects(name);
+    	for(MapObject object: objects) {
+    		MapProperties p = object.getProperties();
+    		Object rect;
+    		try {
+				rect = c.getConstructor(float.class, float.class).newInstance(p.get("x", float.class), p.get("y", float.class));
+				System.out.println(rect.getClass() + " " + array);
+//				array.add(rect);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//    		array.add(c.cast(rect));
+    	}
     }
     
     public void checkDeathCollision() {
