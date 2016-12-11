@@ -15,13 +15,13 @@ public class GameScreen extends ScreenAdapter {
         this.game = game;
         
 //        map = new Map("test_level.tmx");
-        map = new Map("wide_level.tmx");
-//        map = new Map("actual_game_maybe.tmx");
+//        map = new Map("wide_level.tmx");
+        map = new Map("actual_game_maybe.tmx");
         renderer = new MapRenderer(map, game.batch);
         
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
         music.setLooping(true);
-        music.play();
+        //music.play();
     }
     
     @Override
