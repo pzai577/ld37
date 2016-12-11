@@ -149,13 +149,6 @@ public class Player {
 			}
 			wasInAirAnim = false;
 		}
-		if (playerRotating) {
-			playerRotation += 15 * (playerRotatingLeft ? 1 : -1);
-			if (Math.abs(playerRotation) >= 360) {
-				playerRotation = 0;
-				playerRotating = false;
-			}
-		}
 		//update y position of player
 		if (playerFastFalling) {
 			position.y -= PLAYER_FASTFALL_SPEED;
