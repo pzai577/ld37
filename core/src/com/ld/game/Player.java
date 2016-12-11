@@ -27,6 +27,7 @@ enum PlayerFrame {
 	// TODO: maybe get rid of this enum
 	STAND,
 	RUN,
+	RUN_NOARMS,
 	PREJUMP,
 	CLIMB,
 	CYCLONE,
@@ -223,7 +224,7 @@ public class Player {
 					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
 			if (isFrontKeyPressed) {
 				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN;
+				playerFrame = PlayerFrame.RUN_NOARMS;
 				playerSwordVisible = true;
 				playerSwordRotation = -90;
 			}
@@ -606,6 +607,7 @@ public class Player {
 				}
 			}
 			if (currentAnimationType == AnimationType.AIR_FAIR && stateFrameDuration == 11) {
+				playerFrame = PlayerFrame.STAND;
 				playerSwordVisible = false;
 			}
 			if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration == 20) {
