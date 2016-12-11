@@ -16,7 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
-	static final boolean DEBUG_SHOW_HITBOXES = true;
+	static final boolean DEBUG_SHOW_HITBOXES = false;
 	
     Map map;
     SpriteBatch batch, dialogBatch;
@@ -91,7 +91,7 @@ public class MapRenderer {
         batch.begin();
         
         for (Target t: map.targets) {
-            batch.draw(targetImg, t.x, t.y, t.width, t.height);
+            if (t.exists) batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);

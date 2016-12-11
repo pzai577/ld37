@@ -62,7 +62,7 @@ public class Map {
             }
         }
         
-        MapLayer targetLayer = tileMap.getLayers().get("Targets");
+        MapLayer targetLayer = tileMap.getLayers().get("Targets Layer");
         if (targetLayer!=null) {
             MapObjects targetObjects = targetLayer.getObjects();
             for (MapObject t: targetObjects) {
@@ -102,6 +102,9 @@ public class Map {
     }
     
     public void killPlayer() {
+        player.playerHorizVelocity = 0;
+        player.playerVertVelocity = 0;
+        
         if (currCheckpoint==null) {
             player.position.x = startPos.x;
             player.position.y = startPos.y;
