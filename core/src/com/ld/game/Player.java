@@ -277,10 +277,16 @@ public class Player {
 				playerFrame = PlayerFrame.STAND;
 				playerVertVelocity = 0;
 			}
+			
 			if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
 				setState(PlayerState.GROUND_ANIM);
 				loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
 						: AnimationType.GROUND_FSMASH);
+			}
+			
+			// shoot laser gun
+			if(Gdx.input.isKeyJustPressed(Keys.C)) {
+				loadHurtboxData(AnimationType.SHOOT_LASER);
 			}
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
