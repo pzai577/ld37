@@ -28,6 +28,7 @@ enum PlayerFrame {
 	RUN,
 	PREJUMP,
 	CLIMB,
+	CYCLONE,
 }
 
 public class Player {
@@ -219,6 +220,10 @@ public class Player {
 			}
 			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
 				loadHurtboxData(AnimationType.AIR_DAIR);
+				playerFrame = PlayerFrame.CYCLONE;
+				playerSwordVisible = true;
+				playerSwordRotation = -75;
+				playerRotating = true;
 			}
 			else {
 				loadHurtboxData(AnimationType.AIR_NAIR);
@@ -292,9 +297,21 @@ public class Player {
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
 			// TODO: this is copied from the if/else branch above, de-duplicate
-			playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
-			if (Math.abs(playerHorizVelocity) < 1) {
-				playerHorizVelocity = 0;
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+									+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
+				playerFacingLeft = true;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+						+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
+				playerFacingLeft = false;
+			}
+			else {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
+				if (Math.abs(playerHorizVelocity) < 1) {
+					playerHorizVelocity = 0;
+				}
 			}
 			position.x += playerHorizVelocity;
 
@@ -542,6 +559,10 @@ public class Player {
 			if (currentAnimationType == AnimationType.AIR_FAIR) {
 				playerSwordRotation += 16;
 			}
+			else if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration < 20) {
+				playerSwordRotation += 16;
+				playerRotation += 16;
+			}
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
@@ -554,8 +575,13 @@ public class Player {
 			if (currentAnimationType == AnimationType.AIR_FAIR && stateFrameDuration == 11) {
 				playerSwordVisible = false;
 			}
+			if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration == 20) {
+				playerSwordVisible = false;
+				playerRotation = 0;
+			}
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
+				if (playerFrame == PlayerFrame.CYCLONE) playerFrame = PlayerFrame.STAND;
 				activeHurtboxes.clear();
 			}
 		}
