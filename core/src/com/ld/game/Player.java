@@ -221,7 +221,7 @@ public class Player {
 				loadHurtboxData(AnimationType.AIR_UAIR);
 				playerFrame = PlayerFrame.TWIST;
 				playerSwordVisible = true;
-				playerRotation = 155;
+				playerRotation = 175;
 				playerFlipSword = true;
 				playerSwordRotation = -140;
 			}
@@ -582,8 +582,8 @@ public class Player {
 				playerRotation += 16;
 			}
 			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration < 21) {
-				playerSwordRotation -= 13;
-				playerRotation -= 13;
+				playerSwordRotation -= 14;
+				playerRotation -= 14;
 				
 				//pause = true;
 			}
@@ -603,11 +603,12 @@ public class Player {
 				playerSwordVisible = false;
 				playerRotation = 0;
 			}
-			if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 15) {
+			if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 11) {
 				playerFrame = PlayerFrame.CYCLONE;
+			}
+			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 15) {
 				playerFlipSword = false;
 				playerSwordVisible = false;
-				//playerRotation = 0;
 			}
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
