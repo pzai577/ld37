@@ -118,9 +118,11 @@ public class Player {
 			if (Gdx.input.isKeyJustPressed(Keys.Z) && playerHasDoubleJump) {
 				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 					playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+					playerFacingLeft = true;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+					playerFacingLeft = false;
 				}
 				playerHasDoubleJump = false;
 				playerRotating = true;
