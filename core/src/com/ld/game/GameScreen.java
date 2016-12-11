@@ -12,7 +12,7 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(LDGame game) {
         this.game = game;
         
-        map = new Map("test_level.tmx");
+        map = new Map("actual_game_maybe.tmx");
 //        map = new Map("wide_level.tmx");
         renderer = new MapRenderer(map, game.batch);
     }
