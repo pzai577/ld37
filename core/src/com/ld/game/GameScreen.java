@@ -2,19 +2,25 @@ package com.ld.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 
 public class GameScreen extends ScreenAdapter {
     LDGame game;
     Map map;
     MapRenderer renderer;
+    Music music;
     
     public GameScreen(LDGame game) {
         this.game = game;
         
-        map = new Map("test_level.tmx");
-//        map = new Map("wide_level.tmx");
+//        map = new Map("test_level.tmx");
+        map = new Map("wide_level.tmx");
         renderer = new MapRenderer(map, game.batch);
+        
+        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        music.setLooping(true);
+        music.play();
     }
     
     @Override

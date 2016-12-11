@@ -13,12 +13,18 @@ import com.badlogic.gdx.utils.Array;
 public class Map {
     public TiledMap tileMap;
     public TiledMapTileLayer collisionLayer;
+    
+    public float pixelWidth, pixelHeight;
+    
     public Player player;
     public Array<Target> targets;
     
     public Map(String levelFile) {
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
+        
+        pixelWidth = tileMap.getProperties().get("width", int.class) * tileMap.getProperties().get("tilewidth", int.class);
+        pixelHeight = tileMap.getProperties().get("height", int.class) * tileMap.getProperties().get("tileheight", int.class);
         
         MapObjects targetObjects = tileMap.getLayers().get("Targets").getObjects();
         targets = new Array<Target>();

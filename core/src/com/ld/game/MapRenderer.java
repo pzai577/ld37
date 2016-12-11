@@ -1,6 +1,7 @@
 package com.ld.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,12 +23,13 @@ public class MapRenderer {
     static final float GAME_WIDTH = 1280;
     static final float GAME_HEIGHT = 800;
     static final float CAM_BORDER = 150;
-    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
+//    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     
     Texture targetImg;
     Texture playerImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
+    Sound weaponSound;
   
     
     public MapRenderer (Map map, SpriteBatch batch) {
@@ -51,6 +53,8 @@ public class MapRenderer {
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        
+        weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
     }
     
     public void render() {
@@ -99,13 +103,13 @@ public class MapRenderer {
     
     private void moveCamera(){
     	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDER)
-    		cam.position.x = map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDER - GAME_WIDTH/2;
+    		cam.position.x = Math.min(map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDER, map.pixelWidth) - GAME_WIDTH/2;
     	if(map.player.position.x < cam.position.x - GAME_WIDTH/2 + CAM_BORDER)
-    		cam.position.x = map.player.position.x - CAM_BORDER + GAME_WIDTH/2;
+    		cam.position.x = Math.max(map.player.position.x - CAM_BORDER, 0) + GAME_WIDTH/2;
     	if(map.player.position.y + Player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDER)
-    		cam.position.y = map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDER - GAME_HEIGHT/2;
+    		cam.position.y = Math.min(map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDER, map.pixelHeight) - GAME_HEIGHT/2;
     	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDER)
-    		cam.position.y = Math.max(map.player.position.y - CAM_BORDER + GAME_HEIGHT/2, LOWER_CAM_BOUNDARY);
+    		cam.position.y = Math.max(map.player.position.y - CAM_BORDER, 0) + GAME_HEIGHT/2;
     }
     
 }
