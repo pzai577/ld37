@@ -27,6 +27,7 @@ public class Map {
     public Array<Rectangle> deathRects;
     public Array<Projectile> projectiles;
     public Array<Checkpoint> checkpoints;
+    public Array<Sign> signs;
     public Checkpoint currCheckpoint;
     
     public Map(String levelFile) {
@@ -34,6 +35,7 @@ public class Map {
         deathRects = new Array<Rectangle>();
         projectiles = new Array<Projectile>();
         checkpoints = new Array<Checkpoint>();
+        signs = new Array<Sign>();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
@@ -91,6 +93,17 @@ public class Map {
                 }
             }
         }
+        
+        MapLayer signLayer = tileMap.getLayers().get("Sign Layer");
+        if (signLayer!=null) {
+            MapObjects signObjects = signLayer.getObjects();
+            for (MapObject s: signObjects) {
+                MapProperties p = s.getProperties();
+                String signText = p.get("text",String.class);
+                Sign sign = new Sign(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class), p.get("height", float.class), signText);
+                signs.add(sign);
+            }
+        }
     }
     
     public void checkDeathCollision() {
@@ -142,6 +155,15 @@ public class Map {
         }
     }
     
+    public void checkSignHits() {
+        for (Sign s: signs) {
+            if (Intersector.overlaps(s, player.position))
+                s.active = true;
+            else
+                s.active = false;
+        }
+    }
+    
     public void removeTarget(Target t) {
         t.exists = false;
         //probably want to increase score or play sound effects here as well
@@ -151,6 +173,7 @@ public class Map {
         player.updateState();
         checkTargetHits();
         checkCpHits();
+        checkSignHits();
         checkDeathCollision();
     }
     
