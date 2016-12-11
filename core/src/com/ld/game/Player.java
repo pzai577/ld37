@@ -139,15 +139,17 @@ public class Player {
 		if (Gdx.input.isKeyJustPressed(Keys.DOWN) && playerVertVelocity > 0) {
 			playerFastFalling = true;
 		}
-		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
-			playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
-            playerFacingLeft = true;
-		}
-		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			playerHorizVelocity += PLAYER_AIR_INFLUENCE;
-			playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
-            playerFacingLeft = false;
+		if (playerState == PlayerState.AIR) {
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
+				playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
+	            playerFacingLeft = true;
+			}
+			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
+				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
+	            playerFacingLeft = false;
+			}
 		}
 		boolean wasInAirAnim = true;
 		if (playerState == PlayerState.AIR) {
@@ -210,6 +212,8 @@ public class Player {
 				playerState = PlayerState.WALL_LEFT;
 				playerRotation = 0;
 				playerRotating = false;
+				playerSwordVisible = false;
+				playerFlipSword = false;
 			}
 		}
 		else if (rightCell != null) {
@@ -219,6 +223,8 @@ public class Player {
 				playerState = PlayerState.WALL_RIGHT;
 				playerRotation = 0;
 				playerRotating = false;
+				playerSwordVisible = false;
+				playerFlipSword = false;
 			}
 		}
 		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
@@ -296,6 +302,8 @@ public class Player {
 					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
 					setState(PlayerState.WALL_LEFT);
 					playerFrame = PlayerFrame.CLIMB;
+					playerSwordVisible = false;
+					playerFlipSword = false;
 				}
 			}
 			else if (rightCell != null) {
@@ -304,6 +312,8 @@ public class Player {
 					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
 					setState(PlayerState.WALL_RIGHT);
 					playerFrame = PlayerFrame.CLIMB;
+					playerSwordVisible = false;
+					playerFlipSword = false;
 				}
 			}
 			else if (bottomCell == null) {
@@ -316,8 +326,10 @@ public class Player {
 			
 			if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
 				setState(PlayerState.GROUND_ANIM);
-				loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
-						: AnimationType.GROUND_FSMASH);
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
 			}
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
@@ -367,9 +379,19 @@ public class Player {
 		}
 		else { // PlayerState.GROUND_ANIM
 			// TODO: this is copied from the if/else branch above, de-duplicate
-			playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
-			if (Math.abs(playerHorizVelocity) < 1) {
-				playerHorizVelocity = 0;
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+									+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+						+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
+			}
+			else {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
+				if (Math.abs(playerHorizVelocity) < 1) {
+					playerHorizVelocity = 0;
+				}
 			}
 			position.x += playerHorizVelocity;
 
@@ -630,7 +652,8 @@ public class Player {
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
 				if (currentAnimationType == AnimationType.AIR_DAIR ||
-					currentAnimationType == AnimationType.AIR_UAIR) {
+					currentAnimationType == AnimationType.AIR_UAIR ||
+					state == PlayerState.GROUND_ANIM) {
 					playerFrame = PlayerFrame.STAND;
 					playerRotation = 0;
 				}

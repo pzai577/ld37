@@ -100,10 +100,10 @@ public class MapRenderer {
         
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
-        renderTargets();
-        renderCheckpoints();
-        renderSigns();
-        renderParticles();
+        drawTargets();
+        drawCheckpoints();
+        drawSigns();
+        drawParticles();
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
         }*/
@@ -200,13 +200,13 @@ public class MapRenderer {
     	}
     }
     
-    private void renderTargets() {
+    private void drawTargets() {
         for (Target t: map.targets) {
             if (t.exists) batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
     }
     
-    private void renderCheckpoints() {
+    private void drawCheckpoints() {
         for (Checkpoint cp: map.checkpoints) {
             if (cp==map.currCheckpoint) {
                 batch.setColor(Color.GREEN);
@@ -219,7 +219,7 @@ public class MapRenderer {
         }
     }
     
-    private void renderSigns() {
+    private void drawSigns() {
         for (Sign s: map.signs) {
             batch.draw(signImg, s.x, s.y, s.width, s.height);
             if (s.active) {
@@ -228,7 +228,7 @@ public class MapRenderer {
         }
     }
     
-    private void renderParticles() {
+    private void drawParticles() {
         for (Particle p : map.particles) {
         	p.render(batch, particleSprites);
         }

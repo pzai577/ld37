@@ -1,8 +1,7 @@
 package com.ld.game;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
-
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -162,6 +161,9 @@ public class Map {
             for (Checkpoint cp: checkpoints) {
                 if (Intersector.overlaps(c, cp) && currCheckpoint!=cp) {
                     currCheckpoint = cp;
+            		//Sound checkpointSound = Gdx.audio.newSound(Gdx.files.internal("checkpoint_hit.mp3"));
+            		//checkpointSound.play();
+            		//http://soundbible.com/1980-Swords-Collide.html
                 }
             }
         }
