@@ -166,7 +166,7 @@ public class MapRenderer {
         
         if (map.player.playerSwordVisible) {
         	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
-        	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
+        	batch.draw(swordTexture, map.player.getX() - 43 + (map.player.getFacingLeft() ? -5 : 0), map.player.getY() + 8, 67, 20,
         			swordImg.getWidth(), swordImg.getHeight(), xScale * (map.player.playerFlipSword ? -1 : 1), 1f, xScale * map.player.playerSwordRotation);
         }
     }

@@ -190,8 +190,9 @@ public class Player {
 			position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
 			playerState = PlayerState.GROUND;
 			playerRotation = 0;
-			playerRotating = false;
 			playerHasDoubleJump = true;
+			playerSwordVisible = false;
+			playerFlipSword = false;
 		}
 		//update x position of player
 		position.x += playerHorizVelocity;
@@ -224,7 +225,7 @@ public class Player {
 				loadHurtboxData(AnimationType.AIR_FAIR);
 				playerFrame = PlayerFrame.RUN;
 				playerSwordVisible = true;
-				playerSwordRotation = -80;
+				playerSwordRotation = -90;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.UP)) {
 				loadHurtboxData(AnimationType.AIR_UAIR);
@@ -423,6 +424,8 @@ public class Player {
 			playerRotation = 0;
 			playerRotating = false;
 			playerHasDoubleJump = true;
+			playerSwordVisible = false;
+			playerFlipSword = false;
 		}
 		else if (leftCell==null) {
 			// TODO: make the player snap to ground?
@@ -470,6 +473,8 @@ public class Player {
 			playerRotation = 0;
 			playerRotating = false;
 			playerHasDoubleJump = true;
+			playerSwordVisible = false;
+			playerFlipSword = false;
 		}
 		else if (rightCell==null) {
 			setState(PlayerState.AIR);
@@ -579,7 +584,7 @@ public class Player {
 		if (playerState == state) {
 			updateActiveHurtboxes();
 			if (currentAnimationType == AnimationType.AIR_FAIR) {
-				playerSwordRotation += 16;
+				playerSwordRotation += 17;
 			}
 			else if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration < 20) {
 				playerSwordRotation += 16;

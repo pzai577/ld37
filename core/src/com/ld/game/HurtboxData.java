@@ -72,10 +72,10 @@ public class HurtboxData {
 		float SWORD_LENGTH = 75;
 		
 		// TODO: refactor
-		float[][] airFairData = new float[20][5];
-		for (int i = 0; i < 10; ++i) {
-			airFairData[2*i] = new float[]{2 + i, (float) (SWORD_LENGTH * Math.sin((i+2)*Math.PI/12)), (float) (SWORD_LENGTH * Math.cos((i+2)*Math.PI/12)), 15, 2};
-			airFairData[2*i + 1] = new float[]{2 + i, (float) (SWORD_LENGTH * Math.sin((i+2)*Math.PI/12) / 2), (float) (SWORD_LENGTH * Math.cos((i+2)*Math.PI/12) / 2), 15, 2};
+		float[][] airFairData = new float[24][5];
+		for (int i = 0; i < 12; ++i) {
+			airFairData[2*i] = new float[]{2 + i, (float) (SWORD_LENGTH * Math.sin((i+1)*Math.PI/12)), (float) (SWORD_LENGTH * Math.cos((i+1)*Math.PI/12)), 15, 2};
+			airFairData[2*i + 1] = new float[]{2 + i, (float) (SWORD_LENGTH * Math.sin((i+1)*Math.PI/12) / 2), (float) (SWORD_LENGTH * Math.cos((i+1)*Math.PI/12) / 2), 15, 2};
 		}
 		
 		hurtboxLocationMap.put(AnimationType.AIR_FAIR, airFairData);
