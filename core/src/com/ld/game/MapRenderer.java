@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
@@ -84,6 +85,9 @@ public class MapRenderer {
         for (Target t: map.targets) {
             batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
+        /*for (Rectangle d: map.deathRects) {
+            if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
+        }*/
         TextureRegion personTexture = determinePlayerTexture();
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
