@@ -8,7 +8,9 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
 enum PlayerState {
 	GROUND,
@@ -565,5 +567,14 @@ public class Player {
 				--i;
 			}
 		}
+	}
+	
+	public Array<Circle> getHurtboxCircles() {
+	    Array<Circle> allHurtboxes = new Array<Circle>();
+        //convert hurtboxes to circles for Intersector
+        for (Hurtbox hb: getActiveHurtboxes()) {
+            allHurtboxes.add(new Circle(getX()+hb.x, getY()+hb.y, hb.radius));
+        }
+        return allHurtboxes;
 	}
 }

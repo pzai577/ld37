@@ -30,6 +30,8 @@ public class MapRenderer {
     Texture playerImg;
     Texture sageImg;
     Texture swordImg;
+    Texture checkpointImg;
+    Texture usedCheckpointImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
   
@@ -46,6 +48,7 @@ public class MapRenderer {
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
         targetImg = new Texture(Gdx.files.internal("target.png"));
+        checkpointImg = new Texture(Gdx.files.internal("target.png"));
 
         playerImg = new Texture("samurai.png");
         sageImg = new Texture("sage.png");
@@ -85,6 +88,16 @@ public class MapRenderer {
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
         }*/
+        for (Checkpoint cp: map.checkpoints) {
+            if (cp==map.currCheckpoint) {
+                batch.setColor(Color.GREEN);
+                batch.draw(checkpointImg, cp.x, cp.y, cp.width, cp.height);
+                batch.setColor(Color.WHITE);
+            }
+            else {
+                batch.draw(checkpointImg, cp.x, cp.y, cp.width, cp.height);
+            }
+        }
         TextureRegion personTexture = determinePlayerTexture();
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
