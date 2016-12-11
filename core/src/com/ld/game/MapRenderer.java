@@ -195,21 +195,8 @@ public class MapRenderer {
     }
     
     private void drawProjectiles() {
-    	for(Projectile proj: this.map.projectiles){
-    		proj.update();
+    	for(Projectile proj: this.map.projectiles) {
     		proj.render(r);
-//    		for(int i=0; i<proj.hitboxes.size; i++){
-//    			System.out.println(proj.colors.get(i)+" "+i);
-//    			Rectangle rect = proj.hitboxes.get(i);
-//    			r.setColor(proj.colors.get(i));
-//    			r.rect(rect.x, rect.y, rect.width, rect.height);
-//    		}
-//    		
-//    		
-//    		r.setColor(proj.color);
-//    		for(Rectangle rect: proj.hitboxes){
-//    			r.rect(rect.x, rect.y, rect.width, rect.height);
-//    		}
     	}
     }
     
