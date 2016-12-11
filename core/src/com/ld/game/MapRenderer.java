@@ -109,7 +109,6 @@ public class MapRenderer {
         }
         
         drawPlayer();
-        
         batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         
         batch.end();
