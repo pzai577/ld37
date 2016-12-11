@@ -58,12 +58,12 @@ public class HurtboxData {
 		durationMap.put(AnimationType.GROUND_FSMASH, 32);
 
 		hurtboxLocationMap.put(AnimationType.AIR_NAIR, new float[][]{
-			{5, 25, 5, 20, 6},
-			{7, 50, 10, 20, 4},
-			{8, 75, 15, 20, 2},
-			{11, -25, -5, 20, 6},
-			{13, -50, -10, 20, 4},
-			{14, -75, -15, 20, 2},
+			{5, 25, -5, 20, 6},
+			{7, 50, -10, 20, 4},
+			{8, 75, -15, 20, 2},
+			{11, -25, 5, 20, 6},
+			{13, -50, 10, 20, 4},
+			{14, -75, 15, 20, 2},
 		});
 		durationMap.put(AnimationType.AIR_NAIR, 17);
 		
