@@ -1,6 +1,8 @@
 package com.ld.game;
 
-public class Checkpoint extends RectangleObject {
+import com.badlogic.gdx.math.Rectangle;
+
+public class Checkpoint extends Rectangle {
     private static final float DEFAULT_CP_WIDTH = 32;
     private static final float DEFAULT_CP_HEIGHT = 32;
     

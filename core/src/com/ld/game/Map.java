@@ -88,7 +88,7 @@ public class Map {
         Array<Circle> allHurtboxes = player.getHurtboxCircles();
         for (Target t: targets) {
             for (Circle c: allHurtboxes) {
-                if (Intersector.overlaps(c, t.rect)) {
+                if (Intersector.overlaps(c, t)) {
                     removeTarget(t);
                     player.playerHasDoubleJump = true;
                 }
@@ -100,7 +100,7 @@ public class Map {
         Array<Circle> allHurtboxes = player.getHurtboxCircles();
         for (Circle c: allHurtboxes) {
             for (Checkpoint cp: checkpoints) {
-                if (Intersector.overlaps(c, cp.rect) && currCheckpoint!=cp) {
+                if (Intersector.overlaps(c, cp) && currCheckpoint!=cp) {
                     currCheckpoint = cp;
                 }
             }
