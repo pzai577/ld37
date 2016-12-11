@@ -25,17 +25,19 @@ public class Map {
     public Vector2 startPos;
     public Array<Target> targets;
     public Array<Rectangle> deathRects;
+    public Array<Projectile> projectiles;
     public Array<Checkpoint> checkpoints;
     public Checkpoint currCheckpoint;
     
     public Map(String levelFile) {
         targets = new Array<Target>();
         deathRects = new Array<Rectangle>();
+        projectiles = new Array<Projectile>();
         checkpoints = new Array<Checkpoint>();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
-        player = new Player(collisionLayer);
+        player = new Player(this, collisionLayer);
         
         pixelWidth = tileMap.getProperties().get("width", int.class) * tileMap.getProperties().get("tilewidth", int.class);
         pixelHeight = tileMap.getProperties().get("height", int.class) * tileMap.getProperties().get("tileheight", int.class);
