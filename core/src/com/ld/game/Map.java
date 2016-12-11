@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Map {
@@ -21,6 +22,7 @@ public class Map {
     public float pixelWidth, pixelHeight;
     
     public Player player;
+    public Vector2 startPos;
     public Array<Target> targets;
     public Array<Rectangle> deathRects;
     public Array<Checkpoint> checkpoints;
@@ -73,12 +75,33 @@ public class Map {
                 }*/
             }
         }
+        
+        MapLayer locsLayer = tileMap.getLayers().get("Locations Layer");
+        if (locsLayer!=null) {
+            MapObjects locObjects = locsLayer.getObjects();
+            for (MapObject l: locObjects) {
+                MapProperties p = l.getProperties();
+                String name = l.getName();
+                if (name.equals("start")) {
+                    startPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
+                    player.position.x = startPos.x;
+                    player.position.y = startPos.y;
+                }
+            }
+        }
     }
     
     public void checkDeathCollision() {
         for (Rectangle deathRect: deathRects) {
             if (player.position.overlaps(deathRect)) {
-                player.isAlive = false;
+                if (currCheckpoint==null) {
+                    player.position.x = startPos.x;
+                    player.position.y = startPos.y;
+                }
+                else {
+                    player.position.x = currCheckpoint.x;
+                    player.position.y = currCheckpoint.y;
+                }
                 // probably want to just call a killPlayer function instead
             }
         }

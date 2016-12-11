@@ -59,6 +59,7 @@ public class Player {
 	
 	public boolean isAlive;
 	public Rectangle position;
+	
 	private PlayerState playerState = PlayerState.AIR;
 	private double playerHorizVelocity = 0.0;
 	private double playerVertVelocity = 0.0;
@@ -463,6 +464,11 @@ public class Player {
 	public void setState(PlayerState state) {
 		playerState = state;
 		stateFrameDuration = 0;
+	}
+	
+	public void die() {
+	    isAlive = false;
+	    // TODO: probably want to add sound effects or do other things here too
 	}
 	
 	/*
