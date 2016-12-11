@@ -242,9 +242,19 @@ public class Player {
 			
 			if (leftCell != null) {
 				position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
+				if (Gdx.input.isKeyPressed(Keys.UP)) {
+					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
+					setState(PlayerState.WALL_LEFT);
+					playerFrame = PlayerFrame.CLIMB;
+				}
 			}
 			else if (rightCell != null) {
 				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
+				if (Gdx.input.isKeyPressed(Keys.UP)) {
+					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
+					setState(PlayerState.WALL_RIGHT);
+					playerFrame = PlayerFrame.CLIMB;
+				}
 			}
 			else if (bottomCell == null) {
 				setState(PlayerState.AIR);
