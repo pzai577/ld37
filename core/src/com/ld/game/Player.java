@@ -31,7 +31,7 @@ public class Player {
 	// TODO: Maybe make all of the EnhancedCells class variables to avoid slowdown?
     // TODO: Use delta time to account for varying frame rates
 
-	private static final double FALL_ACCELERATION = 0.33;
+	private static final double FALL_ACCELERATION = 0.35;
 	
 	// note: if PLAYER_GROUND_MOVESPEED>PLAYER_AIR_MAX_MOVESPEED, things look weird if you run off a platform
 	private static final double PLAYER_GROUND_MAX_MOVESPEED = 5;
