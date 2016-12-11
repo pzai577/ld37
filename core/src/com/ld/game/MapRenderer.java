@@ -1,6 +1,7 @@
 package com.ld.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,10 +12,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
+	static final boolean DEBUG_SHOW_HITBOXES = false;
+	
     Map map;
     SpriteBatch batch, dialogBatch;
     ShapeRenderer r;
@@ -31,7 +33,9 @@ public class MapRenderer {
     Texture sageImg;
     Texture swordImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
+    TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone;
+    
+    Sound weaponSound;
   
     BitmapFont font;
     Matrix4 fontRotation;
@@ -52,12 +56,14 @@ public class MapRenderer {
         swordImg = new Texture("sword_arm.png");
         
         playerStand = new TextureRegion(playerImg, 8, 0,
-        		Player.PLAYER_WIDTH,Player.PLAYER_HEIGHT);
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerRun = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, 0,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4 + 8, 0,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        playerCyclone = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, playerImg.getHeight()/4,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         
         dialogBatch = new SpriteBatch();
@@ -86,13 +92,14 @@ public class MapRenderer {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
         }*/
         TextureRegion personTexture = determinePlayerTexture();
+        int xScale = (map.player.getFacingLeft() ? 1 : -1);
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
-                    width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
+                    width, height, xScale, 1f, xScale * map.player.getRotation());
         
         if (map.player.playerSwordVisible) {
         	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
         	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
-        			swordImg.getWidth(), swordImg.getHeight(), (map.player.getFacingLeft() ? 1 : -1), 1f, (map.player.getFacingLeft() ? 1 : -1) * map.player.playerSwordRotation);
+        			swordImg.getWidth(), swordImg.getHeight(), xScale, 1f, xScale * map.player.playerSwordRotation);
         }
         
         batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
@@ -105,13 +112,15 @@ public class MapRenderer {
 	        dialogBatch.end();
         }
         
-        r.setProjectionMatrix(cam.combined);
-        r.begin(ShapeType.Filled);
-        r.setColor(Color.RED);
-        for (Hurtbox box : map.player.getActiveHurtboxes()) {
-            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
+        if (DEBUG_SHOW_HITBOXES) {
+	        r.setProjectionMatrix(cam.combined);
+	        r.begin(ShapeType.Filled);
+	        r.setColor(Color.RED);
+	        for (Hurtbox box : map.player.getActiveHurtboxes()) {
+	            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
+	        }
+	        r.end();
         }
-        r.end();
     }
     
     private TextureRegion determinePlayerTexture(){
@@ -123,6 +132,9 @@ public class MapRenderer {
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.CLIMB) {
         	return playerClimb;
+        }
+        else if (map.player.getPlayerFrame() == PlayerFrame.CYCLONE) {
+        	return playerCyclone;
         }
         else {
             return playerStand;
