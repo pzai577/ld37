@@ -29,6 +29,7 @@ public class MapRenderer {
     Texture targetImg;
     Texture playerImg;
     Texture sageImg;
+    Texture swordImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
     
@@ -50,6 +51,7 @@ public class MapRenderer {
 
         playerImg = new Texture("samurai.png");
         sageImg = new Texture("sage.png");
+        swordImg = new Texture("sword_arm.png");
         
         playerStand = new TextureRegion(playerImg, 8, 0,
         		Player.PLAYER_WIDTH,Player.PLAYER_HEIGHT);
@@ -88,13 +90,19 @@ public class MapRenderer {
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
         
-        batch.draw(sageImg, 3 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
+        if (map.player.playerSwordVisible) {
+        	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
+        	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
+        			swordImg.getWidth(), swordImg.getHeight(), (map.player.getFacingLeft() ? 1 : -1), 1f, (map.player.getFacingLeft() ? 1 : -1) * map.player.playerSwordRotation);
+        }
+        
+        batch.draw(sageImg, 2 * 32, 2 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
         
-        if (Math.abs(map.player.getX() - 3*32) + Math.abs(map.player.getY() - 30) <= 150) {
+        if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
         	dialogBatch.setProjectionMatrix(cam.combined);
         	dialogBatch.begin();
-	        font.draw(dialogBatch, "Take my sword to my\nbrother across the forest", 120, 100);
+	        font.draw(dialogBatch, "Take my sword to my\nbrother across the forest", 100, 140);
 	        dialogBatch.end();
         }
         
