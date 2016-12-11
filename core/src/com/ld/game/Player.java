@@ -121,10 +121,12 @@ public class Player {
 		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
 			playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
+            playerFacingLeft = true;
 		}
 		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 			playerHorizVelocity += PLAYER_AIR_INFLUENCE;
 			playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
+            playerFacingLeft = false;
 		}
 		boolean wasInAirAnim = true;
 		if (playerState == PlayerState.AIR) {
@@ -152,6 +154,7 @@ public class Player {
 				playerRotating = false;
 			}
 		}
+		//update y position of player
 		if (playerFastFalling) {
 			position.y -= PLAYER_FASTFALL_SPEED;
 		}
@@ -160,7 +163,7 @@ public class Player {
 			playerVertVelocity = Math.min(playerVertVelocity + FALL_ACCELERATION,
 										  PLAYER_MAX_SLOWFALL_SPEED);
 		}
-		
+		//check whether you're intersecting something vertically
 		EnhancedCell topCell = getCollidingTopCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
 
@@ -178,7 +181,9 @@ public class Player {
 			playerRotating = false;
 			playerHasDoubleJump = true;
 		}
+		//update x position of player
 		position.x += playerHorizVelocity;
+		//check whether you're intersecting something horizontally
 		EnhancedCell leftCell = getCollidingLeftCell();
 		EnhancedCell rightCell = getCollidingRightCell();
 		if (leftCell != null) {
