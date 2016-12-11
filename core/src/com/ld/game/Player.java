@@ -24,6 +24,7 @@ enum PlayerFrame {
 	STAND,
 	RUN,
 	PREJUMP,
+	CLIMB,
 }
 
 public class Player {
@@ -152,6 +153,8 @@ public class Player {
 				playerHorizVelocity = 0;
 				if (playerState != PlayerState.GROUND) {
 					playerState = PlayerState.WALL_LEFT;
+					playerRotation = 0;
+					playerRotating = false;
 				}
 			}
 			else if (rightCell != null) {
@@ -159,11 +162,13 @@ public class Player {
 				playerHorizVelocity = 0;
 				if (playerState != PlayerState.GROUND) {
 					playerState = PlayerState.WALL_RIGHT;
+					playerRotation = 0;
+					playerRotating = false;
 				}
 			}
 			if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 				setState(PlayerState.AIR_ANIM);
-				loadHurtboxData(AnimationType.GROUND_DSMASH);
+				loadHurtboxData(Gdx.input.isKeyPressed(Keys.UP) ? AnimationType.AIR_UAIR : AnimationType.AIR_NAIR);
 			}
 			if (wasInAirAnim) {
 				updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
@@ -282,16 +287,19 @@ public class Player {
 		}
 		else if (playerState == PlayerState.WALL_LEFT) {
 			playerHorizVelocity = 0;
-			playerFacingLeft = false;
+			playerFacingLeft = true;
+			playerFrame = PlayerFrame.CLIMB;
 			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 				playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
 				playerState = PlayerState.AIR;
+				playerFrame = PlayerFrame.STAND;
 			}
 			else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
 				playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
 				setState(PlayerState.AIR);
 				playerFrame = PlayerFrame.STAND;
+				playerFacingLeft = false;
 				playerFastFalling = false;
 				playerHasDoubleJump = true;
 			}
@@ -322,15 +330,18 @@ public class Player {
 		}
 		else if (playerState == PlayerState.WALL_RIGHT) {
 			playerHorizVelocity = 0;
-			playerFacingLeft = true;
+			playerFacingLeft = false;
+			playerFrame = PlayerFrame.CLIMB;
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 				playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
+				playerFrame = PlayerFrame.STAND;
 				playerState = PlayerState.AIR;
 			}
 			else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
 				playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
 				playerVertVelocity = -6;
 				setState(PlayerState.AIR);
+				playerFacingLeft = true;
 				playerFrame = PlayerFrame.STAND;
 				playerFastFalling = false;
 				playerHasDoubleJump = true;
@@ -458,7 +469,7 @@ public class Player {
 		if (playerState == state) {
 			updateActiveHurtboxes();
 			for (float[] hurtboxData : currentAnimationFrames) {
-				if (hurtboxData[0] == stateFrameDuration) {
+				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
 					activeHurtboxes.add(new Hurtbox(adjustedXPosition,
 													hurtboxData[2] + PLAYER_HEIGHT / 2,
@@ -466,7 +477,6 @@ public class Player {
 													(int)hurtboxData[4]));
 				}
 			}
-			++stateFrameDuration;
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
 				activeHurtboxes.clear();

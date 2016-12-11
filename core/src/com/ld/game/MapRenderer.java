@@ -27,7 +27,7 @@ public class MapRenderer {
     Texture targetImg;
     Texture playerImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun, playerPrejump;
+    TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
   
     
     public MapRenderer (Map map, SpriteBatch batch) {
@@ -43,11 +43,14 @@ public class MapRenderer {
 
         playerImg = new Texture("samurai.png");
         
-        playerStand = new TextureRegion(playerImg, 0, 0, playerImg.getWidth() / 4, playerImg.getHeight());
-        playerRun = new TextureRegion(playerImg, playerImg.getWidth() / 4, 0,
-        							  playerImg.getWidth() / 4, playerImg.getHeight());
-        playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4, 0,
-				  playerImg.getWidth() / 4, playerImg.getHeight());
+        playerStand = new TextureRegion(playerImg, 8, 0,
+        		Player.PLAYER_WIDTH,Player.PLAYER_HEIGHT);
+        playerRun = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, 0,
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4 + 8, 0,
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
     }
     
     public void render() {
@@ -57,7 +60,7 @@ public class MapRenderer {
         tileMapRenderer.setView(cam);
         tileMapRenderer.render();
         
-        int width = 56;
+        int width = 40;
         int height = 56;
         
         batch.setProjectionMatrix(cam.combined);
@@ -85,6 +88,9 @@ public class MapRenderer {
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.PREJUMP) {
         	return playerPrejump;
+        }
+        else if (map.player.getPlayerFrame() == PlayerFrame.CLIMB) {
+        	return playerClimb;
         }
         else {
             return playerStand;
