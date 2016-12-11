@@ -58,7 +58,7 @@ public class Player {
 	private float playerRotation = 0.0f;
 	
 	private boolean playerFacingLeft = false;
-	private boolean playerHasDoubleJump = false;
+	public boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
 	private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
@@ -168,7 +168,8 @@ public class Player {
 			}
 			if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 				setState(PlayerState.AIR_ANIM);
-				loadHurtboxData(Gdx.input.isKeyPressed(Keys.UP) ? AnimationType.AIR_UAIR : AnimationType.AIR_NAIR);
+				loadHurtboxData(Gdx.input.isKeyPressed(Keys.UP) ? AnimationType.AIR_UAIR : 
+					(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.AIR_DAIR : AnimationType.AIR_NAIR));
 			}
 			if (wasInAirAnim) {
 				updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);

@@ -58,28 +58,31 @@ public class HurtboxData {
 		durationMap.put(AnimationType.GROUND_FSMASH, 32);
 
 		hurtboxLocationMap.put(AnimationType.AIR_NAIR, new float[][]{
-			{6, 20, 8, 15, 9},
-			{8, 40, 16, 15, 6},
-			{9, 60, 24, 15, 3},
-			{13, -20, -8, 15, 9},
-			{15, -40, -16, 15, 6},
-			{16, -60, -24, 15, 3},
+			{6, 25, 8, 20, 9},
+			{8, 50, 16, 20, 6},
+			{9, 70, 24, 20, 3},
+			{13, -25, -8, 20, 9},
+			{15, -50, -16, 20, 6},
+			{16, -70, -24, 20, 3},
 		});
 		durationMap.put(AnimationType.AIR_NAIR, 20);
 		
-		hurtboxLocationMap.put(AnimationType.AIR_UAIR, new float[][]{
-				{3, 63.02f, 11.11f, 15, 4},
-				{6, 41.13f, 49.02f, 15, 4},
-				{9, 0, 64.15f, 15, 4},
-				{12, -41.13f, 49.02f, 15, 4},
-				{15, -63.02f, 11.11f, 15, 4},
-				
-				{3, 63.02f/2, 11.11f/2, 15, 4},
-				{6, 41.13f/2, 60.14f/2, 15, 4},
-				{9, 0, 64.15f/2, 15, 4},
-				{12, -41.13f/2, 49.02f/2, 15, 4},
-				{15, -63.02f/2, 11.11f/2, 15, 4},
-			});
-			durationMap.put(AnimationType.AIR_UAIR, 21);
+		float[][] airUairData = new float[22][5];
+		for (int i = -5; i <= 5; ++i) {
+			airUairData[2*(i + 5)] = new float[]{10 + i, (float) (65 * Math.sin(-i*Math.PI/12)), (float) (65 * Math.cos(i*Math.PI/12)), 15, 2};
+			airUairData[2*(i + 5) + 1] = new float[]{10 + i, (float) (65 * Math.sin(-i*Math.PI/12) / 2), (float) (65 * Math.cos(i*Math.PI/12) / 2), 15, 2};
+		}
+		
+		hurtboxLocationMap.put(AnimationType.AIR_UAIR, airUairData);
+		durationMap.put(AnimationType.AIR_UAIR, 18);
+		
+		float[][] airDairData = new float[60][5];
+		for (int i = 0; i < 14; ++i) {
+			airDairData[2*i] = new float[]{6 + i, (float) (65 * Math.sin((i+2)*Math.PI/8)), (float) (65 * Math.cos((i+2)*Math.PI/8)), 15, 1};
+			airDairData[2*i + 1] = new float[]{6 + i, (float) (65 * Math.sin((i+2)*Math.PI/8) / 2), (float) (65 * Math.cos((i+2)*Math.PI/8) / 2), 15, 1};
+		}
+		
+		hurtboxLocationMap.put(AnimationType.AIR_DAIR, airDairData);
+		durationMap.put(AnimationType.AIR_DAIR, 23);
 	}
 }

@@ -47,6 +47,7 @@ public class Map {
             for (Circle c: allHurtboxes) {
                 if (Intersector.overlaps(c, t.rect)) {
                     removeTarget(t);
+                    player.playerHasDoubleJump = true;
                 }
             }
         }
