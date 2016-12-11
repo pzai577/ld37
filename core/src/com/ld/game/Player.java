@@ -64,8 +64,8 @@ public class Player {
 	public Rectangle position;
 	
 	private PlayerState playerState = PlayerState.AIR;
-	private double playerHorizVelocity = 0.0;
-	private double playerVertVelocity = 0.0;
+	public double playerHorizVelocity = 0.0; // making these two public so Map can access it
+	public double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
 	
 	private boolean playerFacingLeft = true;

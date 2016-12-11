@@ -53,7 +53,7 @@ public class MapRenderer {
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
         targetImg = new Texture(Gdx.files.internal("target.png"));
-        checkpointImg = new Texture(Gdx.files.internal("target.png"));
+        checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
 
         playerImg = new Texture("samurai.png");
         sageImg = new Texture("sage.png");
@@ -91,7 +91,7 @@ public class MapRenderer {
         batch.begin();
         
         for (Target t: map.targets) {
-            batch.draw(targetImg, t.x, t.y, t.width, t.height);
+            if (t.exists) batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
