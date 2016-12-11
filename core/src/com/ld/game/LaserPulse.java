@@ -8,15 +8,26 @@ public class LaserPulse extends Projectile {
 	
 	Player player;
 	
-	public LaserPulse(Player player){
+	public LaserPulse(Player player, boolean shootingRight){
 		super();
 		
 		this.player = player;
 		
-		Rectangle[] boxes = {new Rectangle(player.position.x + 10, player.position.y + 20, 50, 2)};
+		float laserLength = 50;
+		float laserThickness = 2;
+		float speed = 5;
+		Rectangle hitbox;
+		if(shootingRight){
+			hitbox = new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, laserLength, laserThickness);
+			this.horizVelocity = speed;
+		}
+		else{
+			hitbox = new Rectangle(player.position.x - laserLength, player.position.y + 20, laserLength, laserThickness);
+			this.horizVelocity = -speed;
+		}
+		
 		this.color = Color.CYAN;
-		this.hurtboxes = boxes;
-		this.horizVelocity = 5;
+		this.hitboxes.add(hitbox);
 		
 	}
 

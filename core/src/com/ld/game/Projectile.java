@@ -2,10 +2,11 @@ package com.ld.game;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
 public class Projectile {
 	
-	protected Rectangle[] hurtboxes;
+	protected Array<Rectangle> hitboxes;
 	
 	public Color color;
 	
@@ -15,7 +16,7 @@ public class Projectile {
 	protected double vertAccel;
 	
 	public Projectile() {
-		this.hurtboxes = new Rectangle[0];
+		this.hitboxes = new Array<Rectangle>();
 		this.color = null;
 		this.horizVelocity = 0;
 		this.vertVelocity = 0;
@@ -24,7 +25,7 @@ public class Projectile {
 	}
 	
 	public void update() {
-		for(Rectangle box: hurtboxes) {
+		for(Rectangle box: hitboxes) {
 			box.x += this.horizVelocity;
 			box.y -= this.vertVelocity;
 		}
