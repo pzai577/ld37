@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
-	static final boolean DEBUG_SHOW_HITBOXES = false;
+	static final boolean DEBUG_SHOW_HITBOXES = true;
 	
     Map map;
     SpriteBatch batch, dialogBatch;
@@ -35,7 +35,7 @@ public class MapRenderer {
     Texture checkpointImg;
     Texture usedCheckpointImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone;
+    TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone, playerTwist;
     
     Sound weaponSound;
   
@@ -65,6 +65,8 @@ public class MapRenderer {
         playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4 + 8, 0,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        playerTwist = new TextureRegion(playerImg, 8, playerImg.getHeight()/4,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerCyclone = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, playerImg.getHeight()/4,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
@@ -112,7 +114,7 @@ public class MapRenderer {
         if (map.player.playerSwordVisible) {
         	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
         	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
-        			swordImg.getWidth(), swordImg.getHeight(), xScale, 1f, xScale * map.player.playerSwordRotation);
+        			swordImg.getWidth(), swordImg.getHeight(), xScale * (map.player.playerFlipSword ? -1 : 1), 1f, xScale * map.player.playerSwordRotation);
         }
         
         batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
@@ -145,6 +147,9 @@ public class MapRenderer {
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.CLIMB) {
         	return playerClimb;
+        }
+        else if (map.player.getPlayerFrame() == PlayerFrame.TWIST) {
+        	return playerTwist;
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.CYCLONE) {
         	return playerCyclone;
