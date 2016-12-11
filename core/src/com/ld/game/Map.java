@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Map {
@@ -21,9 +22,11 @@ public class Map {
     
     public Player player;
     public Array<Target> targets;
+    public Array<Rectangle> deathRects;
     
     public Map(String levelFile) {
         targets = new Array<Target>();
+        deathRects = new Array<Rectangle>();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
@@ -31,6 +34,16 @@ public class Map {
         
         pixelWidth = tileMap.getProperties().get("width", int.class) * tileMap.getProperties().get("tilewidth", int.class);
         pixelHeight = tileMap.getProperties().get("height", int.class) * tileMap.getProperties().get("tileheight", int.class);
+        
+        //this layer contains rectangles that kill you when they overlap you, meant for static hazards
+        MapLayer deathLayer = tileMap.getLayers().get("Death Layer");
+        if (deathLayer!=null) {
+            MapObjects deathObjects = deathLayer.getObjects();
+            for (MapObject d: deathObjects) {
+                MapProperties p = d.getProperties();
+                deathRects.add(new Rectangle(p.get("x",float.class),p.get("y",float.class),p.get("width",float.class),p.get("height",float.class)));
+            }
+        }
         
         MapLayer targetLayer = tileMap.getLayers().get("Targets");
         if (targetLayer!=null) {
@@ -47,6 +60,15 @@ public class Map {
                     String property = keys.next();
                     System.out.println(property + ": "+p.get(property));
                 }*/
+            }
+        }
+    }
+    
+    public void checkDeathCollision() {
+        for (Rectangle deathRect: deathRects) {
+            if (player.position.overlaps(deathRect)) {
+                player.isAlive = false;
+                // probably want to just call a killPlayer function instead
             }
         }
     }
@@ -75,6 +97,7 @@ public class Map {
     public void update() {
         player.updateState();
         checkTargetHits();
+        checkDeathCollision();
     }
     
     public boolean isGameFinished(){

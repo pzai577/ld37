@@ -54,6 +54,7 @@ public class Player {
 	public static final int PLAYER_WIDTH = 40;
 	public static final int PLAYER_HEIGHT = 56;
 	
+	public boolean isAlive;
 	public Rectangle position;
 	private PlayerState playerState = PlayerState.AIR;
 	private double playerHorizVelocity = 0.0;
@@ -85,6 +86,7 @@ public class Player {
 	private ArrayList<Hurtbox> activeHurtboxes;
 	
 	public Player(TiledMapTileLayer collisionLayer) {
+	    isAlive = true;
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
 		this.collisionLayer = collisionLayer;
 		this.activeHurtboxes = new ArrayList<Hurtbox>();
