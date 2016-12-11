@@ -186,8 +186,20 @@ public class Player {
 		}
 		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 			setState(PlayerState.AIR_ANIM);
-			loadHurtboxData(Gdx.input.isKeyPressed(Keys.UP) ? AnimationType.AIR_UAIR : 
-				(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.AIR_DAIR : AnimationType.AIR_NAIR));
+			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
+					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
+			if (isFrontKeyPressed) {
+				loadHurtboxData(AnimationType.AIR_FAIR);
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				loadHurtboxData(AnimationType.AIR_UAIR);
+			}
+			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+				loadHurtboxData(AnimationType.AIR_DAIR);
+			}
+			else {
+				loadHurtboxData(AnimationType.AIR_NAIR);
+			}
 		}
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
