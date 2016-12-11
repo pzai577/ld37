@@ -23,14 +23,16 @@ public class Map {
     public Player player;
     public Array<Target> targets;
     public Array<Rectangle> deathRects;
+    public Array<Projectile> projectiles;
     
     public Map(String levelFile) {
         targets = new Array<Target>();
         deathRects = new Array<Rectangle>();
+        projectiles = new Array<Projectile>();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
-        player = new Player(collisionLayer);
+        player = new Player(this, collisionLayer);
         
         pixelWidth = tileMap.getProperties().get("width", int.class) * tileMap.getProperties().get("tilewidth", int.class);
         pixelHeight = tileMap.getProperties().get("height", int.class) * tileMap.getProperties().get("tileheight", int.class);

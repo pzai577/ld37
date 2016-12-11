@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
@@ -34,8 +35,6 @@ public class MapRenderer {
     Texture swordImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone;
-    
-    Sound weaponSound;
   
     BitmapFont font;
     Matrix4 fontRotation;
@@ -80,47 +79,32 @@ public class MapRenderer {
         tileMapRenderer.setView(cam);
         tileMapRenderer.render();
         
-        int width = 40;
-        int height = 56;
         
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
+        
         for (Target t: map.targets) {
             batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
         }*/
-        TextureRegion personTexture = determinePlayerTexture();
-        int xScale = (map.player.getFacingLeft() ? 1 : -1);
-        batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
-                    width, height, xScale, 1f, xScale * map.player.getRotation());
         
-        if (map.player.playerSwordVisible) {
-        	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
-        	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
-        			swordImg.getWidth(), swordImg.getHeight(), xScale, 1f, xScale * map.player.playerSwordRotation);
-        }
+        drawPlayer();
         
         batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
+        
         batch.end();
         
-        if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
-        	dialogBatch.setProjectionMatrix(cam.combined);
-        	dialogBatch.begin();
-	        font.draw(dialogBatch, "Take my sword to my\nbrother across the forest", 100, 140);
-	        dialogBatch.end();
-        }
+        drawDialog();
         
-        if (DEBUG_SHOW_HITBOXES) {
-	        r.setProjectionMatrix(cam.combined);
-	        r.begin(ShapeType.Filled);
-	        r.setColor(Color.RED);
-	        for (Hurtbox box : map.player.getActiveHurtboxes()) {
-	            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
-	        }
-	        r.end();
-        }
+        r.setProjectionMatrix(cam.combined);
+        r.begin(ShapeType.Filled);
+        
+        drawHitboxes();
+        drawProjectiles();
+        
+        r.end();
     }
     
     private TextureRegion determinePlayerTexture(){
@@ -152,4 +136,45 @@ public class MapRenderer {
     		cam.position.y = Math.max(map.player.position.y - CAM_BORDERS[3], 0) + GAME_HEIGHT/2;
     }
     
+    private void drawPlayer() {
+    	int width = Player.PLAYER_WIDTH;
+        int height = Player.PLAYER_HEIGHT;
+        TextureRegion personTexture = determinePlayerTexture();
+        int xScale = (map.player.getFacingLeft() ? 1 : -1);
+        batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
+                    width, height, xScale, 1f, xScale * map.player.getRotation());
+        
+        if (map.player.playerSwordVisible) {
+        	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
+        	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
+        			swordImg.getWidth(), swordImg.getHeight(), xScale, 1f, xScale * map.player.playerSwordRotation);
+        }
+    }
+    
+    private void drawDialog() {
+    	if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
+        	dialogBatch.setProjectionMatrix(cam.combined);
+        	dialogBatch.begin();
+	        font.draw(dialogBatch, "Take my sword to my\nbrother across the forest", 100, 140);
+	        dialogBatch.end();
+        }
+    }
+    
+    private void drawHitboxes() {
+    	if (DEBUG_SHOW_HITBOXES) {    
+	        r.setColor(Color.RED);
+	        for (Hurtbox box : map.player.getActiveHurtboxes()) {
+	            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
+	        }
+        }
+    }
+    
+    private void drawProjectiles() {
+    	for(Projectile proj: this.map.projectiles){
+    		r.setColor(proj.color);
+    		for(Rectangle rect: proj.hurtboxes){
+    			r.rect(rect.x, rect.y, rect.width, rect.height);
+    		}
+    	}
+    }
 }

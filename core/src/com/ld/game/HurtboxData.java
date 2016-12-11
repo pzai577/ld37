@@ -12,7 +12,7 @@ enum AnimationType {
 	AIR_UAIR,
 	AIR_DAIR,
 	
-	SHOOT_LASER,
+//	SHOOT_LASER,
 }
 public class HurtboxData {
 	// Singleton

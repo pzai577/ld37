@@ -82,18 +82,21 @@ public class Player {
 	
 	private int stateFrameDuration = 0;
 	
+	private Map map;
 	private TiledMapTileLayer collisionLayer;
 	// TODO: maybe change to Array to avoid excessive garbage collection? only applies for lots of hurtboxes
 	private ArrayList<Hurtbox> activeHurtboxes;
 	
-	public Player(TiledMapTileLayer collisionLayer) {
+	public Player(Map map, TiledMapTileLayer collisionLayer) {
 	    isAlive = true;
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
+		this.map = map;
 		this.collisionLayer = collisionLayer;
 		this.activeHurtboxes = new ArrayList<Hurtbox>();
 		this.playerFrame = PlayerFrame.STAND;
 		
 		weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
+		//http://soundbible.com/706-Swoosh-3.html
 	}
 	
 	public void updateState() {
@@ -284,7 +287,7 @@ public class Player {
 			
 			// shoot laser gun
 			if(Gdx.input.isKeyJustPressed(Keys.C)) {
-				loadHurtboxData(AnimationType.SHOOT_LASER);
+				shootLaser();
 			}
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
@@ -590,5 +593,10 @@ public class Player {
 				--i;
 			}
 		}
+	}
+	
+	private void shootLaser() {
+		// TODO: make map.projectiles private?
+		map.projectiles.add(new LaserPulse(this));
 	}
 }
