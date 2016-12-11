@@ -2,6 +2,7 @@ package com.ld.game;
 
 import java.util.Iterator;
 
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
@@ -25,7 +26,7 @@ public class Map {
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
         player = new Player(collisionLayer);
         
-        TiledMapTileLayer targetLayer = (TiledMapTileLayer) tileMap.getLayers().get("Targets");
+        MapLayer targetLayer = tileMap.getLayers().get("Targets");
         if (targetLayer!=null) {
             MapObjects targetObjects = targetLayer.getObjects();
            
