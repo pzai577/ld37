@@ -8,7 +8,9 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
 enum PlayerState {
 	GROUND,
@@ -57,6 +59,7 @@ public class Player {
 	
 	public boolean isAlive;
 	public Rectangle position;
+	
 	private PlayerState playerState = PlayerState.AIR;
 	private double playerHorizVelocity = 0.0;
 	private double playerVertVelocity = 0.0;
@@ -123,10 +126,12 @@ public class Player {
 		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
 			playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
+            playerFacingLeft = true;
 		}
 		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 			playerHorizVelocity += PLAYER_AIR_INFLUENCE;
 			playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
+            playerFacingLeft = false;
 		}
 		boolean wasInAirAnim = true;
 		if (playerState == PlayerState.AIR) {
@@ -147,6 +152,7 @@ public class Player {
 			}
 			wasInAirAnim = false;
 		}
+		//update y position of player
 		if (playerFastFalling) {
 			position.y -= PLAYER_FASTFALL_SPEED;
 		}
@@ -155,7 +161,7 @@ public class Player {
 			playerVertVelocity = Math.min(playerVertVelocity + FALL_ACCELERATION,
 										  PLAYER_MAX_SLOWFALL_SPEED);
 		}
-		
+		//check whether you're intersecting something vertically
 		EnhancedCell topCell = getCollidingTopCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
 
@@ -173,7 +179,9 @@ public class Player {
 			playerRotating = false;
 			playerHasDoubleJump = true;
 		}
+		//update x position of player
 		position.x += playerHorizVelocity;
+		//check whether you're intersecting something horizontally
 		EnhancedCell leftCell = getCollidingLeftCell();
 		EnhancedCell rightCell = getCollidingRightCell();
 		if (leftCell != null) {
@@ -460,6 +468,11 @@ public class Player {
 		stateFrameDuration = 0;
 	}
 	
+	public void die() {
+	    isAlive = false;
+	    // TODO: probably want to add sound effects or do other things here too
+	}
+	
 	/*
 	 * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c
 	 * 
@@ -598,5 +611,14 @@ public class Player {
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
 		map.projectiles.add(new LaserPulse(this));
+	}
+	
+	public Array<Circle> getHurtboxCircles() {
+	    Array<Circle> allHurtboxes = new Array<Circle>();
+        //convert hurtboxes to circles for Intersector
+        for (Hurtbox hb: getActiveHurtboxes()) {
+            allHurtboxes.add(new Circle(getX()+hb.x, getY()+hb.y, hb.radius));
+        }
+        return allHurtboxes;
 	}
 }

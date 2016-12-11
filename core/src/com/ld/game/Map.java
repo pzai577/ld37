@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Map {
@@ -21,14 +22,18 @@ public class Map {
     public float pixelWidth, pixelHeight;
     
     public Player player;
+    public Vector2 startPos;
     public Array<Target> targets;
     public Array<Rectangle> deathRects;
     public Array<Projectile> projectiles;
+    public Array<Checkpoint> checkpoints;
+    public Checkpoint currCheckpoint;
     
     public Map(String levelFile) {
         targets = new Array<Target>();
         deathRects = new Array<Rectangle>();
         projectiles = new Array<Projectile>();
+        checkpoints = new Array<Checkpoint>();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
@@ -47,15 +52,23 @@ public class Map {
             }
         }
         
+        MapLayer cpLayer = tileMap.getLayers().get("Checkpoint Layer");
+        if (cpLayer!=null) {
+            MapObjects cpObjects = cpLayer.getObjects();
+            for (MapObject cp: cpObjects) {
+                MapProperties p = cp.getProperties();
+                Checkpoint checkpoint = new Checkpoint(p.get("x",float.class),p.get("y",float.class));
+                checkpoints.add(checkpoint);
+            }
+        }
+        
         MapLayer targetLayer = tileMap.getLayers().get("Targets");
         if (targetLayer!=null) {
             MapObjects targetObjects = targetLayer.getObjects();
-           
             for (MapObject t: targetObjects) {
                 MapProperties p = t.getProperties();
                 Target target = new Target(p.get("x", float.class), p.get("y", float.class));
-                targets.add(target);
-        
+                targets.add(target);      
                 /* Debugging code to print out all properties of an object
                 Iterator<String> keys = t.getProperties().getKeys();
                 while (keys.hasNext()) {
@@ -64,28 +77,56 @@ public class Map {
                 }*/
             }
         }
+        
+        MapLayer locsLayer = tileMap.getLayers().get("Locations Layer");
+        if (locsLayer!=null) {
+            MapObjects locObjects = locsLayer.getObjects();
+            for (MapObject l: locObjects) {
+                MapProperties p = l.getProperties();
+                String name = l.getName();
+                if (name.equals("start")) {
+                    startPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
+                    player.position.x = startPos.x;
+                    player.position.y = startPos.y;
+                }
+            }
+        }
     }
     
     public void checkDeathCollision() {
         for (Rectangle deathRect: deathRects) {
             if (player.position.overlaps(deathRect)) {
-                player.isAlive = false;
+                if (currCheckpoint==null) {
+                    player.position.x = startPos.x;
+                    player.position.y = startPos.y;
+                }
+                else {
+                    player.position.x = currCheckpoint.x;
+                    player.position.y = currCheckpoint.y;
+                }
                 // probably want to just call a killPlayer function instead
             }
         }
     }
 
     public void checkTargetHits() {
-        Array<Circle> allHurtboxes = new Array<Circle>();
-        //convert hurtboxes to circles for Intersector
-        for (Hurtbox hb: player.getActiveHurtboxes()) {
-            allHurtboxes.add(new Circle(player.getX()+hb.x, player.getY()+hb.y, hb.radius));
-        }
+        Array<Circle> allHurtboxes = player.getHurtboxCircles();
         for (Target t: targets) {
             for (Circle c: allHurtboxes) {
-                if (Intersector.overlaps(c, t.rect)) {
+                if (Intersector.overlaps(c, t)) {
                     removeTarget(t);
                     player.playerHasDoubleJump = true;
+                }
+            }
+        }
+    }
+    
+    public void checkCpHits() {
+        Array<Circle> allHurtboxes = player.getHurtboxCircles();
+        for (Circle c: allHurtboxes) {
+            for (Checkpoint cp: checkpoints) {
+                if (Intersector.overlaps(c, cp) && currCheckpoint!=cp) {
+                    currCheckpoint = cp;
                 }
             }
         }
@@ -99,6 +140,7 @@ public class Map {
     public void update() {
         player.updateState();
         checkTargetHits();
+        checkCpHits();
         checkDeathCollision();
     }
     

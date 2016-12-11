@@ -1,6 +1,8 @@
 package com.ld.game;
 
-public class Target extends RectangleObject {
+import com.badlogic.gdx.math.Rectangle;
+
+public class Target extends Rectangle {
     private static final float DEFAULT_TARGET_WIDTH = 32;
     private static final float DEFAULT_TARGET_HEIGHT = 32;
     
