@@ -14,6 +14,7 @@ public class LaserPulse extends Projectile {
 	float laserThickness = 2;
 	float speed = 7;
 	float pulseSize = 2;
+	int pulseTime = 15; // in frames, which should be 1/60 s
 	
 	Color laserColor = Color.CYAN;
 	Color pulseColor = new Color(0f, 0.5f, 0.5f, 1f);
@@ -32,7 +33,7 @@ public class LaserPulse extends Projectile {
 			this.horizVelocity = -speed;
 		}
 		
-		this.pulsebox = new Rectangle(hitbox.x - pulseSize, hitbox.y - pulseSize, laserLength + 2 * pulseSize, laserThickness + 2 * pulseSize);
+		this.pulsebox = new Rectangle(hitbox.x, hitbox.y - pulseSize, laserLength, laserThickness + 2 * pulseSize);
 		
 //		this.colors.add();
 //		this.hitboxes.add(pulsebox);
@@ -51,6 +52,8 @@ public class LaserPulse extends Projectile {
 		// TODO: make pulsebox rounded and pulse
 		r.setColor(pulseColor);
 		renderRectHelper(r, pulsebox);
+		r.arc(hitbox.x, hitbox.y+hitbox.height/2, hitbox.height/2 + pulseSize, 90, 180);
+		r.arc(hitbox.x + laserLength, hitbox.y+hitbox.height/2, hitbox.height/2 + pulseSize, 270, 180);
 		r.setColor(laserColor);
 		renderRectHelper(r, hitbox);
 	}
