@@ -38,8 +38,8 @@ public class Player {
 	private static final double PLAYER_AIR_INFLUENCE = 0.35;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
 	
-	private static final double PLAYER_MAX_SLOWFALL_SPEED = 8.8;
-	private static final double PLAYER_FASTFALL_SPEED = 10.8;
+	private static final double PLAYER_MAX_SLOWFALL_SPEED = 8.3;
+	private static final double PLAYER_FASTFALL_SPEED = 9.3;
 	
 	private static final double PLAYER_JUMP_SPEED = 9.5;
 	private static final double PLAYER_SHORTHOP_SPEED = 6.5;
@@ -59,7 +59,7 @@ public class Player {
 	private double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
 	
-	private boolean playerFacingLeft = false;
+	private boolean playerFacingLeft = true;
 	public boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
 	private boolean playerRotatingLeft = false;
