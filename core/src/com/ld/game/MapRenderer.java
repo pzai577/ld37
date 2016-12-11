@@ -91,7 +91,7 @@ public class MapRenderer {
         			swordImg.getWidth(), swordImg.getHeight(), (map.player.getFacingLeft() ? 1 : -1), 1f, (map.player.getFacingLeft() ? 1 : -1) * map.player.playerSwordRotation);
         }
         
-        batch.draw(sageImg, 2 * 32, 2 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
+        batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
         
         if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
