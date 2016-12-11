@@ -38,7 +38,7 @@ public class MapRenderer {
     Texture checkpointImg;
     Texture signImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone, playerTwist;
+    TextureRegion playerSprites[][];
     
     Sound weaponSound;
   
@@ -62,19 +62,14 @@ public class MapRenderer {
         playerImg = new Texture("samurai.png");
         sageImg = new Texture("sage.png");
         swordImg = new Texture("sword_arm.png");
-        
-        playerStand = new TextureRegion(playerImg, 8, 0,
-        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
-        playerRun = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, 0,
-        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
-        playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4 + 8, 0,
-        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
-        playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
-        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
-        playerTwist = new TextureRegion(playerImg, 8, playerImg.getHeight()/4,
-        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
-        playerCyclone = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, playerImg.getHeight()/4,
-        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+
+        playerSprites = new TextureRegion[4][4];
+        for (int i = 0; i < 4; ++i) {
+        	for (int j = 0; j < 4; ++j) {
+        		playerSprites[i][j] = new TextureRegion(playerImg, 8 + j * playerImg.getWidth() / 4, i * playerImg.getHeight() / 4,
+                		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        	}
+        }
         
         dialogBatch = new SpriteBatch();
         sageFont = new BitmapFont();
@@ -119,22 +114,25 @@ public class MapRenderer {
     
     private TextureRegion determinePlayerTexture(){
     	if (map.player.getPlayerFrame() == PlayerFrame.RUN) {
-        	return playerRun;
+        	return playerSprites[0][1];
+        }
+    	if (map.player.getPlayerFrame() == PlayerFrame.RUN_NOARMS) {
+        	return playerSprites[1][2];
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.PREJUMP) {
-        	return playerPrejump;
+        	return playerSprites[0][2];
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.CLIMB) {
-        	return playerClimb;
+        	return playerSprites[0][3];
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.TWIST) {
-        	return playerTwist;
+        	return playerSprites[1][0];
         }
         else if (map.player.getPlayerFrame() == PlayerFrame.CYCLONE) {
-        	return playerCyclone;
+        	return playerSprites[1][1];
         }
         else {
-            return playerStand;
+            return playerSprites[0][0];
         }
     }
     
