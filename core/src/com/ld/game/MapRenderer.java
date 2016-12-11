@@ -16,7 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
-	static final boolean DEBUG_SHOW_HITBOXES = true;
+	static final boolean DEBUG_SHOW_HITBOXES = false;
 	
     Map map;
     SpriteBatch batch, dialogBatch;

@@ -88,7 +88,7 @@ public class HurtboxData {
 		}
 		
 		hurtboxLocationMap.put(AnimationType.AIR_UAIR, airUairData);
-		durationMap.put(AnimationType.AIR_UAIR, 18);
+		durationMap.put(AnimationType.AIR_UAIR, 21);
 		
 		float[][] airDairData = new float[28][5];
 		for (int i = 0; i < 14; ++i) {

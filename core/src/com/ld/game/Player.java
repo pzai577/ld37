@@ -18,6 +18,7 @@ enum PlayerState {
 	GROUND_ANIM,
 	AIR,
 	AIR_ANIM,
+	AIR_ANIM_RECOVER,
 	WALL_LEFT,
 	WALL_RIGHT;
 }
@@ -220,7 +221,7 @@ public class Player {
 				loadHurtboxData(AnimationType.AIR_UAIR);
 				playerFrame = PlayerFrame.TWIST;
 				playerSwordVisible = true;
-				playerRotation = 125;
+				playerRotation = 155;
 				playerFlipSword = true;
 				playerSwordRotation = -140;
 			}
@@ -580,9 +581,11 @@ public class Player {
 				playerSwordRotation += 16;
 				playerRotation += 16;
 			}
-			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration < 15) {
-				playerSwordRotation -= 8;
-				playerRotation -= 8;
+			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration < 21) {
+				playerSwordRotation -= 13;
+				playerRotation -= 13;
+				
+				//pause = true;
 			}
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
@@ -601,14 +604,18 @@ public class Player {
 				playerRotation = 0;
 			}
 			if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 15) {
-				playerFrame = PlayerFrame.STAND;
+				playerFrame = PlayerFrame.CYCLONE;
 				playerFlipSword = false;
 				playerSwordVisible = false;
-				playerRotation = 0;
+				//playerRotation = 0;
 			}
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
-				if (playerFrame == PlayerFrame.CYCLONE) playerFrame = PlayerFrame.STAND;
+				if (currentAnimationType == AnimationType.AIR_DAIR ||
+					currentAnimationType == AnimationType.AIR_UAIR) {
+					playerFrame = PlayerFrame.STAND;
+					playerRotation = 0;
+				}
 				activeHurtboxes.clear();
 			}
 		}
