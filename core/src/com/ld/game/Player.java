@@ -18,6 +18,7 @@ enum PlayerState {
 	GROUND_ANIM,
 	AIR,
 	AIR_ANIM,
+	AIR_ANIM_RECOVER,
 	WALL_LEFT,
 	WALL_RIGHT;
 }
@@ -29,6 +30,7 @@ enum PlayerFrame {
 	PREJUMP,
 	CLIMB,
 	CYCLONE,
+	TWIST,
 }
 
 public class Player {
@@ -57,12 +59,13 @@ public class Player {
 	public static final int PLAYER_WIDTH = 40;
 	public static final int PLAYER_HEIGHT = 56;
 	
+	private boolean pause;
 	public boolean isAlive;
 	public Rectangle position;
 	
 	private PlayerState playerState = PlayerState.AIR;
-	private double playerHorizVelocity = 0.0;
-	private double playerVertVelocity = 0.0;
+	public double playerHorizVelocity = 0.0; // making these two public so Map can access it
+	public double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
 	
 	private boolean playerFacingLeft = true;
@@ -72,6 +75,7 @@ public class Player {
 	private boolean playerFastFalling = false;
 	
 	public boolean playerSwordVisible = false;
+	public boolean playerFlipSword = false;
 	public float playerSwordRotation = 0;
 	
 	private boolean currentAnimationIsFlipped;
@@ -106,6 +110,7 @@ public class Player {
 	}
 	
 	public void updateState() {
+		if (pause) return;
 		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
 			updatePlayerAir();
 		}
@@ -223,6 +228,11 @@ public class Player {
 			}
 			else if (Gdx.input.isKeyPressed(Keys.UP)) {
 				loadHurtboxData(AnimationType.AIR_UAIR);
+				playerFrame = PlayerFrame.TWIST;
+				playerSwordVisible = true;
+				playerRotation = 175;
+				playerFlipSword = true;
+				playerSwordRotation = -140;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
 				loadHurtboxData(AnimationType.AIR_DAIR);
@@ -575,6 +585,12 @@ public class Player {
 				playerSwordRotation += 16;
 				playerRotation += 16;
 			}
+			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration < 21) {
+				playerSwordRotation -= 14;
+				playerRotation -= 14;
+				
+				//pause = true;
+			}
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
@@ -591,9 +607,20 @@ public class Player {
 				playerSwordVisible = false;
 				playerRotation = 0;
 			}
+			if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 11) {
+				playerFrame = PlayerFrame.CYCLONE;
+			}
+			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 15) {
+				playerFlipSword = false;
+				playerSwordVisible = false;
+			}
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
-				if (playerFrame == PlayerFrame.CYCLONE) playerFrame = PlayerFrame.STAND;
+				if (currentAnimationType == AnimationType.AIR_DAIR ||
+					currentAnimationType == AnimationType.AIR_UAIR) {
+					playerFrame = PlayerFrame.STAND;
+					playerRotation = 0;
+				}
 				activeHurtboxes.clear();
 			}
 		}

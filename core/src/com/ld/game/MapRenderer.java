@@ -36,7 +36,9 @@ public class MapRenderer {
     Texture checkpointImg;
     Texture usedCheckpointImg;
     TextureRegion imgRegion;
-    TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone;
+    TextureRegion playerStand, playerRun, playerPrejump, playerClimb, playerCyclone, playerTwist;
+    
+    Sound weaponSound;
   
     BitmapFont font;
     Matrix4 fontRotation;
@@ -51,7 +53,7 @@ public class MapRenderer {
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
         targetImg = new Texture(Gdx.files.internal("target.png"));
-        checkpointImg = new Texture(Gdx.files.internal("target.png"));
+        checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
 
         playerImg = new Texture("samurai.png");
         sageImg = new Texture("sage.png");
@@ -64,6 +66,8 @@ public class MapRenderer {
         playerPrejump = new TextureRegion(playerImg, 2 * playerImg.getWidth() / 4 + 8, 0,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
+        		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        playerTwist = new TextureRegion(playerImg, 8, playerImg.getHeight()/4,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerCyclone = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, playerImg.getHeight()/4,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
@@ -87,7 +91,7 @@ public class MapRenderer {
         batch.begin();
         
         for (Target t: map.targets) {
-            batch.draw(targetImg, t.x, t.y, t.width, t.height);
+            if (t.exists) batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
@@ -130,6 +134,9 @@ public class MapRenderer {
         else if (map.player.getPlayerFrame() == PlayerFrame.CLIMB) {
         	return playerClimb;
         }
+        else if (map.player.getPlayerFrame() == PlayerFrame.TWIST) {
+        	return playerTwist;
+        }
         else if (map.player.getPlayerFrame() == PlayerFrame.CYCLONE) {
         	return playerCyclone;
         }
@@ -160,7 +167,7 @@ public class MapRenderer {
         if (map.player.playerSwordVisible) {
         	TextureRegion swordTexture = new TextureRegion(swordImg, 0, 0, swordImg.getWidth(), swordImg.getHeight());
         	batch.draw(swordTexture, map.player.getX() - 43, map.player.getY() + 8, 65, 20,
-        			swordImg.getWidth(), swordImg.getHeight(), xScale, 1f, xScale * map.player.playerSwordRotation);
+        			swordImg.getWidth(), swordImg.getHeight(), xScale * (map.player.playerFlipSword ? -1 : 1), 1f, xScale * map.player.playerSwordRotation);
         }
     }
     
