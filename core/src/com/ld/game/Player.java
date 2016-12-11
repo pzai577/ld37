@@ -283,9 +283,21 @@ public class Player {
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
 			// TODO: this is copied from the if/else branch above, de-duplicate
-			playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
-			if (Math.abs(playerHorizVelocity) < 1) {
-				playerHorizVelocity = 0;
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+									+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
+				playerFacingLeft = true;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+						+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
+				playerFacingLeft = false;
+			}
+			else {
+				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
+				if (Math.abs(playerHorizVelocity) < 1) {
+					playerHorizVelocity = 0;
+				}
 			}
 			position.x += playerHorizVelocity;
 
@@ -533,7 +545,7 @@ public class Player {
 			if (currentAnimationType == AnimationType.AIR_FAIR) {
 				playerSwordRotation += 16;
 			}
-			else if (currentAnimationType == AnimationType.AIR_DAIR) {
+			else if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration < 20) {
 				playerSwordRotation += 16;
 				playerRotation += 16;
 			}
@@ -551,6 +563,7 @@ public class Player {
 			}
 			if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration == 20) {
 				playerSwordVisible = false;
+				playerRotation = 0;
 			}
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;

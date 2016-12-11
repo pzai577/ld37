@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
+	static final boolean DEBUG_SHOW_HITBOXES = false;
+	
     Map map;
     SpriteBatch batch, dialogBatch;
     ShapeRenderer r;
@@ -110,13 +112,15 @@ public class MapRenderer {
 	        dialogBatch.end();
         }
         
-        r.setProjectionMatrix(cam.combined);
-        r.begin(ShapeType.Filled);
-        r.setColor(Color.RED);
-        for (Hurtbox box : map.player.getActiveHurtboxes()) {
-            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
+        if (DEBUG_SHOW_HITBOXES) {
+	        r.setProjectionMatrix(cam.combined);
+	        r.begin(ShapeType.Filled);
+	        r.setColor(Color.RED);
+	        for (Hurtbox box : map.player.getActiveHurtboxes()) {
+	            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
+	        }
+	        r.end();
         }
-        r.end();
     }
     
     private TextureRegion determinePlayerTexture(){
