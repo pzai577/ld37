@@ -26,6 +26,7 @@ public class GameScreen extends ScreenAdapter {
     
     @Override
     public void render(float delta) {
+    	// TODO: use delta
         map.update();
         
         Gdx.gl.glClearColor(0.2f, 0, 0.1f, 1);

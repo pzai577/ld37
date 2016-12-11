@@ -29,6 +29,7 @@ enum PlayerFrame {
 	PREJUMP,
 	CLIMB,
 	CYCLONE,
+	TWIST,
 }
 
 public class Player {
@@ -57,6 +58,7 @@ public class Player {
 	public static final int PLAYER_WIDTH = 40;
 	public static final int PLAYER_HEIGHT = 56;
 	
+	private boolean pause;
 	public boolean isAlive;
 	public Rectangle position;
 	
@@ -72,6 +74,7 @@ public class Player {
 	private boolean playerFastFalling = false;
 	
 	public boolean playerSwordVisible = false;
+	public boolean playerFlipSword = false;
 	public float playerSwordRotation = 0;
 	
 	private boolean currentAnimationIsFlipped;
@@ -85,21 +88,25 @@ public class Player {
 	
 	private int stateFrameDuration = 0;
 	
+	private Map map;
 	private TiledMapTileLayer collisionLayer;
 	// TODO: maybe change to Array to avoid excessive garbage collection? only applies for lots of hurtboxes
 	private ArrayList<Hurtbox> activeHurtboxes;
 	
-	public Player(TiledMapTileLayer collisionLayer) {
+	public Player(Map map, TiledMapTileLayer collisionLayer) {
 	    isAlive = true;
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
+		this.map = map;
 		this.collisionLayer = collisionLayer;
 		this.activeHurtboxes = new ArrayList<Hurtbox>();
 		this.playerFrame = PlayerFrame.STAND;
 		
 		weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
+		//http://soundbible.com/706-Swoosh-3.html
 	}
 	
 	public void updateState() {
+		if (pause) return;
 		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
 			updatePlayerAir();
 		}
@@ -148,13 +155,6 @@ public class Player {
 				playerVertVelocity = -8;
 			}
 			wasInAirAnim = false;
-		}
-		if (playerRotating) {
-			playerRotation += 15 * (playerRotatingLeft ? 1 : -1);
-			if (Math.abs(playerRotation) >= 360) {
-				playerRotation = 0;
-				playerRotating = false;
-			}
 		}
 		//update y position of player
 		if (playerFastFalling) {
@@ -218,6 +218,11 @@ public class Player {
 			}
 			else if (Gdx.input.isKeyPressed(Keys.UP)) {
 				loadHurtboxData(AnimationType.AIR_UAIR);
+				playerFrame = PlayerFrame.TWIST;
+				playerSwordVisible = true;
+				playerRotation = 125;
+				playerFlipSword = true;
+				playerSwordRotation = -140;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
 				loadHurtboxData(AnimationType.AIR_DAIR);
@@ -290,10 +295,16 @@ public class Player {
 				playerFrame = PlayerFrame.STAND;
 				playerVertVelocity = 0;
 			}
+			
 			if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
 				setState(PlayerState.GROUND_ANIM);
 				loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
 						: AnimationType.GROUND_FSMASH);
+			}
+			
+			// shoot laser gun
+			if(Gdx.input.isKeyJustPressed(Keys.C)) {
+				shootLaser();
 			}
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
@@ -569,6 +580,10 @@ public class Player {
 				playerSwordRotation += 16;
 				playerRotation += 16;
 			}
+			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration < 15) {
+				playerSwordRotation -= 8;
+				playerRotation -= 8;
+			}
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
@@ -582,6 +597,12 @@ public class Player {
 				playerSwordVisible = false;
 			}
 			if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration == 20) {
+				playerSwordVisible = false;
+				playerRotation = 0;
+			}
+			if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 15) {
+				playerFrame = PlayerFrame.STAND;
+				playerFlipSword = false;
 				playerSwordVisible = false;
 				playerRotation = 0;
 			}
@@ -604,6 +625,11 @@ public class Player {
 				--i;
 			}
 		}
+	}
+	
+	private void shootLaser() {
+		// TODO: make map.projectiles private?
+		map.projectiles.add(new LaserPulse(this));
 	}
 	
 	public Array<Circle> getHurtboxCircles() {
