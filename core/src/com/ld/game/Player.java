@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Rectangle;
@@ -44,7 +45,7 @@ public class Player {
 	
 	private static final double PLAYER_JUMP_SPEED = 9.5;
 	private static final double PLAYER_SHORTHOP_SPEED = 6.5;
-	private static final double PLAYER_PREJUMP_FRAMES = 4;
+	private static final double PLAYER_PREJUMP_FRAMES = 5;
 
 	private static final double PLAYER_WALL_INFLUENCE = 0.16;
 	private static final double PLAYER_WALL_SCALE_SPEED = 5.5;
@@ -54,6 +55,7 @@ public class Player {
 	public static final int PLAYER_WIDTH = 40;
 	public static final int PLAYER_HEIGHT = 56;
 	
+	public boolean isAlive;
 	public Rectangle position;
 	private PlayerState playerState = PlayerState.AIR;
 	private double playerHorizVelocity = 0.0;
@@ -74,6 +76,8 @@ public class Player {
 	private int currentDuration;
 	private AnimationType currentAnimationType;
 	
+	private Sound weaponSound;
+	
 	private PlayerFrame playerFrame;
 	
 	private int stateFrameDuration = 0;
@@ -83,10 +87,13 @@ public class Player {
 	private ArrayList<Hurtbox> activeHurtboxes;
 	
 	public Player(TiledMapTileLayer collisionLayer) {
+	    isAlive = true;
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
 		this.collisionLayer = collisionLayer;
 		this.activeHurtboxes = new ArrayList<Hurtbox>();
 		this.playerFrame = PlayerFrame.STAND;
+		
+		weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
 	}
 	
 	public void updateState() {
@@ -513,6 +520,7 @@ public class Player {
 		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
 		currentDuration = HurtboxData.getDuration(type);
 		currentAnimationIsFlipped = playerFacingLeft;
+		weaponSound.play();
 	}
 	
 	public List<Hurtbox> getActiveHurtboxes() {

@@ -23,7 +23,7 @@ public class MapRenderer {
     OrthogonalTiledMapRenderer tileMapRenderer;
     static final float GAME_WIDTH = 1280;
     static final float GAME_HEIGHT = 800;
-    static final float CAM_BORDER = 150;
+    static final float[] CAM_BORDERS = {600f, 600f, 200f, 200f}; // left, right, up, down
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     
     Texture targetImg;
@@ -64,8 +64,6 @@ public class MapRenderer {
         playerCyclone = new TextureRegion(playerImg, playerImg.getWidth() / 4 + 8, playerImg.getHeight()/4,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         
-        weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
-        
         dialogBatch = new SpriteBatch();
         font = new BitmapFont();
         fontRotation = new Matrix4();
@@ -88,6 +86,9 @@ public class MapRenderer {
         for (Target t: map.targets) {
             batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
+        /*for (Rectangle d: map.deathRects) {
+            if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
+        }*/
         TextureRegion personTexture = determinePlayerTexture();
         int xScale = (map.player.getFacingLeft() ? 1 : -1);
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
@@ -99,7 +100,7 @@ public class MapRenderer {
         			swordImg.getWidth(), swordImg.getHeight(), xScale, 1f, xScale * map.player.playerSwordRotation);
         }
         
-        batch.draw(sageImg, 2 * 32, 2 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
+        batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
         
         if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
@@ -137,14 +138,14 @@ public class MapRenderer {
     }
     
     private void moveCamera(){
-    	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDER)
-    		cam.position.x = Math.min(map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDER, map.pixelWidth) - GAME_WIDTH/2;
-    	if(map.player.position.x < cam.position.x - GAME_WIDTH/2 + CAM_BORDER)
-    		cam.position.x = Math.max(map.player.position.x - CAM_BORDER, 0) + GAME_WIDTH/2;
-    	if(map.player.position.y + Player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDER)
-    		cam.position.y = Math.min(map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDER, map.pixelHeight) - GAME_HEIGHT/2;
-    	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDER)
-    		cam.position.y = Math.max(map.player.position.y - CAM_BORDER, 0) + GAME_HEIGHT/2;
+    	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDERS[1])
+    		cam.position.x = Math.min(map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDERS[1], map.pixelWidth) - GAME_WIDTH/2;
+    	if(map.player.position.x < cam.position.x - GAME_WIDTH/2 + CAM_BORDERS[0])
+    		cam.position.x = Math.max(map.player.position.x - CAM_BORDERS[0], 0) + GAME_WIDTH/2;
+    	if(map.player.position.y + Player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDERS[2])
+    		cam.position.y = Math.min(map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDERS[2], map.pixelHeight) - GAME_HEIGHT/2;
+    	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDERS[3])
+    		cam.position.y = Math.max(map.player.position.y - CAM_BORDERS[3], 0) + GAME_HEIGHT/2;
     }
     
 }
