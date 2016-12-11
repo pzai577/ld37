@@ -29,6 +29,7 @@ public class Map {
     public Array<Projectile> projectiles;
     public Array<Checkpoint> checkpoints;
     public Array<Sign> signs;
+    public Array<Particle> particles;
     public Checkpoint currCheckpoint;
     
     public Map(String levelFile) {
@@ -37,6 +38,7 @@ public class Map {
         projectiles = new Array<Projectile>();
         checkpoints = new Array<Checkpoint>();
         signs = new Array<Sign>();
+        particles = new Array<Particle>();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
@@ -180,6 +182,17 @@ public class Map {
     }
     
     public void update() {
+    	for(Projectile proj : projectiles){
+    		proj.update();
+    	}
+    	for (int i = 0; i < particles.size; ++i) {
+    		particles.get(i).tick();
+    		if (particles.get(i).readyToDie()) {
+    			particles.removeIndex(i);
+    			--i;
+    		}
+    	}
+    	
         player.updateState();
         checkTargetHits();
         checkCpHits();
