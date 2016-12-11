@@ -29,8 +29,8 @@ public class MapRenderer {
     static final float GAME_HEIGHT = 800;
     static final float[] CAM_BORDERS = {600f, 600f, 200f, 200f}; // left, right, up, down
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
-    static final float SIGN_TEXT_WIDTH = 150;
-    static final float SIGN_TEXT_VERTICAL_DISTANCE = 100;
+    static final float SIGN_TEXT_WIDTH = 180;
+    static final float SIGN_TEXT_VERTICAL_DISTANCE = 150;
     Texture targetImg;
     Texture playerImg;
     Texture sageImg;
@@ -168,7 +168,7 @@ public class MapRenderer {
     	if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
         	dialogBatch.setProjectionMatrix(cam.combined);
         	dialogBatch.begin();
-	        sageFont.draw(dialogBatch, "Take my sword to my\nbrother across the forest", 100, 140);
+	        sageFont.draw(dialogBatch, Globals.SAGE_TEXT, 120, 190, 250, Align.center, true);
 	        dialogBatch.end();
         }
     }
