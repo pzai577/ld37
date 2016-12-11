@@ -66,9 +66,13 @@ public class Player {
 	private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
 	
+	public boolean playerSwordVisible = false;
+	public float playerSwordRotation = 0;
+	
 	private boolean currentAnimationIsFlipped;
 	private float[][] currentAnimationFrames;
 	private int currentDuration;
+	private AnimationType currentAnimationType;
 	
 	private PlayerFrame playerFrame;
 	
@@ -127,7 +131,7 @@ public class Player {
 					playerFacingLeft = false;
 				}
 				playerHasDoubleJump = false;
-				playerRotating = true;
+				//playerRotating = true;
 				playerFastFalling = false;
 				playerRotatingLeft = (playerHorizVelocity <= 0);
 				playerVertVelocity = -8;
@@ -194,6 +198,9 @@ public class Player {
 					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
 			if (isFrontKeyPressed) {
 				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN;
+				playerSwordVisible = true;
+				playerSwordRotation = -80;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.UP)) {
 				loadHurtboxData(AnimationType.AIR_UAIR);
@@ -506,6 +513,7 @@ public class Player {
 	}
 	
 	public void loadHurtboxData(AnimationType type) {
+		currentAnimationType = type;
 		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
 		currentDuration = HurtboxData.getDuration(type);
 		currentAnimationIsFlipped = playerFacingLeft;
@@ -518,6 +526,9 @@ public class Player {
 	public void updateAnimationFramesIfInState(PlayerState state, PlayerState endState) {
 		if (playerState == state) {
 			updateActiveHurtboxes();
+			if (currentAnimationType == AnimationType.AIR_FAIR) {
+				playerSwordRotation += 16;
+			}
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
@@ -526,6 +537,9 @@ public class Player {
 													hurtboxData[3],
 													(int)hurtboxData[4]));
 				}
+			}
+			if (currentAnimationType == AnimationType.AIR_FAIR && stateFrameDuration == 11) {
+				playerSwordVisible = false;
 			}
 			if (stateFrameDuration == currentDuration) {
 				playerState = endState;
