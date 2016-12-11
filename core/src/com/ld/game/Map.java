@@ -1,5 +1,6 @@
 package com.ld.game;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
 import com.badlogic.gdx.maps.MapLayer;
@@ -61,6 +62,7 @@ public class Map {
                 checkpoints.add(checkpoint);
             }
         }
+//        handleRectangleLayer("Checkpoint Layer", Checkpoint.class, checkpoints);
         
         MapLayer targetLayer = tileMap.getLayers().get("Targets Layer");
         if (targetLayer!=null) {
@@ -91,6 +93,33 @@ public class Map {
                 }
             }
         }
+    }
+    
+    private MapObjects getLayerObjects(String name) {
+    	MapLayer layer = tileMap.getLayers().get(name);
+    	if (layer!=null) {
+    		return layer.getObjects();
+    	}
+    	else{
+    		return new MapObjects();
+    	}
+    }
+    
+    private void handleRectangleLayer(String name, Class c, Array<> array) {
+    	MapObjects objects = getLayerObjects(name);
+    	for(MapObject object: objects) {
+    		MapProperties p = object.getProperties();
+    		Object rect;
+    		try {
+				rect = c.getConstructor(float.class, float.class).newInstance(p.get("x", float.class), p.get("y", float.class));
+//				System.out.println(rect.getClass());
+				array.add(rect);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//    		array.add(c.cast(rect));
+    	}
     }
     
     public void checkDeathCollision() {
