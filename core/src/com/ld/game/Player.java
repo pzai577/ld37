@@ -31,15 +31,15 @@ public class Player {
 	// TODO: Maybe make all of the EnhancedCells class variables to avoid slowdown?
     // TODO: Use delta time to account for varying frame rates
 
-	private static final double FALL_ACCELERATION = 0.33;
+	private static final double FALL_ACCELERATION = 0.35;
 	
 	// note: if PLAYER_GROUND_MOVESPEED>PLAYER_AIR_MAX_MOVESPEED, things look weird if you run off a platform
 	private static final double PLAYER_GROUND_MAX_MOVESPEED = 5;
 	private static final double PLAYER_AIR_INFLUENCE = 0.35;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
 	
-	private static final double PLAYER_MAX_SLOWFALL_SPEED = 8.8;
-	private static final double PLAYER_FASTFALL_SPEED = 10.8;
+	private static final double PLAYER_MAX_SLOWFALL_SPEED = 8.3;
+	private static final double PLAYER_FASTFALL_SPEED = 9.3;
 	
 	private static final double PLAYER_JUMP_SPEED = 9.5;
 	private static final double PLAYER_SHORTHOP_SPEED = 6.5;
@@ -59,7 +59,7 @@ public class Player {
 	private double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;
 	
-	private boolean playerFacingLeft = false;
+	private boolean playerFacingLeft = true;
 	public boolean playerHasDoubleJump = false;
 	private boolean playerRotating = false;
 	private boolean playerRotatingLeft = false;
@@ -118,9 +118,11 @@ public class Player {
 			if (Gdx.input.isKeyJustPressed(Keys.Z) && playerHasDoubleJump) {
 				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 					playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+					playerFacingLeft = true;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+					playerFacingLeft = false;
 				}
 				playerHasDoubleJump = false;
 				playerRotating = true;
@@ -186,8 +188,20 @@ public class Player {
 		}
 		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 			setState(PlayerState.AIR_ANIM);
-			loadHurtboxData(Gdx.input.isKeyPressed(Keys.UP) ? AnimationType.AIR_UAIR : 
-				(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.AIR_DAIR : AnimationType.AIR_NAIR));
+			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
+					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
+			if (isFrontKeyPressed) {
+				loadHurtboxData(AnimationType.AIR_FAIR);
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				loadHurtboxData(AnimationType.AIR_UAIR);
+			}
+			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+				loadHurtboxData(AnimationType.AIR_DAIR);
+			}
+			else {
+				loadHurtboxData(AnimationType.AIR_NAIR);
+			}
 		}
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
@@ -228,9 +242,19 @@ public class Player {
 			
 			if (leftCell != null) {
 				position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
+				if (Gdx.input.isKeyPressed(Keys.UP)) {
+					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
+					setState(PlayerState.WALL_LEFT);
+					playerFrame = PlayerFrame.CLIMB;
+				}
 			}
 			else if (rightCell != null) {
 				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
+				if (Gdx.input.isKeyPressed(Keys.UP)) {
+					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
+					setState(PlayerState.WALL_RIGHT);
+					playerFrame = PlayerFrame.CLIMB;
+				}
 			}
 			else if (bottomCell == null) {
 				setState(PlayerState.AIR);

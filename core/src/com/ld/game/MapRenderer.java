@@ -3,19 +3,20 @@ package com.ld.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
     Map map;
-    SpriteBatch batch;
+    SpriteBatch batch, dialogBatch;
     ShapeRenderer r;
     OrthographicCamera cam;
     
@@ -27,10 +28,14 @@ public class MapRenderer {
     
     Texture targetImg;
     Texture playerImg;
+    Texture sageImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
+    
     Sound weaponSound;
   
+    BitmapFont font;
+    Matrix4 fontRotation;
     
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
@@ -44,6 +49,7 @@ public class MapRenderer {
         targetImg = new Texture(Gdx.files.internal("target.png"));
 
         playerImg = new Texture("samurai.png");
+        sageImg = new Texture("sage.png");
         
         playerStand = new TextureRegion(playerImg, 8, 0,
         		Player.PLAYER_WIDTH,Player.PLAYER_HEIGHT);
@@ -55,6 +61,12 @@ public class MapRenderer {
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         
         weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
+        
+        dialogBatch = new SpriteBatch();
+        font = new BitmapFont();
+        fontRotation = new Matrix4();
+        fontRotation.setToRotation(new Vector3(0, 0, 1), 10);
+        dialogBatch.setTransformMatrix(fontRotation);
     }
     
     public void render() {
@@ -75,7 +87,16 @@ public class MapRenderer {
         TextureRegion personTexture = determinePlayerTexture();
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
+        
+        batch.draw(sageImg, 3 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
+        
+        if (Math.abs(map.player.getX() - 3*32) + Math.abs(map.player.getY() - 30) <= 150) {
+        	dialogBatch.setProjectionMatrix(cam.combined);
+        	dialogBatch.begin();
+	        font.draw(dialogBatch, "Take my sword to my\nbrother across the forest", 120, 100);
+	        dialogBatch.end();
+        }
         
         r.setProjectionMatrix(cam.combined);
         r.begin(ShapeType.Filled);
