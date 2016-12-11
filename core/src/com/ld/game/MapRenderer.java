@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 public class MapRenderer {
     Map map;
     SpriteBatch batch;
+    ShapeRenderer r;
     OrthographicCamera cam;
     
     OrthogonalTiledMapRenderer tileMapRenderer;
@@ -32,9 +33,9 @@ public class MapRenderer {
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
         this.batch = batch;
+        this.r = new ShapeRenderer();
         this.cam = new OrthographicCamera(GAME_WIDTH, GAME_HEIGHT);
         this.cam.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
-        batch.setProjectionMatrix(cam.combined);
         
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
@@ -59,27 +60,16 @@ public class MapRenderer {
         int width = 56;
         int height = 56;
         
-        TextureRegion textureToDraw;
-        if (map.player.getPlayerFrame() == PlayerFrame.RUN) {
-        	textureToDraw = playerRun;
-        }
-        else if (map.player.getPlayerFrame() == PlayerFrame.PREJUMP) {
-        	textureToDraw = playerPrejump;
-        }
-        else {
-            textureToDraw = playerStand;
-        }
-        
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
         for (Target t: map.targets) {
             batch.draw(targetImg, t.x, t.y, t.width, t.height);
         }
-        batch.draw(textureToDraw, map.player.getX(), map.player.getY(), width/2, height/2,
+        TextureRegion personTexture = determinePlayerTexture();
+        batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
         batch.end();
         
-        ShapeRenderer r = new ShapeRenderer();
         r.setProjectionMatrix(cam.combined);
         r.begin(ShapeType.Filled);
         r.setColor(Color.RED);
@@ -89,13 +79,19 @@ public class MapRenderer {
         r.end();
     }
     
+    private TextureRegion determinePlayerTexture(){
+    	if (map.player.getPlayerFrame() == PlayerFrame.RUN) {
+        	return playerRun;
+        }
+        else if (map.player.getPlayerFrame() == PlayerFrame.PREJUMP) {
+        	return playerPrejump;
+        }
+        else {
+            return playerStand;
+        }
+    }
+    
     private void moveCamera(){
-//    	System.out.println();
-//    	System.out.println(cam.position);
-    	
-//    	float dx = map.player.position.x - (cam.position.x + GAME_WIDTH/2 - CAM_BORDER);
-//    	if (dx > 0)
-//    		cam.translate(dx, 0);
     	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDER)
     		cam.position.x = map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDER - GAME_WIDTH/2;
     	if(map.player.position.x < cam.position.x - GAME_WIDTH/2 + CAM_BORDER)
@@ -104,8 +100,5 @@ public class MapRenderer {
     		cam.position.y = map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDER - GAME_HEIGHT/2;
     	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDER)
     		cam.position.y = Math.max(map.player.position.y - CAM_BORDER + GAME_HEIGHT/2, LOWER_CAM_BOUNDARY);
-    	
-//    	System.out.println(cam.position);
-//    	System.out.println(map.player.position);
     }
 }
