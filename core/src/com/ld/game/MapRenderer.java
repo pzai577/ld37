@@ -2,19 +2,20 @@ package com.ld.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
 public class MapRenderer {
     Map map;
-    SpriteBatch batch;
+    SpriteBatch batch, batch2;
     ShapeRenderer r;
     OrthographicCamera cam;
     
@@ -29,7 +30,8 @@ public class MapRenderer {
     Texture sageImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
-  
+    BitmapFont font;
+    Matrix4 fontRotation;
     
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
@@ -53,6 +55,12 @@ public class MapRenderer {
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
         playerClimb = new TextureRegion(playerImg, 3 * playerImg.getWidth() / 4 + 8, 0,
         		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        
+        batch2 = new SpriteBatch();
+        font = new BitmapFont();
+        fontRotation = new Matrix4();
+        fontRotation.setToRotation(new Vector3(0, 0, 1), 10);
+        batch2.setTransformMatrix(fontRotation);
     }
     
     public void render() {
@@ -76,6 +84,13 @@ public class MapRenderer {
         
         batch.draw(sageImg, 3 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
+        
+        if (Math.abs(map.player.getX() - 3*32) + Math.abs(map.player.getY() - 30) <= 150) {
+	        batch2.setProjectionMatrix(cam.combined);
+	        batch2.begin();
+	        font.draw(batch2, "Take my sword to my\nbrother across the forest", 120, 100);
+	        batch2.end();
+        }
         
         r.setProjectionMatrix(cam.combined);
         r.begin(ShapeType.Filled);
