@@ -1,5 +1,6 @@
 package com.ld.game;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ enum PlayerFrame {
 	// TODO: maybe get rid of this enum
 	STAND,
 	RUN,
+	RUN_NOARMS,
 	PREJUMP,
 	CLIMB,
 	CYCLONE,
@@ -159,6 +161,8 @@ public class Player {
 					playerFacingLeft = false;
 				}
 				playerHasDoubleJump = false;
+				map.particles.add(new Particle(position.x, position.y,
+						new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
 				//playerRotating = true;
 				playerFastFalling = false;
 				playerRotatingLeft = (playerHorizVelocity <= 0);
@@ -223,7 +227,7 @@ public class Player {
 					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
 			if (isFrontKeyPressed) {
 				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN;
+				playerFrame = PlayerFrame.RUN_NOARMS;
 				playerSwordVisible = true;
 				playerSwordRotation = -90;
 			}
@@ -243,7 +247,10 @@ public class Player {
 				playerRotating = true;
 			}
 			else {
-				loadHurtboxData(AnimationType.AIR_NAIR);
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
 			}
 		}
 		if (wasInAirAnim) {
@@ -606,6 +613,7 @@ public class Player {
 				}
 			}
 			if (currentAnimationType == AnimationType.AIR_FAIR && stateFrameDuration == 11) {
+				playerFrame = PlayerFrame.STAND;
 				playerSwordVisible = false;
 			}
 			if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration == 20) {
