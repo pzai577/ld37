@@ -33,12 +33,14 @@ public class MapRenderer {
     static final float SIGN_TEXT_VERTICAL_DISTANCE = 150;
     Texture targetImg;
     Texture playerImg;
+    Texture particleImg;
     Texture sageImg;
     Texture swordImg;
     Texture checkpointImg;
     Texture signImg;
     TextureRegion imgRegion;
     TextureRegion playerSprites[][];
+    TextureRegion particleSprites[][];
     
     Sound weaponSound;
   
@@ -60,6 +62,7 @@ public class MapRenderer {
         signImg = new Texture(Gdx.files.internal("sign.png"));
 
         playerImg = new Texture("samurai.png");
+        particleImg = new Texture("particles.png");
         sageImg = new Texture("sage.png");
         swordImg = new Texture("sword_arm.png");
 
@@ -68,6 +71,14 @@ public class MapRenderer {
         	for (int j = 0; j < 4; ++j) {
         		playerSprites[i][j] = new TextureRegion(playerImg, 8 + j * playerImg.getWidth() / 4, i * playerImg.getHeight() / 4,
                 		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+        	}
+        }
+        
+        particleSprites = new TextureRegion[4][4];
+        for (int i = 0; i < 4; ++i) {
+        	for (int j = 0; j < 4; ++j) {
+        		particleSprites[i][j] = new TextureRegion(particleImg, j * playerImg.getWidth() / 4, i * playerImg.getHeight() / 4,
+                		56, 56);
         	}
         }
         
@@ -92,6 +103,7 @@ public class MapRenderer {
         renderTargets();
         renderCheckpoints();
         renderSigns();
+        renderParticles();
         /*for (Rectangle d: map.deathRects) {
             if (map.player.isAlive) batch.draw(targetImg, d.x, d.y, d.width, d.height);
         }*/
@@ -101,8 +113,10 @@ public class MapRenderer {
         
         batch.end();
         
+        // Draw sage's dialog box (requires vector rotation)
         drawSageDialog();
         
+        // Draw primitive shapes (requires a separate batch)
         r.setProjectionMatrix(cam.combined);
         r.begin(ShapeType.Filled);
         
@@ -224,6 +238,12 @@ public class MapRenderer {
             if (s.active) {
                 signFont.draw(batch, s.displayText, s.x+(s.width-SIGN_TEXT_WIDTH)/2, s.y+SIGN_TEXT_VERTICAL_DISTANCE, SIGN_TEXT_WIDTH, Align.center, true);
             }
+        }
+    }
+    
+    private void renderParticles() {
+        for (Particle p : map.particles) {
+        	p.render(batch, particleSprites);
         }
     }
 }

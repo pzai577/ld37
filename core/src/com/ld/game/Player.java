@@ -1,5 +1,6 @@
 package com.ld.game;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,6 +161,8 @@ public class Player {
 					playerFacingLeft = false;
 				}
 				playerHasDoubleJump = false;
+				map.particles.add(new Particle(position.x, position.y,
+						new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
 				//playerRotating = true;
 				playerFastFalling = false;
 				playerRotatingLeft = (playerHorizVelocity <= 0);
