@@ -35,16 +35,18 @@ public class Player {
 	
 	// note: if PLAYER_GROUND_MOVESPEED>PLAYER_AIR_MAX_MOVESPEED, things look weird if you run off a platform
 	private static final double PLAYER_GROUND_MAX_MOVESPEED = 5;
-	private static final double PLAYER_AIR_INFLUENCE = 0.6;
+	private static final double PLAYER_AIR_INFLUENCE = 0.35;
 	private static final double PLAYER_AIR_MAX_MOVESPEED = 5;
 	
-	private static final double PLAYER_MAX_SLOWFALL_SPEED = 7.8;
-	private static final double PLAYER_FASTFALL_SPEED = 11.8;
+	private static final double PLAYER_MAX_SLOWFALL_SPEED = 8.8;
+	private static final double PLAYER_FASTFALL_SPEED = 10.8;
 	
-	private static final double PLAYER_JUMP_SPEED = 8.5;
+	private static final double PLAYER_JUMP_SPEED = 9.5;
 	private static final double PLAYER_SHORTHOP_SPEED = 6.5;
 	private static final double PLAYER_PREJUMP_FRAMES = 4;
-	
+
+	private static final double PLAYER_WALL_INFLUENCE = 0.16;
+	private static final double PLAYER_WALL_SCALE_SPEED = 5.5;
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
 	
@@ -266,7 +268,7 @@ public class Player {
 				playerHorizVelocity = 0;
 			}
 			if (stateFrameDuration == PLAYER_PREJUMP_FRAMES) {
-				if (Gdx.input.isKeyJustPressed(Keys.Z)) {
+				if (Gdx.input.isKeyPressed(Keys.Z)) {
 					playerVertVelocity = -PLAYER_JUMP_SPEED;
 				}
 				else {
@@ -322,7 +324,8 @@ public class Player {
 			playerHasDoubleJump = true;
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
-			playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * -4;
+			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
+					+ PLAYER_WALL_INFLUENCE * -PLAYER_WALL_SCALE_SPEED;
 			position.y -= playerVertVelocity;
 		}
 		else {
@@ -343,7 +346,9 @@ public class Player {
 			playerHasDoubleJump = true;
 		}
 		else if (leftCell==null) {
-			playerState = PlayerState.AIR;
+			// TODO: make the player snap to ground?
+			setState(PlayerState.AIR);
+			playerFrame = PlayerFrame.STAND;
 		}
 	}
 	
@@ -366,7 +371,8 @@ public class Player {
 			playerHasDoubleJump = true;
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
-			playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * -4;
+			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
+					+ PLAYER_WALL_INFLUENCE * -PLAYER_WALL_SCALE_SPEED;
 			position.y -= playerVertVelocity;
 		}
 		else {
@@ -387,7 +393,8 @@ public class Player {
 			playerHasDoubleJump = true;
 		}
 		else if (rightCell==null) {
-			playerState = PlayerState.AIR;
+			setState(PlayerState.AIR);
+			playerFrame = PlayerFrame.STAND;
 		}
 	}
 	
