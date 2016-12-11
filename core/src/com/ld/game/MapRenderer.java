@@ -103,13 +103,8 @@ public class MapRenderer {
                 batch.draw(checkpointImg, cp.x, cp.y, cp.width, cp.height);
             }
         }
-//        TextureRegion personTexture = determinePlayerTexture();
-//        int xScale = (map.player.getFacingLeft() ? 1 : -1);
-//        batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
-//                    width, height, xScale, 1f, xScale * map.player.getRotation());
         
         drawPlayer();
-        
         batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         
         batch.end();
