@@ -647,6 +647,7 @@ public class Player {
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
 		map.projectiles.add(new LaserPulse(this, !this.playerFacingLeft));
+		laserSound.play();
 	}
 	
 	public Array<Circle> getHurtboxCircles() {

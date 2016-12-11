@@ -12,7 +12,7 @@ public class LaserPulse extends Projectile {
 	
 	float laserLength = 50;
 	float laserThickness = 2;
-	float speed = 5;
+	float speed = 7;
 	float pulseSize = 2;
 	
 	Color laserColor = Color.CYAN;
