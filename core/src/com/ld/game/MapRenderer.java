@@ -52,7 +52,7 @@ public class MapRenderer {
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
         targetImg = new Texture(Gdx.files.internal("target.png"));
-        checkpointImg = new Texture(Gdx.files.internal("target.png"));
+        checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
 
         playerImg = new Texture("samurai.png");
         sageImg = new Texture("sage.png");

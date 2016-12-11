@@ -94,16 +94,23 @@ public class Map {
     public void checkDeathCollision() {
         for (Rectangle deathRect: deathRects) {
             if (player.position.overlaps(deathRect)) {
-                if (currCheckpoint==null) {
-                    player.position.x = startPos.x;
-                    player.position.y = startPos.y;
-                }
-                else {
-                    player.position.x = currCheckpoint.x;
-                    player.position.y = currCheckpoint.y;
-                }
-                // probably want to just call a killPlayer function instead
+                killPlayer();
             }
+        }
+    }
+    
+    public void killPlayer() {
+        if (currCheckpoint==null) {
+            player.position.x = startPos.x;
+            player.position.y = startPos.y;
+        }
+        else {
+            player.position.x = currCheckpoint.x;
+            player.position.y = currCheckpoint.y;
+        }
+        
+        for (Target t: targets) {
+            t.exists = true;
         }
     }
 
@@ -111,7 +118,7 @@ public class Map {
         Array<Circle> allHurtboxes = player.getHurtboxCircles();
         for (Target t: targets) {
             for (Circle c: allHurtboxes) {
-                if (Intersector.overlaps(c, t)) {
+                if (Intersector.overlaps(c, t) && t.exists) {
                     removeTarget(t);
                     player.playerHasDoubleJump = true;
                 }
@@ -131,7 +138,7 @@ public class Map {
     }
     
     public void removeTarget(Target t) {
-        targets.removeValue(t, true);
+        t.exists = false;
         //probably want to increase score or play sound effects here as well
     }
     
