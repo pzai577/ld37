@@ -191,8 +191,9 @@ public class MapRenderer {
     
     private void drawProjectiles() {
     	for(Projectile proj: this.map.projectiles){
+    		proj.update();
     		r.setColor(proj.color);
-    		for(Rectangle rect: proj.hurtboxes){
+    		for(Rectangle rect: proj.hitboxes){
     			r.rect(rect.x, rect.y, rect.width, rect.height);
     		}
     	}

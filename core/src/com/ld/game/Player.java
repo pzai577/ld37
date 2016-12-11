@@ -84,6 +84,7 @@ public class Player {
 	private AnimationType currentAnimationType;
 	
 	private Sound weaponSound;
+	private Sound laserSound;
 	
 	private PlayerFrame playerFrame;
 	
@@ -104,6 +105,8 @@ public class Player {
 		
 		weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
 		//http://soundbible.com/706-Swoosh-3.html
+		laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
+		//http://soundbible.com/472-Laser-Blasts.html
 	}
 	
 	public void updateState() {
@@ -121,6 +124,12 @@ public class Player {
 		else if (playerState == PlayerState.WALL_RIGHT) {
 			updatePlayerWallRight();
 		}
+		
+		// shoot laser gun
+		if(Gdx.input.isKeyJustPressed(Keys.C)) {
+			shootLaser();
+		}
+		
 		++stateFrameDuration;
 	}
 	
@@ -302,11 +311,6 @@ public class Player {
 				setState(PlayerState.GROUND_ANIM);
 				loadHurtboxData(Gdx.input.isKeyPressed(Keys.DOWN) ? AnimationType.GROUND_DSMASH
 						: AnimationType.GROUND_FSMASH);
-			}
-			
-			// shoot laser gun
-			if(Gdx.input.isKeyJustPressed(Keys.C)) {
-				shootLaser();
 			}
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
@@ -642,7 +646,7 @@ public class Player {
 	
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
-		map.projectiles.add(new LaserPulse(this));
+		map.projectiles.add(new LaserPulse(this, !this.playerFacingLeft));
 	}
 	
 	public Array<Circle> getHurtboxCircles() {
