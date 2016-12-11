@@ -24,5 +24,17 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0.2f, 0, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.render();
+        
+        checkGameCompletion();
+    }
+    
+    public void refreshGame() {
+    	this.game.refresh();
+    }
+    
+    private void checkGameCompletion() {
+    	if(map.isGameFinished()){
+    		refreshGame();
+    	}
     }
 }
