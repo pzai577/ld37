@@ -247,7 +247,7 @@ public class Player {
 				playerRotating = true;
 			}
 			else {
-				loadHurtboxData(AnimationType.AIR_NAIR);
+				loadHurtboxData(AnimationType.AIR_FAIR);
 			}
 		}
 		if (wasInAirAnim) {
