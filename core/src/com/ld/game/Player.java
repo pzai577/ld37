@@ -247,7 +247,10 @@ public class Player {
 				playerRotating = true;
 			}
 			else {
-				loadHurtboxData(AnimationType.AIR_NAIR);
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
 			}
 		}
 		if (wasInAirAnim) {
