@@ -74,7 +74,7 @@ public class MapRenderer {
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
         
-        batch.draw(sageImg, 3 * 32, 1 * 32, sageImg.getWidth(), sageImg.getHeight());
+        batch.draw(sageImg, 3 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
         
         r.setProjectionMatrix(cam.combined);
