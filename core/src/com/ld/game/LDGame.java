@@ -24,4 +24,8 @@ public class LDGame extends Game {
 	public void dispose () {
 		batch.dispose();
 	}
+	
+	public void refresh() {
+		this.create();
+	}
 }

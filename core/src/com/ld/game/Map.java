@@ -69,4 +69,13 @@ public class Map {
         player.updateState();
         checkTargetHits();
     }
+    
+    public boolean isGameFinished(){
+    	if(targets.size == 0){
+    		return true;
+    	}
+    	else{
+    		return false;
+    	}
+    }
 }
