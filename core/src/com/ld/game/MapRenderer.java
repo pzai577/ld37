@@ -26,6 +26,7 @@ public class MapRenderer {
     
     Texture targetImg;
     Texture playerImg;
+    Texture sageImg;
     TextureRegion imgRegion;
     TextureRegion playerStand, playerRun, playerPrejump, playerClimb;
   
@@ -42,6 +43,7 @@ public class MapRenderer {
         targetImg = new Texture(Gdx.files.internal("target.png"));
 
         playerImg = new Texture("samurai.png");
+        sageImg = new Texture("sage.png");
         
         playerStand = new TextureRegion(playerImg, 8, 0,
         		Player.PLAYER_WIDTH,Player.PLAYER_HEIGHT);
@@ -71,6 +73,8 @@ public class MapRenderer {
         TextureRegion personTexture = determinePlayerTexture();
         batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
                     width, height, (map.player.getFacingLeft() ? 1 : -1), 1f, map.player.getRotation());
+        
+        batch.draw(sageImg, 3 * 32, 1 * 32, sageImg.getWidth(), sageImg.getHeight());
         batch.end();
         
         r.setProjectionMatrix(cam.combined);
