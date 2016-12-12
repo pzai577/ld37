@@ -3,6 +3,7 @@ package com.ld.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -117,13 +118,13 @@ public class MapRenderer {
         drawSageDialog();
         
         // Draw primitive shapes (requires a separate batch)
+        Gdx.gl.glEnable(GL20.GL_BLEND);
         r.setProjectionMatrix(cam.combined);
         r.begin(ShapeType.Filled);
-        
         drawHitboxes();
         drawProjectiles();
-        
         r.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
     
     private TextureRegion determinePlayerTexture(){
