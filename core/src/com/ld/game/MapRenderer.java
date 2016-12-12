@@ -29,7 +29,7 @@ public class MapRenderer {
     static final float GAME_WIDTH = 1280;
     static final float GAME_HEIGHT = 800;
     static final float CAM_SCALE = 1.2f;
-    static final float[] CAM_BORDERS = {600f, 600f, 300f, 300f}; // left, right, up, down
+    static final float[] CAM_BORDERS = {600f, 600f, 380f, 380f}; // left, right, up, down
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     static final float SIGN_TEXT_WIDTH = 180;
     static final float SIGN_TEXT_VERTICAL_DISTANCE = 150;
@@ -64,16 +64,16 @@ public class MapRenderer {
         checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
         signImg = new Texture(Gdx.files.internal("sign.png"));
 
-        playerImg = new Texture("samurai.png");
-        particleImg = new Texture("particles.png");
-        sageImg = new Texture("sage.png");
-        swordImg = new Texture("sword_arm.png");
+        playerImg = new Texture(Gdx.files.internal("samurai.png"));
+        particleImg = new Texture(Gdx.files.internal("particles.png"));
+        sageImg = new Texture(Gdx.files.internal("sage.png"));
+        swordImg = new Texture(Gdx.files.internal("sword_arm.png"));
 
         playerSprites = new TextureRegion[4][4];
         for (int i = 0; i < 4; ++i) {
         	for (int j = 0; j < 4; ++j) {
         		playerSprites[i][j] = new TextureRegion(playerImg, 8 + j * playerImg.getWidth() / 4, i * playerImg.getHeight() / 4,
-                		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+                		40, Player.PLAYER_HEIGHT);
         	}
         }
         
@@ -165,11 +165,12 @@ public class MapRenderer {
     }
     
     private void drawPlayer() {
-    	int width = Player.PLAYER_WIDTH;
+    	int width = 40;
         int height = Player.PLAYER_HEIGHT;
         TextureRegion personTexture = determinePlayerTexture();
         int xScale = (map.player.getFacingLeft() ? 1 : -1);
-        batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
+        int playerClimbOffset = (map.player.getPlayerFrame() == PlayerFrame.CLIMB ? -4 : 0);
+        batch.draw(personTexture, map.player.getX() + playerClimbOffset, map.player.getY(), width/2, height/2,
                     width, height, xScale, 1f, xScale * map.player.getRotation());
         
         if (map.player.playerSwordVisible) {

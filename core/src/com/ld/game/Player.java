@@ -58,8 +58,9 @@ public class Player {
 	private static final double PLAYER_WALL_SCALE_SPEED = 5.5;
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
+	private static final double AIR_FRICTION_SCALING = 0.98;
 	
-	public static final int PLAYER_WIDTH = 40;
+	public static final int PLAYER_WIDTH = 32;
 	public static final int PLAYER_HEIGHT = 56;
 	
 	private boolean pause;
@@ -152,6 +153,9 @@ public class Player {
 				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
 				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
 	            playerFacingLeft = false;
+			}
+			else {
+			    playerHorizVelocity *= AIR_FRICTION_SCALING;
 			}
 		}
 		boolean wasInAirAnim = true;
@@ -449,6 +453,7 @@ public class Player {
 		
 		EnhancedCell leftCell = getCollidingLeftCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
+		EnhancedCell topCell = getCollidingTopCell();
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
@@ -458,6 +463,12 @@ public class Player {
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
+		}
+		else if (topCell != null) {
+			if (playerVertVelocity < 0) {
+				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
+				playerVertVelocity = 0;
+			}
 		}
 		else if (leftCell==null) {
 			// TODO: make the player snap to ground?
@@ -498,6 +509,7 @@ public class Player {
 		
 		EnhancedCell rightCell = getCollidingRightCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
+		EnhancedCell topCell = getCollidingTopCell();
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
@@ -507,6 +519,12 @@ public class Player {
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
+		}
+		else if (topCell != null) {
+			if (playerVertVelocity < 0) {
+				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
+				playerVertVelocity = 0;
+			}
 		}
 		else if (rightCell==null) {
 			setState(PlayerState.AIR);
