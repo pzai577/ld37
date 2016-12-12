@@ -33,9 +33,9 @@ public class Map {
     public Array<Sign> signs;
     public Array<Particle> particles;
     public Checkpoint currCheckpoint;
-    public int leg; //starts at 0 before you start the starting dialog, is 1 for the sword trip, 2 for the gun trip, etc.
+    public int leg; //starts at 0 before you activate the starting dialogue, 1 for sword trip, 2 for gun trip, etc.
     
-    private Array<Dialog> dialogs;
+    public Array<Dialogue> dialogues;
     
     public Map(String levelFile) {
         targets = new Array<Target>();
@@ -44,6 +44,7 @@ public class Map {
         checkpoints = new Array<Checkpoint>();
         signs = new Array<Sign>();
         particles = new Array<Particle>();
+        dialogues = new Array<Dialogue>();
         leg = 0;
         
         tileMap = new TmxMapLoader().load(levelFile);
@@ -107,6 +108,9 @@ public class Map {
             Sign sign = new Sign(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class), p.get("height", float.class), signText);
             signs.add(sign);
         }
+        
+        dialogues.add(Globals.makeDialogue(0));
+        dialogues.add(Globals.makeDialogue(1));
     }
     
     private MapObjects getLayerObjects(String name) {
@@ -167,17 +171,27 @@ public class Map {
             player.position.y = currCheckpoint.y;
         }
         
-        for (Target t: targets) {
-            t.exists = true;
-        }
+        refreshTargets();
         
         for (Projectile p: projectiles) {
             p.destroy();
         }
     }
     
-    public boolean advanceDialog() {
-    	return true;
+    public void startDialogue(int i) {
+        dialogues.get(i).activate();
+        player.inDialog = true;
+    }
+    
+    // advances dialogue, returns true if dialogue is still happening, false otherwise
+    public boolean advanceDialogue() {
+        Dialogue activeDialogue = null;
+        for (Dialogue d: dialogues) {
+            if (d.active) activeDialogue = d;
+        }
+        assert activeDialogue!=null;
+    	activeDialogue.advance();
+    	return activeDialogue.active;
     }
 
     public void checkTargetHits() {
@@ -266,14 +280,23 @@ public class Map {
     public void checkLegFinished() {
         if (leg==0) {
             if (Intersector.overlaps(player.position, startZone) && player.playerState==PlayerState.GROUND) {
-                System.out.println("leg 0 finished!");
+                //System.out.println("leg 0 finished!");
                 leg++;
+                startDialogue(0);
             }
         }
         else if (leg==1) {
             if (Intersector.overlaps(player.position, finishZone) && player.playerState==PlayerState.GROUND) {
-                System.out.println("leg 1 finished!");
+                //System.out.println("leg 1 finished!");
                 leg++;
+                startDialogue(1);
+                refreshTargets();
+            }
+        }
+        else if (leg==2) {
+            if (Intersector.overlaps(player.position, startZone) && player.playerState==PlayerState.GROUND) {
+                leg++;
+                startDialogue(2);
             }
         }
     }
@@ -284,6 +307,12 @@ public class Map {
             // This is bad coding but we can probably do some instanceof checks if we have multiple projectile types
             LaserPulse laser = (LaserPulse) r.ownerProjectile; 
             laser.destroy();
+        }
+    }
+    
+    public void refreshTargets() {
+        for (Target t: targets) {
+            t.exists = true;
         }
     }
     

@@ -22,7 +22,8 @@ public class MapRenderer {
 	
     Map map;
     SpriteBatch batch, dialogBatch;
-    ShapeRenderer r;
+    ShapeRenderer projRenderer;
+    ShapeRenderer dialogueBoxRenderer;
     OrthographicCamera cam;
     
     OrthogonalTiledMapRenderer tileMapRenderer;
@@ -33,6 +34,11 @@ public class MapRenderer {
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     static final float SIGN_TEXT_WIDTH = 180;
     static final float SIGN_TEXT_VERTICAL_DISTANCE = 150;
+    static final float DIALOGUE_BOX_WIDTH = 180;
+    static final float DIALOGUE_BOX_HEIGHT = 180;
+    static final float DIALOGUE_BOX_VERTICAL_SPACING = 150;
+    static final float DIALOGUE_TEXT_HORIZ_MARGIN = 10;
+    static final float DIALOGUE_TEXT_VERT_MARGIN = 10;
     Texture targetImg;
     Texture playerImg;
     Texture particleImg;
@@ -50,11 +56,13 @@ public class MapRenderer {
     BitmapFont sageFont;
     Matrix4 sageFontRotation;
     BitmapFont signFont;
+    BitmapFont dialogueFont;
     
     public MapRenderer (Map map, SpriteBatch batch) {
         this.map = map;
         this.batch = batch;
-        this.r = new ShapeRenderer();
+        this.projRenderer = new ShapeRenderer();
+        this.dialogueBoxRenderer = new ShapeRenderer();
         this.cam = new OrthographicCamera(GAME_WIDTH, GAME_HEIGHT);
         cam.zoom = CAM_SCALE;
         this.cam.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -93,17 +101,21 @@ public class MapRenderer {
         sageFontRotation.setToRotation(new Vector3(0, 0, 1), 10);
         dialogBatch.setTransformMatrix(sageFontRotation);
         signFont = new BitmapFont();
+        dialogueFont = new BitmapFont();
     }
     
     public void render() {
+        // Update camera stuff
     	moveCamera();
         cam.update();
-        
-        tileMapRenderer.setView(cam);
-        tileMapRenderer.render();
-        
-        
+        projRenderer.setProjectionMatrix(cam.combined);
+        dialogueBoxRenderer.setProjectionMatrix(cam.combined);
         batch.setProjectionMatrix(cam.combined);
+        tileMapRenderer.setView(cam);
+        // Draw tilemap
+        tileMapRenderer.render();
+
+        // Draw map objects
         batch.begin();
         drawTargets();
         drawCheckpoints();
@@ -114,20 +126,21 @@ public class MapRenderer {
         }*/
                 
         drawPlayer();
-        drawSages();
-        
+        drawSages();     
         batch.end();
         
+        // Draw dialogue (uses both a ShapeRenderer and the batch, so done separately)
+        drawDialogue();
+        
         // Draw sage's dialog box (requires vector rotation)
-        drawSageDialog();
+        // drawSageDialog();
         
         // Draw primitive shapes (requires a separate batch)
         Gdx.gl.glEnable(GL20.GL_BLEND);
-        r.setProjectionMatrix(cam.combined);
-        r.begin(ShapeType.Filled);
+        projRenderer.begin(ShapeType.Filled);
         drawHitboxes();
         drawProjectiles();
-        r.end();
+        projRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
     
@@ -187,27 +200,67 @@ public class MapRenderer {
         batch.draw(endSageImg, map.sageEndPos.x, map.sageEndPos.y);
     }
     
-    private void drawSageDialog() {
+    private void drawDialogue() {
+        for (Dialogue d: map.dialogues) {
+            if (d.active) {
+                Rectangle speaker0Rect = convertSpeakerToRectangle(d.speaker0);
+                Rectangle speaker1Rect = convertSpeakerToRectangle(d.speaker1);
+                Rectangle activeRect;
+                if (d.speakerList[d.currentSentence]==0) activeRect = speaker0Rect;
+                else activeRect = speaker1Rect;
+                float dialogueBoxX = activeRect.x+(activeRect.width-SIGN_TEXT_WIDTH)/2;
+                float dialogueBoxY = activeRect.y+activeRect.height+DIALOGUE_BOX_VERTICAL_SPACING;
+                // draw dialogue box background  
+                dialogueBoxRenderer.begin(ShapeType.Filled);
+                dialogueBoxRenderer.setColor(Color.WHITE);
+                dialogueBoxRenderer.rect(dialogueBoxX-1, dialogueBoxY-1, DIALOGUE_BOX_WIDTH+2, DIALOGUE_BOX_HEIGHT+2);
+                dialogueBoxRenderer.setColor(Color.BLACK);
+                dialogueBoxRenderer.rect(dialogueBoxX, dialogueBoxY, DIALOGUE_BOX_WIDTH, DIALOGUE_BOX_HEIGHT);
+                dialogueBoxRenderer.end();
+                // draw dialogue text
+                batch.begin();
+                dialogueFont.draw(batch, d.text[d.currentSentence], 
+                        dialogueBoxX+DIALOGUE_TEXT_HORIZ_MARGIN, dialogueBoxY+DIALOGUE_BOX_HEIGHT-DIALOGUE_TEXT_VERT_MARGIN, 
+                        DIALOGUE_BOX_WIDTH-2*DIALOGUE_TEXT_HORIZ_MARGIN, Align.center, true);
+                batch.end();
+            }
+        }
+    }
+    
+    private Rectangle convertSpeakerToRectangle (String speaker) {
+        if (speaker.equals("player")) {
+            return map.player.position;
+        }
+        else if (speaker.equals("startSage")) {
+            return new Rectangle(map.sageStartPos.x, map.sageStartPos.y, startSageImg.getWidth(), startSageImg.getHeight());
+        }
+        else if (speaker.equals("endSage")) {
+            return new Rectangle(map.sageEndPos.x, map.sageEndPos.y, endSageImg.getWidth(), endSageImg.getHeight());
+        }
+        return null;
+    }
+    
+    /*private void drawSageDialog() {
     	if (Math.abs(map.player.getX() - 2*32) + Math.abs(map.player.getY() - 2*32 + 2) <= 150) {
         	dialogBatch.setProjectionMatrix(cam.combined);
         	dialogBatch.begin();
 	        sageFont.draw(dialogBatch, Globals.SAGE_TEXT, 120, 190, 250, Align.center, true);
 	        dialogBatch.end();
         }
-    }
+    }*/
     
     private void drawHitboxes() {
     	if (DEBUG_SHOW_HITBOXES) {    
-	        r.setColor(Color.RED);
+	        projRenderer.setColor(Color.RED);
 	        for (HurtboxCircle box : map.player.getActiveHurtboxes()) {
-	            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
+	            projRenderer.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
 	        }
         }
     }
     
     private void drawProjectiles() {
     	for(Projectile proj: this.map.projectiles) {
-    		proj.render(r);
+    		proj.render(projRenderer);
     	}
     }
     

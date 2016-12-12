@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="76" tilewidth="32" tileheight="32" nextobjectid="73">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="76" tilewidth="32" tileheight="32" nextobjectid="78">
  <tileset firstgid="1" name="goodly-2x" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="goodly-2x.png" width="512" height="512"/>
  </tileset>
@@ -195,9 +195,9 @@
 106,107,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,121,122,122,122,122,122,122,106,106,106,106,
 106,107,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
 106,107,0,0,0,0,0,0,0,0,0,0,121,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,122,90,94,94,94,94,94,94,122,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
-106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
-106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
-106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
+106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
+106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
+106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,106,106,
 106,107,0,0,89,90,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,90,90,90,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,122,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,122,122,122,106,
 106,107,0,0,105,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,121,106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,
 106,107,0,0,105,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,
@@ -283,7 +283,11 @@
  <objectgroup name="Checkpoint Layer">
   <object id="2" name="cp" x="1341" y="2332" width="46" height="43"/>
   <object id="4" name="cp" x="2892" y="2324.17" width="46" height="43"/>
-  <object id="26" name="cp" x="2833" y="1667.83" width="46" height="43"/>
+  <object id="26" name="cp" x="1050" y="1179.83" width="46" height="43"/>
+  <object id="73" name="cp" x="2838" y="1663.5" width="46" height="43"/>
+  <object id="74" name="cp" x="208" y="792.5" width="46" height="43"/>
+  <object id="75" name="cp" x="1309" y="663.5" width="46" height="43"/>
+  <object id="76" name="cp" x="2585" y="799.5" width="46" height="43"/>
  </objectgroup>
  <objectgroup name="Targets Layer">
   <object id="7" name="target" x="2626" y="2232" width="32" height="32"/>
@@ -295,14 +299,14 @@
   <object id="40" name="target" x="1308" y="1723" width="32" height="32"/>
   <object id="41" name="target" x="2708" y="599" width="32" height="32"/>
   <object id="48" name="target" x="743.188" y="305.701" width="32" height="32"/>
-  <object id="49" name="target" x="598.228" y="609.251" width="32" height="32"/>
-  <object id="50" name="target" x="810.653" y="605.242" width="32" height="32"/>
+  <object id="49" name="target" x="598.228" y="606.24" width="32" height="32"/>
+  <object id="50" name="target" x="810.653" y="606.24" width="32" height="32"/>
   <object id="51" name="target" x="1021.07" y="606.244" width="32" height="32"/>
   <object id="54" name="target" x="1375.85" y="224.481" width="32" height="32"/>
   <object id="67" name="target" x="705" y="1308" width="32" height="32"/>
  </objectgroup>
  <objectgroup name="Locations Layer">
-  <object id="5" name="start" x="464.817" y="2170.57" width="53" height="54"/>
+  <object id="5" name="start" x="187.817" y="1870.57" width="53" height="54"/>
   <object id="43" name="endSage" x="3057" y="474" width="76" height="71"/>
   <object id="68" name="finishZone" x="2902" y="456" width="161" height="92"/>
   <object id="69" name="startZone" x="114" y="2317" width="195" height="81"/>
@@ -341,12 +345,7 @@
   </object>
   <object id="21" name="sign5" x="2949.33" y="2368" width="32" height="32">
    <properties>
-    <property name="text" value="Ah, fuck it. You can figure this out."/>
-   </properties>
-  </object>
-  <object id="24" name="sign5" x="2756" y="1697.33" width="32" height="32">
-   <properties>
-    <property name="text" value="Those spikes are a different color, but they'll still kill you."/>
+    <property name="text" value="If it isn't obvious from the spike pattern, you can walljump. Also, walljumping restores your double jump!"/>
    </properties>
   </object>
   <object id="27" name="sign6" x="2336.33" y="1250.33" width="32" height="32">
@@ -356,7 +355,7 @@
   </object>
   <object id="31" name="sign7" x="1873" y="1728" width="32" height="32">
    <properties>
-    <property name="text" value="By the way, whenever you jump off a wall, you get your double jump back. Why am I telling you this? No reason."/>
+    <property name="text" value="Oh, I just remembered something! You can press R to restart from the last checkpoint, but I'm sure you won't need it."/>
    </properties>
   </object>
   <object id="33" name="sign8" x="121" y="1506" width="32" height="32">
@@ -367,6 +366,11 @@
   <object id="53" name="sign9" x="1327.69" y="832.697" width="32" height="32">
    <properties>
     <property name="text" value="TUNNEL UNDER CONSTRUCTION"/>
+   </properties>
+  </object>
+  <object id="77" name="sign10" x="272" y="834" width="32" height="32">
+   <properties>
+    <property name="text" value="Psst...the secret tunnel is over here."/>
    </properties>
   </object>
  </objectgroup>
