@@ -17,7 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 public class MapRenderer {
-	static final boolean DEBUG_SHOW_HITBOXES = false;
+	static final boolean DEBUG_SHOW_HITBOXES = true;
 	
     Map map;
     SpriteBatch batch, dialogBatch;
@@ -27,7 +27,7 @@ public class MapRenderer {
     OrthogonalTiledMapRenderer tileMapRenderer;
     static final float GAME_WIDTH = 1280;
     static final float GAME_HEIGHT = 800;
-    static final float[] CAM_BORDERS = {600f, 600f, 300f, 300f}; // left, right, up, down
+    static final float[] CAM_BORDERS = {600f, 600f, 380f, 380f}; // left, right, up, down
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     static final float SIGN_TEXT_WIDTH = 180;
     static final float SIGN_TEXT_VERTICAL_DISTANCE = 150;
