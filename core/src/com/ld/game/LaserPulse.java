@@ -13,11 +13,15 @@ public class LaserPulse extends Projectile {
 	float laserLength = 50;
 	float laserThickness = 2;
 	float speed = 7;
+//	float speed = 0;
 	float pulseSize = 2;
-	int pulseTime = 15; // in frames, which should be 1/60 s
+//	float pulseSize = 10;
+	int pulseHalfPeriod = 15; // in frames, which should be 1/60 s
+	int currentPulseTime;
+	boolean pulsingDown;
 	
 	Color laserColor = Color.CYAN;
-	Color pulseColor = new Color(0f, 0.5f, 0.5f, 1f);
+	Color pulseColor = new Color(0f, 0.5f, 0.5f, 0.1f);
 	
 	public LaserPulse(Player player, boolean shootingRight){
 		super();
@@ -33,7 +37,11 @@ public class LaserPulse extends Projectile {
 			this.horizVelocity = -speed;
 		}
 		
+		this.laserColor.a = 0.5f;
+		
 		this.pulsebox = new Rectangle(hitbox.x, hitbox.y - pulseSize, laserLength, laserThickness + 2 * pulseSize);
+		currentPulseTime = pulseHalfPeriod;
+		pulsingDown = true;
 		
 //		this.colors.add();
 //		this.hitboxes.add(pulsebox);
@@ -44,12 +52,25 @@ public class LaserPulse extends Projectile {
 	@Override
 	public void update() {
 		super.update();
+		
 		updateBox(pulsebox);
+		if(pulsingDown) {
+			currentPulseTime--;
+			if(currentPulseTime == 0) {
+				pulsingDown = !pulsingDown;
+			}
+		}
+		else {
+			currentPulseTime++;
+			if(currentPulseTime == pulseHalfPeriod) {
+				pulsingDown = !pulsingDown;
+			}
+		}
+		this.pulseColor.a = 1.0f * currentPulseTime / pulseHalfPeriod;
 	}
 	
 	@Override
 	public void render(ShapeRenderer r) {
-		// TODO: make pulsebox rounded and pulse
 		r.setColor(pulseColor);
 		renderRectHelper(r, pulsebox);
 		r.arc(hitbox.x, hitbox.y+hitbox.height/2, hitbox.height/2 + pulseSize, 90, 180);
