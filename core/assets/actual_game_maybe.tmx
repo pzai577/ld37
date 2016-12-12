@@ -258,13 +258,13 @@
   <object id="23" name="target" x="2636" y="1205.33" width="32" height="32"/>
   <object id="29" name="target" x="1622" y="1259" width="32" height="32"/>
   <object id="30" name="target" x="1433" y="1185" width="32" height="32"/>
-  <object id="38" name="target" x="1474" y="1528" width="32" height="32"/>
-  <object id="39" name="target" x="1418" y="1531" width="32" height="32"/>
-  <object id="40" name="target" x="1368" y="1529" width="32" height="32"/>
+  <object id="38" name="target" x="1414" y="1531" width="32" height="32"/>
+  <object id="39" name="target" x="1359" y="1531" width="32" height="32"/>
+  <object id="40" name="target" x="1308" y="1531" width="32" height="32"/>
   <object id="41" name="target" x="2708" y="407" width="32" height="32"/>
  </objectgroup>
  <objectgroup name="Locations Layer">
-  <object id="5" name="start" x="2532.33" y="611.333" width="53" height="54"/>
+  <object id="5" name="start" x="1863.33" y="1485.33" width="53" height="54"/>
   <object id="43" name="endSage" x="3057" y="282" width="76" height="71"/>
  </objectgroup>
  <objectgroup name="Sign Layer">
@@ -315,7 +315,7 @@
   </object>
   <object id="31" name="sign7" x="1873" y="1536" width="32" height="32">
    <properties>
-    <property name="text" value="By the way, whenever you jump off a wall, you get your double jump back. Just sayin'."/>
+    <property name="text" value="By the way, whenever you jump off a wall, you get your double jump back. Why am I telling you this? No reason."/>
    </properties>
   </object>
   <object id="33" name="sign8" x="121" y="1314" width="32" height="32">
