@@ -12,16 +12,19 @@ public class Projectile {
 	public HurtboxRectangle hitbox;
 	public Vector2 head;
 	
+	private Map map;
+	
 	protected float horizVelocity;
 	protected float vertVelocity;
 	protected float horizAccel;
 	protected float vertAccel;
 	
-	public Projectile() {
+	public Projectile(Map map) {
 //		this.hitboxes = new Array<Rectangle>();
 //		this.colors = new Array<Color>();
 		this.hitbox = new HurtboxRectangle(new Rectangle());
 		this.head = new Vector2();
+		this.map = map;
 		this.horizVelocity = 0;
 		this.vertVelocity = 0;
 		this.horizAccel = 0;
@@ -53,7 +56,8 @@ public class Projectile {
 	}
 	
 	public void destroy() {
-		
+		map.projectiles.removeValue(this, true);
+		return;
 	}
 
 }

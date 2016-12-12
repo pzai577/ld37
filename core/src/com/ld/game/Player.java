@@ -63,8 +63,9 @@ public class Player {
 	public static final int PLAYER_WIDTH = 32;
 	public static final int PLAYER_HEIGHT = 56;
 	
-	private boolean pause;
+	private boolean paused;
 	public boolean isAlive;
+	public boolean inDialog;
 	public Rectangle position;
 	
 	private PlayerState playerState = PlayerState.AIR;
@@ -101,7 +102,9 @@ public class Player {
 	private Array<HurtboxRectangle> activeHurtboxRects;
 	
 	public Player(Map map, TiledMapTileLayer collisionLayer) {
+		paused = false;
 	    isAlive = true;
+	    inDialog = false;
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
 		this.map = map;
 		this.collisionLayer = collisionLayer;
@@ -116,7 +119,11 @@ public class Player {
 	}
 	
 	public void updateState() {
-		if (pause) return;
+		if(inDialog) {
+			updateInDialog();
+			return;
+		}
+		if (paused) return;
 		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
 			updatePlayerAir();
 		}
@@ -136,7 +143,16 @@ public class Player {
 			shootLaser();
 		}
 		
+		// press r to refresh
+		if(Gdx.input.isKeyJustPressed(Keys.R)) {
+			map.killPlayer();
+		}
+		
 		++stateFrameDuration;
+	}
+	
+	private void updateInDialog() {
+		
 	}
 	
 	private void updatePlayerAir(){
@@ -634,7 +650,7 @@ public class Player {
 				playerSwordRotation -= 14;
 				playerRotation -= 14;
 				
-				//pause = true;
+				//paused = true;
 			}
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
@@ -688,10 +704,14 @@ public class Player {
 	
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
-		LaserPulse laser = new LaserPulse(this, !this.playerFacingLeft);
+		LaserPulse laser = new LaserPulse(this.map, this, !this.playerFacingLeft);
 		map.projectiles.add(laser);
 		this.activeHurtboxRects.add(laser.hitbox);
 		laserSound.play();
+	}
+	
+	public void removeLaser(HurtboxRectangle rect) {
+		this.activeHurtboxRects.removeValue(rect, true);
 	}
 	
 	public Array<Circle> getHurtboxCircles() {

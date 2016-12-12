@@ -24,8 +24,8 @@ public class LaserPulse extends Projectile {
 	Color laserColor = Color.CYAN;
 	Color pulseColor = new Color(0f, 0.5f, 0.5f, 0.1f);
 	
-	public LaserPulse(Player player, boolean shootingRight){
-		super();
+	public LaserPulse(Map map, Player player, boolean shootingRight){
+		super(map);
 		
 		this.player = player;
 		
@@ -85,6 +85,7 @@ public class LaserPulse extends Projectile {
 	@Override
 	public void destroy() {
 		super.destroy();
+		player.removeLaser(this.hitbox);
 	}
 
 }
