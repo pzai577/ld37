@@ -13,7 +13,7 @@ public class LaserPulse extends Projectile {
 	
 	float laserLength = 50;
 	float laserThickness = 2;
-	float speed = 7;
+	float speed = 6;
 //	float speed = 0;
 	float pulseSize = 2;
 //	float pulseSize = 10;
@@ -30,16 +30,16 @@ public class LaserPulse extends Projectile {
 		this.player = player;
 		
 		if(shootingRight){
-			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, laserLength, laserThickness));
+			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, laserLength, laserThickness), this);
 			this.head = new Vector2(hitbox.x + laserLength, hitbox.y);
 			this.horizVelocity = speed;
 		}
 		else{
-			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x - laserLength, player.position.y + 20, laserLength, laserThickness));
+			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x - laserLength, player.position.y + 20, laserLength, laserThickness), this);
 			this.head = new Vector2(hitbox.x, hitbox.y);
 			this.horizVelocity = -speed;
 		}
-		
+
 		this.laserColor.a = 0.5f;
 		
 		this.pulsebox = new Rectangle(hitbox.x, hitbox.y - pulseSize, laserLength, laserThickness + 2 * pulseSize);

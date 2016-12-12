@@ -22,7 +22,7 @@ public class Projectile {
 	public Projectile(Map map) {
 //		this.hitboxes = new Array<Rectangle>();
 //		this.colors = new Array<Color>();
-		this.hitbox = new HurtboxRectangle(new Rectangle());
+		this.hitbox = new HurtboxRectangle(new Rectangle(), this);
 		this.head = new Vector2();
 		this.map = map;
 		this.horizVelocity = 0;

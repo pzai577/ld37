@@ -167,14 +167,15 @@ public class Map {
     			if (Intersector.overlaps(c, t) && t.exists)
     				removeTarget = true;
     		}
-    		for(Rectangle r: hurtboxRects){
-    			if (Intersector.overlaps(r, t) && t.exists)
+    		for(HurtboxRectangle r: hurtboxRects){
+    			if (Intersector.overlaps(r, t) && t.exists) {
     				removeTarget = true;
+    				removeProjectileGivenHurtbox(r);
+    			}
     		}
     		if(removeTarget){
     			removeTarget(t);
 				player.playerHasDoubleJump = true;
-				System.out.println("removed");
     		}
     	}
 //    	
@@ -200,10 +201,12 @@ public class Map {
     			if (Intersector.overlaps(c, cp) && currCheckpoint!=cp)
     				newCheckpoint = true;
     		}
-    		for(Rectangle r: hurtboxRects){
-    			System.out.println(r);
-    			if (Intersector.overlaps(r, cp) && currCheckpoint!=cp)
+    		for(HurtboxRectangle r: hurtboxRects){
+    			//System.out.println(r);
+    			if (Intersector.overlaps(r, cp) && currCheckpoint!=cp) {
     				newCheckpoint = true;
+    				removeProjectileGivenHurtbox(r);
+    			}
     		}
     		if(newCheckpoint) {
     			currCheckpoint = cp;
@@ -235,6 +238,15 @@ public class Map {
                 s.active = true;
             else
                 s.active = false;
+        }
+    }
+    
+    public void removeProjectileGivenHurtbox(HurtboxRectangle r) {
+        if (r.ownerProjectile!=null) {// hurtboxOwner should be the projectile that owns r
+            // I'm just assuming it's a laser pulse
+            // This is bad coding but we can probably do some instanceof checks if we have multiple projectile types
+            LaserPulse laser = (LaserPulse) r.ownerProjectile; 
+            laser.destroy();
         }
     }
     

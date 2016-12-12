@@ -710,6 +710,7 @@ public class Player {
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
 		LaserPulse laser = new LaserPulse(this.map, this, !this.playerFacingLeft);
+		if (laser.hitbox.ownerProjectile == null) System.out.println("laser hitbox owner is null");
 		map.projectiles.add(laser);
 		this.activeHurtboxRects.add(laser.hitbox);
 		laserSound.play();
