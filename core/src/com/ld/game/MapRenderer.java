@@ -71,7 +71,7 @@ public class MapRenderer {
         for (int i = 0; i < 4; ++i) {
         	for (int j = 0; j < 4; ++j) {
         		playerSprites[i][j] = new TextureRegion(playerImg, 8 + j * playerImg.getWidth() / 4, i * playerImg.getHeight() / 4,
-                		Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT);
+                		40, Player.PLAYER_HEIGHT);
         	}
         }
         
@@ -163,11 +163,12 @@ public class MapRenderer {
     }
     
     private void drawPlayer() {
-    	int width = Player.PLAYER_WIDTH;
+    	int width = 40;
         int height = Player.PLAYER_HEIGHT;
         TextureRegion personTexture = determinePlayerTexture();
         int xScale = (map.player.getFacingLeft() ? 1 : -1);
-        batch.draw(personTexture, map.player.getX(), map.player.getY(), width/2, height/2,
+        int playerClimbOffset = (map.player.getPlayerFrame() == PlayerFrame.CLIMB ? -4 : 0);
+        batch.draw(personTexture, map.player.getX() + playerClimbOffset, map.player.getY(), width/2, height/2,
                     width, height, xScale, 1f, xScale * map.player.getRotation());
         
         if (map.player.playerSwordVisible) {

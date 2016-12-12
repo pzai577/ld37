@@ -58,7 +58,7 @@ public class Player {
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
 	
-	public static final int PLAYER_WIDTH = 40;
+	public static final int PLAYER_WIDTH = 32;
 	public static final int PLAYER_HEIGHT = 56;
 	
 	private boolean pause;
