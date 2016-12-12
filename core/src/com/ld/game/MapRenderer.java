@@ -17,7 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 public class MapRenderer {
-	static final boolean DEBUG_SHOW_HITBOXES = true;
+	static final boolean DEBUG_SHOW_HITBOXES = false;
 	
     Map map;
     SpriteBatch batch, dialogBatch;
@@ -61,10 +61,10 @@ public class MapRenderer {
         checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
         signImg = new Texture(Gdx.files.internal("sign.png"));
 
-        playerImg = new Texture("samurai.png");
-        particleImg = new Texture("particles.png");
-        sageImg = new Texture("sage.png");
-        swordImg = new Texture("sword_arm.png");
+        playerImg = new Texture(Gdx.files.internal("samurai.png"));
+        particleImg = new Texture(Gdx.files.internal("particles.png"));
+        sageImg = new Texture(Gdx.files.internal("sage.png"));
+        swordImg = new Texture(Gdx.files.internal("sword_arm.png"));
 
         playerSprites = new TextureRegion[4][4];
         for (int i = 0; i < 4; ++i) {

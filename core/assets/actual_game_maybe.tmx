@@ -195,7 +195,7 @@
   <object id="30" name="target" x="1433" y="545" width="32" height="32"/>
  </objectgroup>
  <objectgroup name="Locations Layer">
-  <object id="5" name="start" x="2501.33" y="548.333" width="53" height="54"/>
+  <object id="5" name="start" x="158.33" y="1506.33" width="53" height="54"/>
  </objectgroup>
  <objectgroup name="Sign Layer">
   <object id="14" name="sign1" x="321.333" y="1536" width="32" height="32">
