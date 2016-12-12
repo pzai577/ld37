@@ -1,7 +1,5 @@
 package com.ld.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -12,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -144,30 +143,79 @@ public class Map {
     }
 
     public void checkTargetHits() {
-        Array<Circle> allHurtboxes = player.getHurtboxCircles();
-        for (Target t: targets) {
-            for (Circle c: allHurtboxes) {
-                if (Intersector.overlaps(c, t) && t.exists) {
-                    removeTarget(t);
-                    player.playerHasDoubleJump = true;
-                }
-            }
-        }
+    	Array<Circle> hurtboxCircles = player.getHurtboxCircles();
+    	Array<HurtboxRectangle> hurtboxRects = player.getHurtboxRects();
+    	for (Target t: targets) {
+    		boolean removeTarget = false;
+    		for(Circle c: hurtboxCircles){
+    			if (Intersector.overlaps(c, t) && t.exists)
+    				removeTarget = true;
+    		}
+    		for(Rectangle r: hurtboxRects){
+    			if (Intersector.overlaps(r, t) && t.exists)
+    				removeTarget = true;
+    		}
+    		if(removeTarget){
+    			removeTarget(t);
+				player.playerHasDoubleJump = true;
+				System.out.println("removed");
+    		}
+    	}
+//    	
+//    	
+//    	
+//        Array<Circle> allHurtboxes = player.getHurtboxCircles();
+//        for (Target t: targets) {
+//            for (Circle c: allHurtboxes) {
+//                if (Intersector.overlaps(c, t) && t.exists) {
+//                    removeTarget(t);
+//                    player.playerHasDoubleJump = true;
+//                }
+//            }
+//        }
     }
     
-    public void checkCpHits() {
-        Array<Circle> allHurtboxes = player.getHurtboxCircles();
-        for (Circle c: allHurtboxes) {
-            for (Checkpoint cp: checkpoints) {
-                if (Intersector.overlaps(c, cp) && currCheckpoint!=cp) {
-                    currCheckpoint = cp;
-            		//Sound checkpointSound = Gdx.audio.newSound(Gdx.files.internal("checkpoint_hit.mp3"));
-            		//checkpointSound.play();
-            		//http://soundbible.com/1980-Swords-Collide.html
-                }
-            }
-        }
+    public void checkCheckpointHits() {
+    	Array<Circle> hurtboxCircles = player.getHurtboxCircles();
+    	Array<HurtboxRectangle> hurtboxRects = player.getHurtboxRects();
+    	for (Checkpoint cp: checkpoints) {
+    		boolean newCheckpoint = false;
+    		for(Circle c: hurtboxCircles){
+    			if (Intersector.overlaps(c, cp) && currCheckpoint!=cp)
+    				newCheckpoint = true;
+    		}
+    		for(Rectangle r: hurtboxRects){
+    			System.out.println(r);
+    			if (Intersector.overlaps(r, cp) && currCheckpoint!=cp)
+    				newCheckpoint = true;
+    		}
+    		if(newCheckpoint) {
+    			currCheckpoint = cp;
+        		//Sound checkpointSound = Gdx.audio.newSound(Gdx.files.internal("checkpoint_hit.mp3"));
+        		//checkpointSound.play();
+        		//http://soundbible.com/1980-Swords-Collide.html
+    		}
+    	}
+    	
+//    	
+//    	
+//    	
+//        Array<Circle> allHurtboxes = player.getHurtboxCircles();
+//        for (Circle c: allHurtboxes) {
+//            for (Checkpoint cp: checkpoints) {
+//                if (Intersector.overlaps(c, cp) && currCheckpoint!=cp) {
+//                    currCheckpoint = cp;
+//            		//Sound checkpointSound = Gdx.audio.newSound(Gdx.files.internal("checkpoint_hit.mp3"));
+//            		//checkpointSound.play();
+//            		//http://soundbible.com/1980-Swords-Collide.html
+//                }
+//            }
+//        }
     }
+    
+//    private void checkWeaponHits(Array<Rectangle> rects) {
+//    	
+//    }
     
     public void checkSignHits() {
         for (Sign s: signs) {
@@ -197,7 +245,7 @@ public class Map {
     	
         player.updateState();
         checkTargetHits();
-        checkCpHits();
+        checkCheckpointHits();
         checkSignHits();
         checkDeathCollision();
     }

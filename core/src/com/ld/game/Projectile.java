@@ -8,7 +8,7 @@ public class Projectile {
 //	protected Array<Rectangle> hitboxes;
 //	
 //	public Array<Color> colors;
-	public Rectangle hitbox;
+	public HurtboxRectangle hitbox;
 	
 	protected double horizVelocity;
 	protected double vertVelocity;
@@ -18,7 +18,7 @@ public class Projectile {
 	public Projectile() {
 //		this.hitboxes = new Array<Rectangle>();
 //		this.colors = new Array<Color>();
-		this.hitbox = new Rectangle();
+		this.hitbox = new HurtboxRectangle(new Rectangle());
 		this.horizVelocity = 0;
 		this.vertVelocity = 0;
 		this.horizAccel = 0;

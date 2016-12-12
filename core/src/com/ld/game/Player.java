@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.utils.Array;
 
 enum PlayerState {
@@ -95,14 +96,16 @@ public class Player {
 	private Map map;
 	private TiledMapTileLayer collisionLayer;
 	// TODO: maybe change to Array to avoid excessive garbage collection? only applies for lots of hurtboxes
-	private ArrayList<Hurtbox> activeHurtboxes;
+	private Array<HurtboxCircle> activeHurtboxes;
+	private Array<HurtboxRectangle> activeHurtboxRects;
 	
 	public Player(Map map, TiledMapTileLayer collisionLayer) {
 	    isAlive = true;
 		position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
 		this.map = map;
 		this.collisionLayer = collisionLayer;
-		this.activeHurtboxes = new ArrayList<Hurtbox>();
+		this.activeHurtboxes = new Array<HurtboxCircle>();
+		this.activeHurtboxRects = new Array<HurtboxRectangle>();
 		this.playerFrame = PlayerFrame.STAND;
 		
 		weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
@@ -605,7 +608,7 @@ public class Player {
 		weaponSound.play();
 	}
 	
-	public List<Hurtbox> getActiveHurtboxes() {
+	public Array<HurtboxCircle> getActiveHurtboxes() {
 		return activeHurtboxes;
 	}
 	
@@ -628,7 +631,7 @@ public class Player {
 			for (float[] hurtboxData : currentAnimationFrames) {
 				if (Math.abs(hurtboxData[0] - stateFrameDuration) < 1e-6) {
 					float adjustedXPosition = PLAYER_WIDTH / 2 + hurtboxData[1] * (currentAnimationIsFlipped ? -1 : 1);
-					activeHurtboxes.add(new Hurtbox(adjustedXPosition,
+					activeHurtboxes.add(new HurtboxCircle(adjustedXPosition,
 													hurtboxData[2] + PLAYER_HEIGHT / 2,
 													hurtboxData[3],
 													(int)hurtboxData[4]));
@@ -666,10 +669,10 @@ public class Player {
 	}
 	
 	public void updateActiveHurtboxes() {
-		for (int i = 0; i < activeHurtboxes.size(); ++i) {
+		for (int i = 0; i < activeHurtboxes.size; ++i) {
 			--activeHurtboxes.get(i).duration;
 			if (activeHurtboxes.get(i).duration == 0) {
-				activeHurtboxes.remove(i);
+				activeHurtboxes.removeIndex(i);
 				--i;
 			}
 		}
@@ -677,16 +680,31 @@ public class Player {
 	
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
-		map.projectiles.add(new LaserPulse(this, !this.playerFacingLeft));
+		LaserPulse laser = new LaserPulse(this, !this.playerFacingLeft);
+		map.projectiles.add(laser);
+		this.activeHurtboxRects.add(laser.hitbox);
 		laserSound.play();
 	}
 	
 	public Array<Circle> getHurtboxCircles() {
 	    Array<Circle> allHurtboxes = new Array<Circle>();
         //convert hurtboxes to circles for Intersector
-        for (Hurtbox hb: getActiveHurtboxes()) {
+        for (HurtboxCircle hb: getActiveHurtboxes()) {
             allHurtboxes.add(new Circle(getX()+hb.x, getY()+hb.y, hb.radius));
         }
         return allHurtboxes;
 	}
+	
+	public Array<HurtboxRectangle> getHurtboxRects() {
+		return activeHurtboxRects;
+	}
+	
+//	public Array<Shape2D> getHurtboxes() {
+//		Array<Shape2D> hurtboxes = new Array<Shape2D>();
+//		for(HurtboxCircle hb: getActiveHurtboxes()) {
+//			hurtboxes.add(new Circle(getX()+hb.x, getY()+hb.y, hb.radius));
+//		}
+//		
+//		return hurtboxes;
+//	}
 }

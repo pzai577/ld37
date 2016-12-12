@@ -29,11 +29,11 @@ public class LaserPulse extends Projectile {
 		this.player = player;
 		
 		if(shootingRight){
-			this.hitbox = new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, laserLength, laserThickness);
+			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, laserLength, laserThickness));
 			this.horizVelocity = speed;
 		}
 		else{
-			this.hitbox = new Rectangle(player.position.x - laserLength, player.position.y + 20, laserLength, laserThickness);
+			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x - laserLength, player.position.y + 20, laserLength, laserThickness));
 			this.horizVelocity = -speed;
 		}
 		

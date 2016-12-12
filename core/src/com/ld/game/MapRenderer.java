@@ -28,6 +28,7 @@ public class MapRenderer {
     OrthogonalTiledMapRenderer tileMapRenderer;
     static final float GAME_WIDTH = 1280;
     static final float GAME_HEIGHT = 800;
+    static final float CAM_SCALE = 1.2f;
     static final float[] CAM_BORDERS = {600f, 600f, 300f, 300f}; // left, right, up, down
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
     static final float SIGN_TEXT_WIDTH = 180;
@@ -54,6 +55,7 @@ public class MapRenderer {
         this.batch = batch;
         this.r = new ShapeRenderer();
         this.cam = new OrthographicCamera(GAME_WIDTH, GAME_HEIGHT);
+        cam.zoom = CAM_SCALE;
         this.cam.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
         
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
@@ -189,7 +191,7 @@ public class MapRenderer {
     private void drawHitboxes() {
     	if (DEBUG_SHOW_HITBOXES) {    
 	        r.setColor(Color.RED);
-	        for (Hurtbox box : map.player.getActiveHurtboxes()) {
+	        for (HurtboxCircle box : map.player.getActiveHurtboxes()) {
 	            r.arc(map.player.getX() + box.x, map.player.getY() + box.y, box.radius, 0, 360);
 	        }
         }
