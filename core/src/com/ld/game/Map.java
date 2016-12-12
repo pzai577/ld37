@@ -35,6 +35,8 @@ public class Map {
     public Checkpoint currCheckpoint;
     public int leg; //starts at 0 before you activate the starting dialogue, 1 for sword trip, 2 for gun trip, etc.
     
+    Sounds sounds;
+    
     public Array<Dialogue> dialogues;
     
     public Map(String levelFile) {
@@ -46,6 +48,7 @@ public class Map {
         particles = new Array<Particle>();
         dialogues = Globals.makeDialogue();
         leg = 0;
+        sounds = new Sounds();
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
@@ -209,6 +212,7 @@ public class Map {
     		if(removeTarget){
     			removeTarget(t);
 				player.playerHasDoubleJump = true;
+				sounds.targetBreakSound.play();
     		}
     	}
 //    	
@@ -243,6 +247,7 @@ public class Map {
     		}
     		if(newCheckpoint) {
     			currCheckpoint = cp;
+    			sounds.checkpointSound.play();
         		//Sound checkpointSound = Gdx.audio.newSound(Gdx.files.internal("checkpoint_hit.mp3"));
         		//checkpointSound.play();
         		//http://soundbible.com/1980-Swords-Collide.html
@@ -280,6 +285,8 @@ public class Map {
                 //System.out.println("leg 0 finished!");
                 leg++;
                 startDialogue(0);
+                
+                player.setWeapon("sword");
             }
         }
         else if (leg==1) {
@@ -288,6 +295,8 @@ public class Map {
                 leg++;
                 startDialogue(1);
                 refreshTargets();
+                
+                player.setWeapon("laser");
             }
         }
         else if (leg==2) {

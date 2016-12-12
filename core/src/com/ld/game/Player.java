@@ -88,8 +88,9 @@ public class Player {
 	private int currentDuration;
 	private AnimationType currentAnimationType;
 	
+	private String weapon;
 	private Sound weaponSound;
-	private Sound laserSound;
+	private Sounds sounds;
 	
 	private PlayerFrame playerFrame;
 	
@@ -111,11 +112,7 @@ public class Player {
 		this.activeHurtboxes = new Array<HurtboxCircle>();
 		this.activeHurtboxRects = new Array<HurtboxRectangle>();
 		this.playerFrame = PlayerFrame.STAND;
-		
-		weaponSound = Gdx.audio.newSound(Gdx.files.internal("swoosh.mp3"));
-		//http://soundbible.com/706-Swoosh-3.html
-		laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
-		//http://soundbible.com/472-Laser-Blasts.html
+		this.sounds = map.sounds;
 	}
 	
 	public void updateState() {
@@ -138,10 +135,14 @@ public class Player {
 			updatePlayerWallRight();
 		}
 		
-		// shoot laser gun
-		if(Gdx.input.isKeyJustPressed(Keys.C)) {
-			shootLaser();
+		if(Gdx.input.isKeyJustPressed(Keys.X)) {
+			useWeapon();
 		}
+		
+//		// shoot laser gun
+//		if(Gdx.input.isKeyJustPressed(Keys.C)) {
+//			shootLaser();
+//		}
 		
 		// press r to refresh
 		if(Gdx.input.isKeyJustPressed(Keys.R)) {
@@ -191,6 +192,7 @@ public class Player {
 					playerFacingLeft = false;
 				}
 				playerHasDoubleJump = false;
+				sounds.dblJumpSound.play();
 				map.particles.add(new Particle(position.x, position.y,
 						new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
 				//playerRotating = true;
@@ -256,36 +258,7 @@ public class Player {
 			}
 		}
 		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
-			setState(PlayerState.AIR_ANIM);
-			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
-					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
-			if (isFrontKeyPressed) {
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
-			}
-			else if (Gdx.input.isKeyPressed(Keys.UP)) {
-				loadHurtboxData(AnimationType.AIR_UAIR);
-				playerFrame = PlayerFrame.TWIST;
-				playerSwordVisible = true;
-				playerRotation = 175;
-				playerFlipSword = true;
-				playerSwordRotation = -140;
-			}
-			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-				loadHurtboxData(AnimationType.AIR_DAIR);
-				playerFrame = PlayerFrame.CYCLONE;
-				playerSwordVisible = true;
-				playerSwordRotation = -75;
-				playerRotating = true;
-			}
-			else {
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
-			}
+			
 		}
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
@@ -352,13 +325,13 @@ public class Player {
 				playerVertVelocity = 0;
 			}
 			
-			if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
-				setState(PlayerState.GROUND_ANIM);
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
-			}
+			// if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
+			// 	setState(PlayerState.GROUND_ANIM);
+			// 	loadHurtboxData(AnimationType.AIR_FAIR);
+			// 	playerFrame = PlayerFrame.RUN_NOARMS;
+			// 	playerSwordVisible = true;
+			// 	playerSwordRotation = -90;
+			// }
 		}
 		else if (playerState == PlayerState.GROUND_PREJUMP) {
 			// TODO: this is copied from the if/else branch above, de-duplicate
@@ -395,6 +368,7 @@ public class Player {
 				playerHorizVelocity = 0;
 			}
 			if (stateFrameDuration == PLAYER_PREJUMP_FRAMES) {
+				sounds.jumpSound.play();
 				if (Gdx.input.isKeyPressed(Keys.Z)) {
 					playerVertVelocity = -PLAYER_JUMP_SPEED;
 				}
@@ -557,7 +531,7 @@ public class Player {
 		playerState = state;
 		stateFrameDuration = 0;
 	}
-	
+
 	public void die() {
 	    isAlive = false;
 	    // TODO: probably want to add sound effects or do other things here too
@@ -707,13 +681,74 @@ public class Player {
 		}
 	}
 	
+	public void setWeapon(String weapon) {
+		this.weapon = weapon;
+		if(weapon.equals("sword")) {
+			this.weaponSound = sounds.swordSound;
+		}
+		else if(weapon.equals("laser")) {
+			this.weaponSound = sounds.laserSound;
+		}
+	}
+	
+	private void useWeapon() {
+		if(weapon.equals("sword")) {
+			swingSword();
+		}
+		else if(weapon.equals("laser")) {
+			shootLaser();
+		}
+	}
+	
+	private void swingSword() {
+		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
+			setState(PlayerState.AIR_ANIM);
+			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
+					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
+			if (isFrontKeyPressed) {
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				loadHurtboxData(AnimationType.AIR_UAIR);
+				playerFrame = PlayerFrame.TWIST;
+				playerSwordVisible = true;
+				playerRotation = 175;
+				playerFlipSword = true;
+				playerSwordRotation = -140;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+				loadHurtboxData(AnimationType.AIR_DAIR);
+				playerFrame = PlayerFrame.CYCLONE;
+				playerSwordVisible = true;
+				playerSwordRotation = -75;
+				playerRotating = true;
+			}
+			else {
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
+			}
+		}
+		if (playerState == PlayerState.GROUND) {
+			setState(PlayerState.GROUND_ANIM);
+			loadHurtboxData(AnimationType.AIR_FAIR);
+			playerFrame = PlayerFrame.RUN_NOARMS;
+			playerSwordVisible = true;
+			playerSwordRotation = -90;
+		}
+	}
+
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
 		LaserPulse laser = new LaserPulse(this.map, this, !this.playerFacingLeft);
 		if (laser.hitbox.ownerProjectile == null) System.out.println("laser hitbox owner is null");
 		map.projectiles.add(laser);
 		this.activeHurtboxRects.add(laser.hitbox);
-		laserSound.play();
+		weaponSound.play();
 	}
 	
 	public void removeLaser(HurtboxRectangle rect) {
