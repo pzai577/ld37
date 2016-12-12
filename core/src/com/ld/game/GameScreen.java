@@ -21,7 +21,7 @@ public class GameScreen extends ScreenAdapter {
         
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
         music.setLooping(true);
-        //music.play();
+        music.play();
     }
     
     @Override
