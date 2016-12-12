@@ -57,6 +57,7 @@ public class Player {
 	private static final double PLAYER_WALL_SCALE_SPEED = 5.5;
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
+	private static final double AIR_FRICTION_SCALING = 0.98;
 	
 	public static final int PLAYER_WIDTH = 40;
 	public static final int PLAYER_HEIGHT = 56;
@@ -149,6 +150,9 @@ public class Player {
 				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
 				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
 	            playerFacingLeft = false;
+			}
+			else {
+			    playerHorizVelocity *= AIR_FRICTION_SCALING;
 			}
 		}
 		boolean wasInAirAnim = true;
