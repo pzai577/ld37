@@ -22,8 +22,8 @@ public class Globals {
     private static int[] dialogue0SpeakerList = {0,1,0,1,0,1,1,0,0,1,0,0};
     
     private static String[] dialogue1Text = {"Here's your brother's sword.",
-                                             "Wow, thank you so much! My brother borrowed that from me a year ago and never returned it.",
-                                             "Oh! That reminds me. I actually borrowed my brother's laser gun a year ago and haven't given it back. Silly me!",
+                                             "Wow, thank you so much! He borrowed that a year ago and never returned it.",
+                                             "Oh! That reminds me. I actually also borrowed my brother's laser gun a year ago and haven't given it back. Silly me!",
                                              "are you serious",
                                              "If you could deliver this back to him, I would be eternally grateful. And I'll pay you double.",
                                              "Hmph, fine, I'll do it. But I really don't appreciate running back and forth like I'm in a video game or something!",
