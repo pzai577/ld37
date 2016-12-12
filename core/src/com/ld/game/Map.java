@@ -7,10 +7,10 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -116,6 +116,16 @@ public class Map {
     	}
     }
     
+    public EnhancedCell getEnhancedCell(float x, float y) {
+		int xCoord = (int) (x/collisionLayer.getTileWidth());
+		int yCoord = (int) (y/collisionLayer.getTileHeight());
+		Cell cell = collisionLayer.getCell(xCoord, yCoord);
+		if(cell == null) {
+			return null;
+		}
+		return new EnhancedCell(cell, xCoord, yCoord);		
+	}
+    
     public void checkDeathCollision() {
         for (Rectangle deathRect: deathRects) {
             if (player.position.overlaps(deathRect)) {
@@ -213,10 +223,6 @@ public class Map {
 //        }
     }
     
-//    private void checkWeaponHits(Array<Rectangle> rects) {
-//    	
-//    }
-    
     public void checkSignHits() {
         for (Sign s: signs) {
             if (Intersector.overlaps(s, player.position))
@@ -234,6 +240,9 @@ public class Map {
     public void update() {
     	for(Projectile proj : projectiles){
     		proj.update();
+    		if(getEnhancedCell(proj.head.x, proj.head.y) != null) {
+    			proj.destroy();
+    		}
     	}
     	for (int i = 0; i < particles.size; ++i) {
     		particles.get(i).tick();

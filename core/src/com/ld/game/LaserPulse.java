@@ -3,6 +3,7 @@ package com.ld.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.ld.game.Player;
 
 public class LaserPulse extends Projectile {
@@ -30,10 +31,12 @@ public class LaserPulse extends Projectile {
 		
 		if(shootingRight){
 			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, laserLength, laserThickness));
+			this.head = new Vector2(hitbox.x + laserLength, hitbox.y);
 			this.horizVelocity = speed;
 		}
 		else{
 			this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x - laserLength, player.position.y + 20, laserLength, laserThickness));
+			this.head = new Vector2(hitbox.x, hitbox.y);
 			this.horizVelocity = -speed;
 		}
 		
@@ -77,6 +80,11 @@ public class LaserPulse extends Projectile {
 		r.arc(hitbox.x + laserLength, hitbox.y+hitbox.height/2, hitbox.height/2 + pulseSize, 270, 180);
 		r.setColor(laserColor);
 		renderRectHelper(r, hitbox);
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
 	}
 
 }

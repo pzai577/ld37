@@ -550,52 +550,42 @@ public class Player {
 	 */
 	public EnhancedCell getCollidingLeftCell() {
         for (float step = 1f; step < PLAYER_HEIGHT; step += collisionLayer.getTileHeight() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() - 1, getY() + step);
+        	EnhancedCell cell = map.getEnhancedCell(getX() - 1, getY() + step);
         	if (cell != null) {
         		return cell;
         	}
         }
-        return getEnhancedCell(getX() - 1, getY() + PLAYER_HEIGHT);
+        return map.getEnhancedCell(getX() - 1, getY() + PLAYER_HEIGHT);
 	}
 	
 	public EnhancedCell getCollidingRightCell() {
         for (float step = 1f; step < PLAYER_HEIGHT; step += collisionLayer.getTileHeight() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + PLAYER_WIDTH + 1, getY() + step);
+        	EnhancedCell cell = map.getEnhancedCell(getX() + PLAYER_WIDTH + 1, getY() + step);
         	if (cell != null) {
         		return cell;
         	}
         }
-        return getEnhancedCell(getX() + PLAYER_WIDTH + 1, getY() + PLAYER_HEIGHT);
+        return map.getEnhancedCell(getX() + PLAYER_WIDTH + 1, getY() + PLAYER_HEIGHT);
 	}
 	
 	public EnhancedCell getCollidingTopCell() {
         for (float step = 0.1f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() + PLAYER_HEIGHT);
+        	EnhancedCell cell = map.getEnhancedCell(getX() + step, getY() + PLAYER_HEIGHT);
         	if (cell != null) {
         		return cell;
         	}
         }
-		return getEnhancedCell(getX() + PLAYER_WIDTH, getY() + PLAYER_HEIGHT);
+		return map.getEnhancedCell(getX() + PLAYER_WIDTH, getY() + PLAYER_HEIGHT);
 	}
 	
 	public EnhancedCell getCollidingBottomCell() {
 		for (float step = 0.5f; step < PLAYER_WIDTH; step += collisionLayer.getTileWidth() / 2) {        
-        	EnhancedCell cell = getEnhancedCell(getX() + step, getY() - 1);
+        	EnhancedCell cell = map.getEnhancedCell(getX() + step, getY() - 1);
         	if (cell != null) {
         		return cell;
         	}
         }
-		return getEnhancedCell(getX() + PLAYER_WIDTH, getY() - 5);
-	}
-	
-	private EnhancedCell getEnhancedCell(float x, float y) {
-		int xCoord = (int) (x/collisionLayer.getTileWidth());
-		int yCoord = (int) (y/collisionLayer.getTileHeight());
-		Cell cell = collisionLayer.getCell(xCoord, yCoord);
-		if(cell == null) {
-			return null;
-		}
-		return new EnhancedCell(cell, xCoord, yCoord);		
+		return map.getEnhancedCell(getX() + PLAYER_WIDTH, getY() - 5);
 	}
 	
 	public float getX() {
