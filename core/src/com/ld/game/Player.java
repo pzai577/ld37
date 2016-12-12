@@ -68,7 +68,7 @@ public class Player {
 	public boolean inDialog;
 	public Rectangle position;
 	
-	private PlayerState playerState = PlayerState.AIR;
+	public PlayerState playerState = PlayerState.AIR; // also making this one public
 	public double playerHorizVelocity = 0.0; // making these two public so Map can access it
 	public double playerVertVelocity = 0.0;
 	private float playerRotation = 0.0f;

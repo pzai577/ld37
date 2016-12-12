@@ -36,7 +36,8 @@ public class MapRenderer {
     Texture targetImg;
     Texture playerImg;
     Texture particleImg;
-    Texture sageImg;
+    Texture startSageImg;
+    Texture endSageImg;
     Texture swordImg;
     Texture checkpointImg;
     Texture signImg;
@@ -66,7 +67,8 @@ public class MapRenderer {
 
         playerImg = new Texture(Gdx.files.internal("samurai.png"));
         particleImg = new Texture(Gdx.files.internal("particles.png"));
-        sageImg = new Texture(Gdx.files.internal("sage.png"));
+        startSageImg = new Texture(Gdx.files.internal("sage.png"));
+        endSageImg = new Texture(Gdx.files.internal("end_sage.png"));
         swordImg = new Texture(Gdx.files.internal("sword_arm.png"));
 
         playerSprites = new TextureRegion[4][4];
@@ -112,7 +114,7 @@ public class MapRenderer {
         }*/
                 
         drawPlayer();
-        batch.draw(sageImg, 2 * 32, 1 * 32 - 2, sageImg.getWidth(), sageImg.getHeight());
+        drawSages();
         
         batch.end();
         
@@ -178,6 +180,11 @@ public class MapRenderer {
         	batch.draw(swordTexture, map.player.getX() - 43 + (map.player.getFacingLeft() ? -5 : 0), map.player.getY() + 8, 67, 20,
         			swordImg.getWidth(), swordImg.getHeight(), xScale * (map.player.playerFlipSword ? -1 : 1), 1f, xScale * map.player.playerSwordRotation);
         }
+    }
+    
+    private void drawSages() {
+        batch.draw(startSageImg, map.sageStartPos.x, map.sageStartPos.y);
+        batch.draw(endSageImg, map.sageEndPos.x, map.sageEndPos.y);
     }
     
     private void drawSageDialog() {

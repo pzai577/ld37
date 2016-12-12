@@ -22,6 +22,10 @@ public class Map {
     
     public Player player;
     public Vector2 startPos;
+    public Vector2 sageStartPos;
+    public Vector2 sageEndPos;
+    public Rectangle startZone;
+    public Rectangle finishZone;
     public Array<Target> targets;
     public Array<Rectangle> deathRects;
     public Array<Projectile> projectiles;
@@ -29,6 +33,7 @@ public class Map {
     public Array<Sign> signs;
     public Array<Particle> particles;
     public Checkpoint currCheckpoint;
+    public int leg; //starts at 0 before you start the starting dialog, is 1 for the sword trip, 2 for the gun trip, etc.
     
     private Array<Dialog> dialogs;
     
@@ -39,6 +44,7 @@ public class Map {
         checkpoints = new Array<Checkpoint>();
         signs = new Array<Sign>();
         particles = new Array<Particle>();
+        leg = 0;
         
         tileMap = new TmxMapLoader().load(levelFile);
         collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
@@ -80,6 +86,18 @@ public class Map {
                 startPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
                 player.position.x = startPos.x;
                 player.position.y = startPos.y;
+            }
+            else if (name.equals("startZone")) {
+                startZone = new Rectangle(p.get("x",float.class),p.get("y",float.class),p.get("width",float.class),p.get("height",float.class));
+            }
+            else if (name.equals("finishZone")) {
+                finishZone = new Rectangle(p.get("x",float.class),p.get("y",float.class),p.get("width",float.class),p.get("height",float.class));
+            }
+            else if (name.equals("startSage")) {
+                sageStartPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
+            }
+            else if (name.equals("endSage")) {
+                sageEndPos = new Vector2(p.get("x", float.class),p.get("y", float.class));
             }
         }
     
@@ -151,6 +169,10 @@ public class Map {
         
         for (Target t: targets) {
             t.exists = true;
+        }
+        
+        for (Projectile p: projectiles) {
+            p.destroy();
         }
     }
     
@@ -241,6 +263,21 @@ public class Map {
         }
     }
     
+    public void checkLegFinished() {
+        if (leg==0) {
+            if (Intersector.overlaps(player.position, startZone) && player.playerState==PlayerState.GROUND) {
+                System.out.println("leg 0 finished!");
+                leg++;
+            }
+        }
+        else if (leg==1) {
+            if (Intersector.overlaps(player.position, finishZone) && player.playerState==PlayerState.GROUND) {
+                System.out.println("leg 1 finished!");
+                leg++;
+            }
+        }
+    }
+    
     public void removeProjectileGivenHurtbox(HurtboxRectangle r) {
         if (r.ownerProjectile!=null) {// hurtboxOwner should be the projectile that owns r
             // I'm just assuming it's a laser pulse
@@ -275,6 +312,7 @@ public class Map {
         checkCheckpointHits();
         checkSignHits();
         checkDeathCollision();
+        checkLegFinished();
     }
     
     public boolean isGameFinished(){
