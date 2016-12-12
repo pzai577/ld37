@@ -30,6 +30,8 @@ public class Map {
     public Array<Particle> particles;
     public Checkpoint currCheckpoint;
     
+    private Array<Dialog> dialogs;
+    
     public Map(String levelFile) {
         targets = new Array<Target>();
         deathRects = new Array<Rectangle>();
@@ -150,6 +152,10 @@ public class Map {
         for (Target t: targets) {
             t.exists = true;
         }
+    }
+    
+    public boolean advanceDialog() {
+    	return true;
     }
 
     public void checkTargetHits() {
