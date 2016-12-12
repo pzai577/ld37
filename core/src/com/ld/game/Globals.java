@@ -1,5 +1,7 @@
 package com.ld.game;
 
+import com.badlogic.gdx.utils.Array;
+
 public class Globals {
     public static String SAGE_TEXT = "Thanks for agreeing to deliver this sword to my brother.\n"
             + "It should be pretty easy, since he just lives at the other end of this room. \n"
@@ -39,13 +41,11 @@ public class Globals {
                                              "You beat the game!! Congratulations!!!"};
     private static int[] dialogue2SpeakerList = {0,1,1,1,0};
 
-    public static Dialogue makeDialogue(int i) {
-        if (i==0)
-            return new Dialogue(dialogue0Text, dialogue0SpeakerList, "startSage", "player");
-        else if (i==1)
-            return new Dialogue(dialogue1Text, dialogue1SpeakerList, "endSage", "player");
-        else if (i==2)
-            return new Dialogue(dialogue2Text, dialogue2SpeakerList, "startSage", "player");
-        return null;
+    public static Array<Dialogue> makeDialogue() {
+        Array<Dialogue> dialogues = new Array<Dialogue>();
+        dialogues.add(new Dialogue(dialogue0Text, dialogue0SpeakerList, "startSage", "player"));
+        dialogues.add(new Dialogue(dialogue1Text, dialogue1SpeakerList, "endSage", "player"));
+        dialogues.add(new Dialogue(dialogue2Text, dialogue2SpeakerList, "startSage", "player"));
+        return dialogues;
     }
 }

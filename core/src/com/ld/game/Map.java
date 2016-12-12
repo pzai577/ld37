@@ -44,7 +44,7 @@ public class Map {
         checkpoints = new Array<Checkpoint>();
         signs = new Array<Sign>();
         particles = new Array<Particle>();
-        dialogues = new Array<Dialogue>();
+        dialogues = Globals.makeDialogue();
         leg = 0;
         
         tileMap = new TmxMapLoader().load(levelFile);
@@ -108,9 +108,6 @@ public class Map {
             Sign sign = new Sign(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class), p.get("height", float.class), signText);
             signs.add(sign);
         }
-        
-        dialogues.add(Globals.makeDialogue(0));
-        dialogues.add(Globals.makeDialogue(1));
     }
     
     private MapObjects getLayerObjects(String name) {
