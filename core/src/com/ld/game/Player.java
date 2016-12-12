@@ -152,7 +152,12 @@ public class Player {
 	}
 	
 	private void updateInDialog() {
-		
+		if(Gdx.input.isKeyJustPressed(Keys.Z)) {
+			if(!map.advanceDialog()){
+				// dialog failed to advance, dialog is finished
+				inDialog = false;
+			}
+		}
 	}
 	
 	private void updatePlayerAir(){
