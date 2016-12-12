@@ -446,6 +446,7 @@ public class Player {
 		
 		EnhancedCell leftCell = getCollidingLeftCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
+		EnhancedCell topCell = getCollidingTopCell();
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
@@ -455,6 +456,12 @@ public class Player {
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
+		}
+		else if (topCell != null) {
+			if (playerVertVelocity < 0) {
+				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
+				playerVertVelocity = 0;
+			}
 		}
 		else if (leftCell==null) {
 			// TODO: make the player snap to ground?
@@ -495,6 +502,7 @@ public class Player {
 		
 		EnhancedCell rightCell = getCollidingRightCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
+		EnhancedCell topCell = getCollidingTopCell();
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
@@ -504,6 +512,12 @@ public class Player {
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
+		}
+		else if (topCell != null) {
+			if (playerVertVelocity < 0) {
+				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
+				playerVertVelocity = 0;
+			}
 		}
 		else if (rightCell==null) {
 			setState(PlayerState.AIR);
