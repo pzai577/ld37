@@ -223,6 +223,7 @@ public class Player {
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
+			sounds.landingSound.play();
 		}
 		//update x position of player
 		position.x += playerHorizVelocity;
@@ -456,6 +457,7 @@ public class Player {
 			playerFacingLeft = false;
 			playerFastFalling = false;
 			playerHasDoubleJump = true;
+			sounds.jumpSound.play();
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
 			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
@@ -512,6 +514,7 @@ public class Player {
 			playerFrame = PlayerFrame.STAND;
 			playerFastFalling = false;
 			playerHasDoubleJump = true;
+			sounds.jumpSound.play();
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
 			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity

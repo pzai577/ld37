@@ -193,6 +193,7 @@ public class Map {
         }
         assert activeDialogue!=null;
     	activeDialogue.advance();
+    	sounds.dialogueSound.play();
     	return activeDialogue.active;
     }
 
