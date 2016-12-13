@@ -354,11 +354,9 @@ public class Map {
     }
     
     public boolean isGameFinished(){
-    	if(targets.size == 0){
-    		return false;
-    	}
-    	else{
-    		return false;
-    	}
+    	if (leg==3 && dialogues.get(2).currentSentence==5)
+    	    return true;
+    	else
+    	    return false;
     }
 }

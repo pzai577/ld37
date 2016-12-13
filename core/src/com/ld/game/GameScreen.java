@@ -10,6 +10,7 @@ public class GameScreen extends ScreenAdapter {
     Map map;
     MapRenderer renderer;
     Music music;
+    float player_time;
     
     public GameScreen(LDGame game) {
         this.game = game;
@@ -22,6 +23,7 @@ public class GameScreen extends ScreenAdapter {
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
         music.setLooping(true);
         //music.play();
+        player_time = 0;
     }
     
     @Override
@@ -33,6 +35,7 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.render();
         
+        player_time += delta;
         checkGameCompletion();
     }
     
@@ -42,7 +45,7 @@ public class GameScreen extends ScreenAdapter {
     
     private void checkGameCompletion() {
     	if(map.isGameFinished()){
-    		refreshGame();
+    		game.setScreen(new CreditsScreen(game, player_time));
     	}
     }
 }
