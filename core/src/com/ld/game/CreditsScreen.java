@@ -10,12 +10,14 @@ public class CreditsScreen extends ScreenAdapter {
     LDGame game;
     BitmapFont creditsFont;
     float time;
-    static final float TEXT_WIDTH = 300;
+    int deaths;
+    static final float TEXT_WIDTH = 500;
     static final float TEXT_VERT = 400;
     
-    public CreditsScreen(LDGame game, float time) {
+    public CreditsScreen(LDGame game, float time, int deaths) {
         this.game = game;
         this.time = time;
+        this.deaths = deaths;
         creditsFont = new BitmapFont();
     }
     
@@ -25,7 +27,7 @@ public class CreditsScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         game.batch.begin();
-        creditsFont.draw(game.batch, "Thanks for playing United Parcel Samurai! \n Your time was "+time, 640-TEXT_WIDTH/2, TEXT_VERT, TEXT_WIDTH, Align.center, true);
+        creditsFont.draw(game.batch, "Thanks for playing United Parcel Samurai! \n Your time was "+time+" seconds and you had "+deaths+" deaths!", 640-TEXT_WIDTH/2, TEXT_VERT, TEXT_WIDTH, Align.center, true);
         game.batch.end();
     }
 }

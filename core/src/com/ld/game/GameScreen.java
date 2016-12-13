@@ -47,7 +47,7 @@ public class GameScreen extends ScreenAdapter {
     
     private void checkGameCompletion() {
     	if(map.isGameFinished()){
-    		game.setScreen(new CreditsScreen(game, player_time));
+    		game.setScreen(new CreditsScreen(game, player_time, map.playerDeaths));
     	}
     }
 }

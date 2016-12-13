@@ -34,7 +34,7 @@ public class Map {
     public Array<Particle> particles;
     public Checkpoint currCheckpoint;
     public int leg; //starts at 0 before you activate the starting dialogue, 1 for sword trip, 2 for gun trip, etc.
-    
+    public int playerDeaths;
     Sounds sounds;
     
     public Array<Dialogue> dialogues;
@@ -48,6 +48,7 @@ public class Map {
         particles = new Array<Particle>();
         dialogues = Globals.makeDialogue();
         leg = 0;
+        playerDeaths = 0;
         sounds = new Sounds();
         
         tileMap = new TmxMapLoader().load(levelFile);
@@ -159,6 +160,7 @@ public class Map {
     }
     
     public void killPlayer() {
+        playerDeaths++;
         player.playerHorizVelocity = 0;
         player.playerVertVelocity = 0;
         
