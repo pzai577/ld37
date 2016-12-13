@@ -1,17 +1,11 @@
 package com.ld.game;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.utils.Array;
 
 enum PlayerState {
@@ -75,8 +69,8 @@ public class Player {
 	
 	private boolean playerFacingLeft = true;
 	public boolean playerHasDoubleJump = false;
-	private boolean playerRotating = false;
-	private boolean playerRotatingLeft = false;
+	//private boolean playerRotating = false;
+	//private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
 	
 	public boolean playerSwordVisible = false;
@@ -195,7 +189,7 @@ public class Player {
 						new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
 				//playerRotating = true;
 				playerFastFalling = false;
-				playerRotatingLeft = (playerHorizVelocity <= 0);
+				//playerRotatingLeft = (playerHorizVelocity <= 0);
 				playerVertVelocity = -8;
 			}
 			wasInAirAnim = false;
@@ -239,7 +233,7 @@ public class Player {
 			if (playerState != PlayerState.GROUND) {
 				playerState = PlayerState.WALL_LEFT;
 				playerRotation = 0;
-				playerRotating = false;
+				//playerRotating = false;
 				playerSwordVisible = false;
 				playerFlipSword = false;
 			}
@@ -250,7 +244,7 @@ public class Player {
 			if (playerState != PlayerState.GROUND) {
 				playerState = PlayerState.WALL_RIGHT;
 				playerRotation = 0;
-				playerRotating = false;
+				//playerRotating = false;
 				playerSwordVisible = false;
 				playerFlipSword = false;
 			}
@@ -278,7 +272,7 @@ public class Player {
 				playerFrame = PlayerFrame.CYCLONE;
 				playerSwordVisible = true;
 				playerSwordRotation = -75;
-				playerRotating = true;
+				//playerRotating = true;
 			}
 			else {
 				loadHurtboxData(AnimationType.AIR_FAIR);
@@ -480,7 +474,7 @@ public class Player {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
 			playerState = PlayerState.GROUND;
 			playerRotation = 0;
-			playerRotating = false;
+			//playerRotating = false;
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
@@ -536,7 +530,7 @@ public class Player {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
 			playerState = PlayerState.GROUND;
 			playerRotation = 0;
-			playerRotating = false;
+			//playerRotating = false;
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;

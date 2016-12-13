@@ -120,7 +120,7 @@ public class Map {
     	}
     }
     
-    private void handleRectangleLayer(String name, Class<?> c, Array<? extends Rectangle> array) {
+    /*private void handleRectangleLayer(String name, Class<?> c, Array<? extends Rectangle> array) {
     	MapObjects objects = getLayerObjects(name);
     	for(MapObject object: objects) {
     		MapProperties p = object.getProperties();
@@ -135,7 +135,7 @@ public class Map {
 			}
 //    		array.add(c.cast(rect));
     	}
-    }
+    }*/
     
     public EnhancedCell getEnhancedCell(float x, float y) {
 		int xCoord = (int) (x/collisionLayer.getTileWidth());

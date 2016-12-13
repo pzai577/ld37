@@ -2,6 +2,7 @@ package com.ld.game;
 
 import com.badlogic.gdx.math.Rectangle;
 
+@SuppressWarnings("serial")
 public class Checkpoint extends Rectangle {
     private static final float DEFAULT_CP_WIDTH = 32;
     private static final float DEFAULT_CP_HEIGHT = 32;
