@@ -257,9 +257,9 @@ public class Player {
 				playerFlipSword = false;
 			}
 		}
-		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
-			
-		}
+//		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
+//			
+//		}
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
 		}

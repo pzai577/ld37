@@ -16,7 +16,9 @@ public class GameScreen extends ScreenAdapter {
         
 //        map = new Map("test_level.tmx");
 //        map = new Map("wide_level.tmx");
-        map = new Map(Gdx.files.internal("actual_game_maybe.tmx").file().getAbsolutePath());
+//        map = new Map(Gdx.files.internal("actual_game_maybe.tmx").file().getAbsolutePath());
+//        map = new Map(Gdx.files.internal("wide_level.tmx").file().getAbsolutePath());
+        map = new Map("actual_game_maybe.tmx");
         renderer = new MapRenderer(map, game.batch);
         
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
