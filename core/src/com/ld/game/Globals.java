@@ -27,9 +27,9 @@ public class Globals {
                                              "are you serious",
                                              "If you could deliver this back to him, I would be eternally grateful. And I'll pay you double.",
                                              "Hmph, fine, I'll do it. But I really don't appreciate running back and forth like I'm in a video game or something!",
-                                             "Anyways, here's some advice: laser beams travel forever until they hit a wall, a checkpoint, or a black orb.",
+                                             "Oh, and here's some advice: laser beams travel forever until they hit a wall, a checkpoint, or a black orb.",
                                              "As usual, you get your double jump restored whenever a black orb is destroyed.",
-                                             "Wait a minute! There's no way I can go back over that bridge area! I refuse to-",
+                                             "Sounds goo-Wait a minute! There's no way I can go back over that bridge area! I refuse to-",
                                              "Have fun!"};
             
     private static int[] dialogue1SpeakerList = {1,0,0,1,0,1,0,0,1,0};

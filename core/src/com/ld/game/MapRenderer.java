@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -102,13 +104,17 @@ public class MapRenderer {
         borderColor = new Color(Color.BROWN);
         borderColor.a = 0.5f;
         
-        dialogBatch = new SpriteBatch();
-        sageFont = new BitmapFont();
-        sageFontRotation = new Matrix4();
-        sageFontRotation.setToRotation(new Vector3(0, 0, 1), 10);
-        dialogBatch.setTransformMatrix(sageFontRotation);
-        signFont = new BitmapFont();
-        dialogueFont = new BitmapFont();
+        //dialogBatch = new SpriteBatch();
+        //sageFont = new BitmapFont();
+        //sageFontRotation = new Matrix4();
+        //sageFontRotation.setToRotation(new Vector3(0, 0, 1), 10);
+        //dialogBatch.setTransformMatrix(sageFontRotation);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("PixelFJVerdana12pt.ttf"));
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = 8;
+        signFont = generator.generateFont(parameter);
+        dialogueFont = generator.generateFont(parameter);
+        generator.dispose();
     }
     
     public void render() {
