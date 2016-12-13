@@ -74,7 +74,8 @@ public class MapRenderer {
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
         targetImg = new Texture(Gdx.files.internal("target.png"));
-        checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
+//        checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
+        checkpointImg = new Texture(Gdx.files.internal("purplePlat.png"));
         signImg = new Texture(Gdx.files.internal("sign.png"));
 
         playerImg = new Texture(Gdx.files.internal("samurai.png"));
