@@ -7,5 +7,13 @@
 	<inherits name='LDGame' />
 	<entry-point class='com.ld.game.client.HtmlLauncher' />
 	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
-	<set-configuration-property name="gdx.assetpath" value="../android/assets" />
+	<set-configuration-property name="gdx.assetpath" value="../core/assets" />
+
+	<add-linker name="xsiframe"/>
+
+	<set-configuration-property name="devModeRedirectEnabled" value="true"/>
+
+	<!-- enable source maps -->
+
+	<set-property name="compiler.useSourceMaps" value="true" />
 </module>

@@ -1,17 +1,11 @@
 package com.ld.game;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.utils.Array;
 
 enum PlayerState {
@@ -75,8 +69,8 @@ public class Player {
 	
 	private boolean playerFacingLeft = true;
 	public boolean playerHasDoubleJump = false;
-	private boolean playerRotating = false;
-	private boolean playerRotatingLeft = false;
+	//private boolean playerRotating = false;
+	//private boolean playerRotatingLeft = false;
 	private boolean playerFastFalling = false;
 	
 	public boolean playerSwordVisible = false;
@@ -197,7 +191,7 @@ public class Player {
 						new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
 				//playerRotating = true;
 				playerFastFalling = false;
-				playerRotatingLeft = (playerHorizVelocity <= 0);
+				//playerRotatingLeft = (playerHorizVelocity <= 0);
 				playerVertVelocity = -8;
 			}
 			wasInAirAnim = false;
@@ -229,6 +223,7 @@ public class Player {
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
+			sounds.landingSound.play();
 		}
 		//update x position of player
 		position.x += playerHorizVelocity;
@@ -241,7 +236,7 @@ public class Player {
 			if (playerState != PlayerState.GROUND) {
 				playerState = PlayerState.WALL_LEFT;
 				playerRotation = 0;
-				playerRotating = false;
+				//playerRotating = false;
 				playerSwordVisible = false;
 				playerFlipSword = false;
 			}
@@ -252,7 +247,7 @@ public class Player {
 			if (playerState != PlayerState.GROUND) {
 				playerState = PlayerState.WALL_RIGHT;
 				playerRotation = 0;
-				playerRotating = false;
+				//playerRotating = false;
 				playerSwordVisible = false;
 				playerFlipSword = false;
 			}
@@ -260,6 +255,39 @@ public class Player {
 //		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 //			
 //		}
+		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
+			setState(PlayerState.AIR_ANIM);
+			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
+					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
+			if (isFrontKeyPressed) {
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+				loadHurtboxData(AnimationType.AIR_UAIR);
+				playerFrame = PlayerFrame.TWIST;
+				playerSwordVisible = true;
+				playerRotation = 175;
+				playerFlipSword = true;
+				playerSwordRotation = -140;
+			}
+			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+				loadHurtboxData(AnimationType.AIR_DAIR);
+				playerFrame = PlayerFrame.CYCLONE;
+				playerSwordVisible = true;
+				playerSwordRotation = -75;
+				//playerRotating = true;
+			}
+			else {
+				loadHurtboxData(AnimationType.AIR_FAIR);
+				playerFrame = PlayerFrame.RUN_NOARMS;
+				playerSwordVisible = true;
+				playerSwordRotation = -90;
+			}
+		}
+>>>>>>> 44728839dcb57fa2b713ae35a0136a42169c37c6
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
 		}
@@ -433,6 +461,7 @@ public class Player {
 			playerFacingLeft = false;
 			playerFastFalling = false;
 			playerHasDoubleJump = true;
+			sounds.jumpSound.play();
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
 			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
@@ -454,7 +483,7 @@ public class Player {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
 			playerState = PlayerState.GROUND;
 			playerRotation = 0;
-			playerRotating = false;
+			//playerRotating = false;
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
@@ -489,6 +518,7 @@ public class Player {
 			playerFrame = PlayerFrame.STAND;
 			playerFastFalling = false;
 			playerHasDoubleJump = true;
+			sounds.jumpSound.play();
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
 			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
@@ -510,7 +540,7 @@ public class Player {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
 			playerState = PlayerState.GROUND;
 			playerRotation = 0;
-			playerRotating = false;
+			//playerRotating = false;
 			playerHasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
@@ -724,7 +754,7 @@ public class Player {
 				playerFrame = PlayerFrame.CYCLONE;
 				playerSwordVisible = true;
 				playerSwordRotation = -75;
-				playerRotating = true;
+				//playerRotating = true;
 			}
 			else {
 				loadHurtboxData(AnimationType.AIR_FAIR);

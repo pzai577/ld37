@@ -1,10 +1,7 @@
 package com.ld.game;
 
-import java.awt.Point;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Particle {
 	// This class is for displaying animated particles whose source sprites come entirely

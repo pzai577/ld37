@@ -2,6 +2,7 @@ package com.ld.game;
 
 import com.badlogic.gdx.math.Rectangle;
 
+@SuppressWarnings("serial")
 public class Sign extends Rectangle {
     public String displayText;
     public boolean active;

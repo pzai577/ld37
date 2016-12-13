@@ -1,7 +1,5 @@
 package com.ld.game;
 
-import com.badlogic.gdx.math.Rectangle;
-
 public class Dialogue {
 	
 	public String[] text;
