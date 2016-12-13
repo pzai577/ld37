@@ -254,40 +254,39 @@ public class Player {
 		}
 //		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
 //			
+////		}
+//		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
+//			setState(PlayerState.AIR_ANIM);
+//			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
+//					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
+//			if (isFrontKeyPressed) {
+//				loadHurtboxData(AnimationType.AIR_FAIR);
+//				playerFrame = PlayerFrame.RUN_NOARMS;
+//				playerSwordVisible = true;
+//				playerSwordRotation = -90;
+//			}
+//			else if (Gdx.input.isKeyPressed(Keys.UP)) {
+//				loadHurtboxData(AnimationType.AIR_UAIR);
+//				playerFrame = PlayerFrame.TWIST;
+//				playerSwordVisible = true;
+//				playerRotation = 175;
+//				playerFlipSword = true;
+//				playerSwordRotation = -140;
+//			}
+//			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+//				loadHurtboxData(AnimationType.AIR_DAIR);
+//				playerFrame = PlayerFrame.CYCLONE;
+//				playerSwordVisible = true;
+//				playerSwordRotation = -75;
+//				//playerRotating = true;
+//			}
+//			else {
+//				loadHurtboxData(AnimationType.AIR_FAIR);
+//				playerFrame = PlayerFrame.RUN_NOARMS;
+//				playerSwordVisible = true;
+//				playerSwordRotation = -90;
+//			}
 //		}
-		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
-			setState(PlayerState.AIR_ANIM);
-			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
-					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
-			if (isFrontKeyPressed) {
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
-			}
-			else if (Gdx.input.isKeyPressed(Keys.UP)) {
-				loadHurtboxData(AnimationType.AIR_UAIR);
-				playerFrame = PlayerFrame.TWIST;
-				playerSwordVisible = true;
-				playerRotation = 175;
-				playerFlipSword = true;
-				playerSwordRotation = -140;
-			}
-			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-				loadHurtboxData(AnimationType.AIR_DAIR);
-				playerFrame = PlayerFrame.CYCLONE;
-				playerSwordVisible = true;
-				playerSwordRotation = -75;
-				//playerRotating = true;
-			}
-			else {
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
-			}
-		}
->>>>>>> 44728839dcb57fa2b713ae35a0136a42169c37c6
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
 		}
