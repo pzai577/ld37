@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Sound;
 
 public class Sounds {
 
-	Sound swordSound, laserSound, jumpSound, dblJumpSound, targetBreakSound, checkpointSound, runSound, climbSound;
+	Sound swordSound, laserSound, jumpSound, dblJumpSound, targetBreakSound, checkpointSound, runSound, climbSound, deathSound;
 	
 	public Sounds() {
 		
@@ -26,6 +26,8 @@ public class Sounds {
 		
 		dblJumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.mp3"));
 		//http://soundbible.com/1343-Jump.html
+		
+		deathSound = Gdx.audio.newSound(Gdx.files.internal("tada.mp3"));
 	}
 
 }

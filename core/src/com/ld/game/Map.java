@@ -171,6 +171,8 @@ public class Map {
             player.position.y = currCheckpoint.y;
         }
         
+        sounds.deathSound.play();
+        
         refreshTargets();
         
         for (Projectile p: projectiles) {

@@ -532,10 +532,10 @@ public class Player {
 		stateFrameDuration = 0;
 	}
 
-	public void die() {
-	    isAlive = false;
-	    // TODO: probably want to add sound effects or do other things here too
-	}
+//	public void die() {
+//	    isAlive = false;
+//	    sounds.deathSound.play();
+//	}
 	
 	/*
 	 * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c

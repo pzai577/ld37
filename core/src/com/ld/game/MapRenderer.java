@@ -1,7 +1,6 @@
 package com.ld.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -36,7 +35,8 @@ public class MapRenderer {
     static final float SIGN_TEXT_VERTICAL_DISTANCE = 150;
     static final float DIALOGUE_BOX_WIDTH = 180;
     static final float DIALOGUE_BOX_HEIGHT = 180;
-    static final float DIALOGUE_BOX_VERTICAL_SPACING = 150;
+    static final float DIALOGUE_BORDER = 5;
+    static final float DIALOGUE_BOX_VERTICAL_SPACING = 50;
     static final float DIALOGUE_TEXT_HORIZ_MARGIN = 10;
     static final float DIALOGUE_TEXT_VERT_MARGIN = 10;
     Texture targetImg;
@@ -51,7 +51,9 @@ public class MapRenderer {
     TextureRegion playerSprites[][];
     TextureRegion particleSprites[][];
     
-    Sound weaponSound;
+    Color textboxColor, borderColor;
+    
+//    Sound weaponSound;
   
     BitmapFont sageFont;
     Matrix4 sageFontRotation;
@@ -94,6 +96,11 @@ public class MapRenderer {
                 		56, 56);
         	}
         }
+        
+        textboxColor = new Color(Color.TAN);
+        textboxColor.a = 0.5f;
+        borderColor = new Color(Color.BROWN);
+        borderColor.a = 0.5f;
         
         dialogBatch = new SpriteBatch();
         sageFont = new BitmapFont();
@@ -210,13 +217,15 @@ public class MapRenderer {
                 else activeRect = speaker1Rect;
                 float dialogueBoxX = activeRect.x+(activeRect.width-SIGN_TEXT_WIDTH)/2;
                 float dialogueBoxY = activeRect.y+activeRect.height+DIALOGUE_BOX_VERTICAL_SPACING;
-                // draw dialogue box background  
+                // draw dialogue box background
+                Gdx.gl.glEnable(GL20.GL_BLEND);
                 dialogueBoxRenderer.begin(ShapeType.Filled);
-                dialogueBoxRenderer.setColor(Color.WHITE);
-                dialogueBoxRenderer.rect(dialogueBoxX-1, dialogueBoxY-1, DIALOGUE_BOX_WIDTH+2, DIALOGUE_BOX_HEIGHT+2);
-                dialogueBoxRenderer.setColor(Color.BLACK);
+                dialogueBoxRenderer.setColor(borderColor);
+                dialogueBoxRenderer.rect(dialogueBoxX-DIALOGUE_BORDER, dialogueBoxY-DIALOGUE_BORDER, DIALOGUE_BOX_WIDTH+2*DIALOGUE_BORDER, DIALOGUE_BOX_HEIGHT+2*DIALOGUE_BORDER);
+                dialogueBoxRenderer.setColor(textboxColor);
                 dialogueBoxRenderer.rect(dialogueBoxX, dialogueBoxY, DIALOGUE_BOX_WIDTH, DIALOGUE_BOX_HEIGHT);
                 dialogueBoxRenderer.end();
+                Gdx.gl.glDisable(GL20.GL_BLEND);
                 // draw dialogue text
                 batch.begin();
                 dialogueFont.draw(batch, d.text[d.currentSentence], 
