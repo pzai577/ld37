@@ -45,6 +45,7 @@ public class Player {
 	private static final double PLAYER_FASTFALL_SPEED = 9.3;
 	
 	private static final double PLAYER_JUMP_SPEED = 9.5;
+	private static final double PLAYER_DOUBLE_JUMP_SPEED = 8;
 	private static final double PLAYER_SHORTHOP_SPEED = 6.5;
 	private static final double PLAYER_PREJUMP_FRAMES = 5;
 
@@ -52,7 +53,7 @@ public class Player {
 	private static final double PLAYER_WALL_SCALE_SPEED = 5.5;
 	private static final double WALL_FRICTION = 0.08;
 	private static final double FLOOR_FRICTION = 0.12;
-	private static final double AIR_FRICTION_SCALING = 0.98;
+	private static final double AIR_FRICTION_SCALING = 0.99f;
 	
 	public static final int PLAYER_WIDTH = 32;
 	public static final int PLAYER_HEIGHT = 56;
@@ -62,16 +63,17 @@ public class Player {
 	public boolean inDialog;
 	public Rectangle position;
 	
-	public PlayerState playerState = PlayerState.AIR; // also making this one public
-	public double playerHorizVelocity = 0.0; // making these two public so Map can access it
-	public double playerVertVelocity = 0.0;
-	private float playerRotation = 0.0f;
+	public PlayerState state = PlayerState.AIR; // also making this one public
+	public double horizVelocity = 0.0; // making these two public so Map can access it
+	public double vertVelocity = 0.0;
+	private float rotation = 0.0f;
 	
-	private boolean playerFacingLeft = true;
-	public boolean playerHasDoubleJump = false;
+	private boolean facingLeft = true;
+	private float inFloat = -1f; // direction, as a float: 1 if being told to move right, -1 if left, 0 if no left-right input
+	public boolean hasDoubleJump = false;
 	//private boolean playerRotating = false;
 	//private boolean playerRotatingLeft = false;
-	private boolean playerFastFalling = false;
+	private boolean fastFalling = false;
 	
 	public boolean playerSwordVisible = false;
 	public boolean playerFlipSword = false;
@@ -110,22 +112,29 @@ public class Player {
 	}
 	
 	public void updateState() {
+		
 		if(inDialog) {
 			updateInDialog();
 			return;
 		}
 		if (paused) return;
-		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
+		
+		
+		
+		
+		
+		
+		if (state == PlayerState.AIR || state == PlayerState.AIR_ANIM) {
 			updatePlayerAir();
 		}
-		else if (playerState == PlayerState.GROUND || playerState == PlayerState.GROUND_ANIM
-				|| playerState == PlayerState.GROUND_PREJUMP) {
+		else if (state == PlayerState.GROUND || state == PlayerState.GROUND_ANIM
+				|| state == PlayerState.GROUND_PREJUMP) {
 			updatePlayerGround();
 		}
-		else if (playerState == PlayerState.WALL_LEFT) {
+		else if (state == PlayerState.WALL_LEFT) {
 			updatePlayerWallLeft();
 		}
-		else if (playerState == PlayerState.WALL_RIGHT) {
+		else if (state == PlayerState.WALL_RIGHT) {
 			updatePlayerWallRight();
 		}
 		
@@ -156,53 +165,52 @@ public class Player {
 	}
 	
 	private void updatePlayerAir(){
-		if (Gdx.input.isKeyJustPressed(Keys.DOWN) && playerVertVelocity > 0) {
-			playerFastFalling = true;
+		if (Gdx.input.isKeyJustPressed(Keys.DOWN) && vertVelocity > 0) {
+			fastFalling = true;
 		}
-		if (playerState == PlayerState.AIR) {
+		if (state == PlayerState.AIR) {
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				playerHorizVelocity -= PLAYER_AIR_INFLUENCE;
-				playerHorizVelocity = Math.max(playerHorizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
-	            playerFacingLeft = true;
+				this.faceLeft();
+//				horizVelocity -= PLAYER_AIR_INFLUENCE;
+//				horizVelocity = Math.max(horizVelocity, -PLAYER_AIR_MAX_MOVESPEED);
+//				facingLeft = true;
+//				System.out.println("here");
 			}
-			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				playerHorizVelocity += PLAYER_AIR_INFLUENCE;
-				playerHorizVelocity = Math.min(playerHorizVelocity, PLAYER_AIR_MAX_MOVESPEED);
-	            playerFacingLeft = false;
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				this.faceRight();
+//				horizVelocity += PLAYER_AIR_INFLUENCE;
+//				horizVelocity = Math.min(horizVelocity, PLAYER_AIR_MAX_MOVESPEED);
+//	            facingLeft = false;
 			}
 			else {
-			    playerHorizVelocity *= AIR_FRICTION_SCALING;
+				inFloat = 0f;
 			}
+			horizVelocity += inFloat * PLAYER_AIR_INFLUENCE;
+			if(inFloat * horizVelocity > PLAYER_AIR_MAX_MOVESPEED) {
+				horizVelocity = inFloat * PLAYER_AIR_MAX_MOVESPEED;
+			}
+//			horizVelocity = inFloat * Math.min(inFloat*horizVelocity, PLAYER_AIR_MAX_MOVESPEED);
+			horizVelocity *= AIR_FRICTION_SCALING;
+//			
+//			else {
+//			    horizVelocity *= AIR_FRICTION_SCALING;
+//			}
+//			System.out.println(horizVelocity);
 		}
 		boolean wasInAirAnim = true;
-		if (playerState == PlayerState.AIR) {
-			if (Gdx.input.isKeyJustPressed(Keys.Z) && playerHasDoubleJump) {
-				if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-					playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
-					playerFacingLeft = true;
-				}
-				else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-					playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
-					playerFacingLeft = false;
-				}
-				playerHasDoubleJump = false;
-				sounds.dblJumpSound.play();
-				map.particles.add(new Particle(position.x, position.y,
-						new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
-				//playerRotating = true;
-				playerFastFalling = false;
-				//playerRotatingLeft = (playerHorizVelocity <= 0);
-				playerVertVelocity = -8;
+		if (state == PlayerState.AIR) {
+			if (Gdx.input.isKeyJustPressed(Keys.Z) && hasDoubleJump) {
+				this.doubleJump();
 			}
 			wasInAirAnim = false;
 		}
 		//update y position of player
-		if (playerFastFalling) {
+		if (fastFalling) {
 			position.y -= PLAYER_FASTFALL_SPEED;
 		}
 		else {
-			position.y -= playerVertVelocity;
-			playerVertVelocity = Math.min(playerVertVelocity + FALL_ACCELERATION,
+			position.y -= vertVelocity;
+			vertVelocity = Math.min(vertVelocity + FALL_ACCELERATION,
 										  PLAYER_MAX_SLOWFALL_SPEED);
 		}
 		//check whether you're intersecting something vertically
@@ -210,32 +218,32 @@ public class Player {
 		EnhancedCell bottomCell = getCollidingBottomCell();
 
 		if (topCell != null) {
-			if (playerVertVelocity < 0) {
+			if (vertVelocity < 0) {
 				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
-				playerVertVelocity = 0;
+				vertVelocity = 0;
 			}
 		}
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
-			playerState = PlayerState.GROUND;
-			playerRotation = 0;
-			playerHasDoubleJump = true;
+			state = PlayerState.GROUND;
+			rotation = 0;
+			hasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
 			sounds.landingSound.play();
 		}
 		//update x position of player
-		position.x += playerHorizVelocity;
+		position.x += horizVelocity;
 		//check whether you're intersecting something horizontally
 		EnhancedCell leftCell = getCollidingLeftCell();
 		EnhancedCell rightCell = getCollidingRightCell();
 		if (leftCell != null) {
 			position.x = (leftCell.x+1)*collisionLayer.getTileWidth();
-			playerHorizVelocity = 0;
-			if (playerState != PlayerState.GROUND) {
-				playerState = PlayerState.WALL_LEFT;
-				playerRotation = 0;
+			horizVelocity = 0;
+			if (state != PlayerState.GROUND) {
+				state = PlayerState.WALL_LEFT;
+				rotation = 0;
 				//playerRotating = false;
 				playerSwordVisible = false;
 				playerFlipSword = false;
@@ -243,82 +251,49 @@ public class Player {
 		}
 		else if (rightCell != null) {
 			position.x = (rightCell.x)*collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
-			playerHorizVelocity = 0;
-			if (playerState != PlayerState.GROUND) {
-				playerState = PlayerState.WALL_RIGHT;
-				playerRotation = 0;
+			horizVelocity = 0;
+			if (state != PlayerState.GROUND) {
+				state = PlayerState.WALL_RIGHT;
+				rotation = 0;
 				//playerRotating = false;
 				playerSwordVisible = false;
 				playerFlipSword = false;
 			}
 		}
-//		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
-//			
-////		}
-//		if (playerState == PlayerState.AIR && Gdx.input.isKeyJustPressed(Keys.X)) {
-//			setState(PlayerState.AIR_ANIM);
-//			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
-//					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
-//			if (isFrontKeyPressed) {
-//				loadHurtboxData(AnimationType.AIR_FAIR);
-//				playerFrame = PlayerFrame.RUN_NOARMS;
-//				playerSwordVisible = true;
-//				playerSwordRotation = -90;
-//			}
-//			else if (Gdx.input.isKeyPressed(Keys.UP)) {
-//				loadHurtboxData(AnimationType.AIR_UAIR);
-//				playerFrame = PlayerFrame.TWIST;
-//				playerSwordVisible = true;
-//				playerRotation = 175;
-//				playerFlipSword = true;
-//				playerSwordRotation = -140;
-//			}
-//			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-//				loadHurtboxData(AnimationType.AIR_DAIR);
-//				playerFrame = PlayerFrame.CYCLONE;
-//				playerSwordVisible = true;
-//				playerSwordRotation = -75;
-//				//playerRotating = true;
-//			}
-//			else {
-//				loadHurtboxData(AnimationType.AIR_FAIR);
-//				playerFrame = PlayerFrame.RUN_NOARMS;
-//				playerSwordVisible = true;
-//				playerSwordRotation = -90;
-//			}
-//		}
 		if (wasInAirAnim) {
 			updateAnimationFramesIfInState(PlayerState.AIR_ANIM, PlayerState.AIR);
 		}
 	}
 	
+	private void updatePlayerAirAnim() {
+		
+	}
+	
 	private void updatePlayerGround(){
-		if (playerState == PlayerState.GROUND) {
+		if (state == PlayerState.GROUND) {
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity
 									+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
-				playerFacingLeft = true;
+				facingLeft = true;
 				playerFrame = PlayerFrame.RUN;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity
 						+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
-				playerFacingLeft = false;
+				facingLeft = false;
 				playerFrame = PlayerFrame.RUN;
 			}
 			else {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
-				if (Math.abs(playerHorizVelocity) < 1) {
-					playerHorizVelocity = 0;
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity;
+				if (Math.abs(horizVelocity) < 1) {
+					horizVelocity = 0;
 				}
 				playerFrame = PlayerFrame.STAND;
 			}
 			if (Gdx.input.isKeyJustPressed(Keys.Z)) {
-				setState(PlayerState.GROUND_PREJUMP);
-				playerFrame = PlayerFrame.PREJUMP;
-				playerFastFalling = false;
+				this.beginGroundJump();
 			}
-			position.x += playerHorizVelocity;
+			position.x += horizVelocity;
 
 			EnhancedCell leftCell = getCollidingLeftCell();
 			EnhancedCell rightCell = getCollidingRightCell();
@@ -327,7 +302,7 @@ public class Player {
 			if (leftCell != null) {
 				position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
 				if (Gdx.input.isKeyPressed(Keys.UP)) {
-					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
+					vertVelocity = -PLAYER_WALL_SCALE_SPEED;
 					setState(PlayerState.WALL_LEFT);
 					playerFrame = PlayerFrame.CLIMB;
 					playerSwordVisible = false;
@@ -337,7 +312,7 @@ public class Player {
 			else if (rightCell != null) {
 				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 				if (Gdx.input.isKeyPressed(Keys.UP)) {
-					playerVertVelocity = -PLAYER_WALL_SCALE_SPEED;
+					vertVelocity = -PLAYER_WALL_SCALE_SPEED;
 					setState(PlayerState.WALL_RIGHT);
 					playerFrame = PlayerFrame.CLIMB;
 					playerSwordVisible = false;
@@ -346,10 +321,10 @@ public class Player {
 			}
 			else if (bottomCell == null) {
 				setState(PlayerState.AIR);
-				playerFastFalling = false;
-				playerHasDoubleJump = true;
+				fastFalling = false;
+				hasDoubleJump = true;
 				playerFrame = PlayerFrame.STAND;
-				playerVertVelocity = 0;
+				vertVelocity = 0;
 			}
 			
 			// if (playerState == PlayerState.GROUND && Gdx.input.isKeyJustPressed(Keys.X)) {
@@ -360,25 +335,25 @@ public class Player {
 			// 	playerSwordRotation = -90;
 			// }
 		}
-		else if (playerState == PlayerState.GROUND_PREJUMP) {
+		else if (state == PlayerState.GROUND_PREJUMP) {
 			// TODO: this is copied from the if/else branch above, de-duplicate
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity
 									+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
-				playerFacingLeft = true;
+				facingLeft = true;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity
 						+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
-				playerFacingLeft = false;
+				facingLeft = false;
 			}
 			else {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
-				if (Math.abs(playerHorizVelocity) < 1) {
-					playerHorizVelocity = 0;
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity;
+				if (Math.abs(horizVelocity) < 1) {
+					horizVelocity = 0;
 				}
 			}
-			position.x += playerHorizVelocity;
+			position.x += horizVelocity;
 
 			EnhancedCell leftCell = getCollidingLeftCell();
 			EnhancedCell rightCell = getCollidingRightCell();
@@ -391,38 +366,30 @@ public class Player {
 				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 			}
 			else if (bottomCell == null) {
-				position.x -= playerHorizVelocity; // TODO: make notion of 'teeter' precise?
-				playerHorizVelocity = 0;
+				position.x -= horizVelocity; // TODO: make notion of 'teeter' precise?
+				horizVelocity = 0;
 			}
 			if (stateFrameDuration == PLAYER_PREJUMP_FRAMES) {
-				sounds.jumpSound.play();
-				if (Gdx.input.isKeyPressed(Keys.Z)) {
-					playerVertVelocity = -PLAYER_JUMP_SPEED;
-				}
-				else {
-					playerVertVelocity = -PLAYER_SHORTHOP_SPEED;
-				}
-				setState(PlayerState.AIR);
-				playerFrame = PlayerFrame.STAND;
+				this.endGroundJump();
 			}
 		}
 		else { // PlayerState.GROUND_ANIM
 			// TODO: this is copied from the if/else branch above, de-duplicate
 			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity
 									+ FLOOR_FRICTION * -PLAYER_GROUND_MAX_MOVESPEED;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity
 						+ FLOOR_FRICTION * PLAYER_GROUND_MAX_MOVESPEED;
 			}
 			else {
-				playerHorizVelocity = (1. - FLOOR_FRICTION) * playerHorizVelocity;
-				if (Math.abs(playerHorizVelocity) < 1) {
-					playerHorizVelocity = 0;
+				horizVelocity = (1. - FLOOR_FRICTION) * horizVelocity;
+				if (Math.abs(horizVelocity) < 1) {
+					horizVelocity = 0;
 				}
 			}
-			position.x += playerHorizVelocity;
+			position.x += horizVelocity;
 
 			EnhancedCell leftCell = getCollidingLeftCell();
 			EnhancedCell rightCell = getCollidingRightCell();
@@ -435,8 +402,8 @@ public class Player {
 				position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
 			}
 			else if (bottomCell == null) {
-				position.x -= playerHorizVelocity; // TODO: make notion of 'teeter' precise?
-				playerHorizVelocity = 0;
+				position.x -= horizVelocity; // TODO: make notion of 'teeter' precise?
+				horizVelocity = 0;
 			}
 			
 			updateAnimationFramesIfInState(PlayerState.GROUND_ANIM, PlayerState.GROUND);
@@ -444,35 +411,35 @@ public class Player {
 	}
 	
 	private void updatePlayerWallLeft(){
-		playerHorizVelocity = 0;
-		playerFacingLeft = true;
+		horizVelocity = 0;
+		facingLeft = true;
 		playerFrame = PlayerFrame.CLIMB;
 		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			playerHorizVelocity = 2 * PLAYER_AIR_INFLUENCE;
-			playerState = PlayerState.AIR;
+			horizVelocity = 2 * PLAYER_AIR_INFLUENCE;
+			state = PlayerState.AIR;
 			playerFrame = PlayerFrame.STAND;
 		}
 		else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
-			playerHorizVelocity = PLAYER_AIR_MAX_MOVESPEED;
-			playerVertVelocity = -6;
+			horizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+			vertVelocity = -6;
 			setState(PlayerState.AIR);
 			playerFrame = PlayerFrame.STAND;
-			playerFacingLeft = false;
-			playerFastFalling = false;
-			playerHasDoubleJump = true;
+			facingLeft = false;
+			fastFalling = false;
+			hasDoubleJump = true;
 			sounds.jumpSound.play();
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
-			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
+			vertVelocity = (1. - PLAYER_WALL_INFLUENCE) * vertVelocity
 					+ PLAYER_WALL_INFLUENCE * -PLAYER_WALL_SCALE_SPEED;
-			position.y -= playerVertVelocity;
+			position.y -= vertVelocity;
 		}
 		else {
-			position.y -= playerVertVelocity;
-			playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * 3;
+			position.y -= vertVelocity;
+			vertVelocity = (1. - WALL_FRICTION) * vertVelocity + WALL_FRICTION * 3;
 		}
 		
-		position.x += playerHorizVelocity;
+		position.x += horizVelocity;
 		
 		EnhancedCell leftCell = getCollidingLeftCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
@@ -480,17 +447,17 @@ public class Player {
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
-			playerState = PlayerState.GROUND;
-			playerRotation = 0;
+			state = PlayerState.GROUND;
+			rotation = 0;
 			//playerRotating = false;
-			playerHasDoubleJump = true;
+			hasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
 		}
 		else if (topCell != null) {
-			if (playerVertVelocity < 0) {
+			if (vertVelocity < 0) {
 				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
-				playerVertVelocity = 0;
+				vertVelocity = 0;
 			}
 		}
 		else if (leftCell==null) {
@@ -501,35 +468,35 @@ public class Player {
 	}
 	
 	private void updatePlayerWallRight(){
-		playerHorizVelocity = 0;
-		playerFacingLeft = false;
+		horizVelocity = 0;
+		facingLeft = false;
 		playerFrame = PlayerFrame.CLIMB;
 		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			playerHorizVelocity = -2 * PLAYER_AIR_INFLUENCE;
+			horizVelocity = -2 * PLAYER_AIR_INFLUENCE;
 			playerFrame = PlayerFrame.STAND;
-			playerState = PlayerState.AIR;
+			state = PlayerState.AIR;
 		}
 		else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
-			playerHorizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
-			playerVertVelocity = -6;
+			horizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+			vertVelocity = -6;
 			setState(PlayerState.AIR);
-			playerFacingLeft = true;
+			facingLeft = true;
 			playerFrame = PlayerFrame.STAND;
-			playerFastFalling = false;
-			playerHasDoubleJump = true;
+			fastFalling = false;
+			hasDoubleJump = true;
 			sounds.jumpSound.play();
 		}
 		else if (Gdx.input.isKeyPressed(Keys.UP)) {
-			playerVertVelocity = (1. - PLAYER_WALL_INFLUENCE) * playerVertVelocity
+			vertVelocity = (1. - PLAYER_WALL_INFLUENCE) * vertVelocity
 					+ PLAYER_WALL_INFLUENCE * -PLAYER_WALL_SCALE_SPEED;
-			position.y -= playerVertVelocity;
+			position.y -= vertVelocity;
 		}
 		else {
-			position.y -= playerVertVelocity;
-			playerVertVelocity = (1. - WALL_FRICTION) * playerVertVelocity + WALL_FRICTION * 3;
+			position.y -= vertVelocity;
+			vertVelocity = (1. - WALL_FRICTION) * vertVelocity + WALL_FRICTION * 3;
 		}
 		
-		position.x += playerHorizVelocity;
+		position.x += horizVelocity;
 		
 		EnhancedCell rightCell = getCollidingRightCell();
 		EnhancedCell bottomCell = getCollidingBottomCell();
@@ -537,17 +504,17 @@ public class Player {
 		
 		if (bottomCell != null) {
 			position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
-			playerState = PlayerState.GROUND;
-			playerRotation = 0;
+			state = PlayerState.GROUND;
+			rotation = 0;
 			//playerRotating = false;
-			playerHasDoubleJump = true;
+			hasDoubleJump = true;
 			playerSwordVisible = false;
 			playerFlipSword = false;
 		}
 		else if (topCell != null) {
-			if (playerVertVelocity < 0) {
+			if (vertVelocity < 0) {
 				position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
-				playerVertVelocity = 0;
+				vertVelocity = 0;
 			}
 		}
 		else if (rightCell==null) {
@@ -557,7 +524,7 @@ public class Player {
 	}
 	
 	public void setState(PlayerState state) {
-		playerState = state;
+		this.state = state;
 		stateFrameDuration = 0;
 	}
 
@@ -565,6 +532,53 @@ public class Player {
 //	    isAlive = false;
 //	    sounds.deathSound.play();
 //	}
+	
+	private void faceLeft() {
+		this.facingLeft = true;
+		this.inFloat = -1f;
+	}
+	
+	private void faceRight() {
+		this.facingLeft = false;
+		this.inFloat = 1f;
+	}
+	
+	private void beginGroundJump() {
+		setState(PlayerState.GROUND_PREJUMP);
+		playerFrame = PlayerFrame.PREJUMP;
+		fastFalling = false;
+	}
+	
+	private void endGroundJump() {
+		sounds.jumpSound.play();
+		if (Gdx.input.isKeyPressed(Keys.Z)) {
+			vertVelocity = -PLAYER_JUMP_SPEED;
+		}
+		else {
+			vertVelocity = -PLAYER_SHORTHOP_SPEED;
+		}
+		setState(PlayerState.AIR);
+		playerFrame = PlayerFrame.STAND;
+	}
+	
+	private void doubleJump() {
+		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+			horizVelocity = -PLAYER_AIR_MAX_MOVESPEED;
+			facingLeft = true;
+		}
+		else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+			horizVelocity = PLAYER_AIR_MAX_MOVESPEED;
+			facingLeft = false;
+		}
+		hasDoubleJump = false;
+		sounds.dblJumpSound.play();
+		map.particles.add(new Particle(position.x, position.y,
+				new Point[]{ new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(2, 0) }));
+		//playerRotating = true;
+		fastFalling = false;
+		//playerRotatingLeft = (playerHorizVelocity <= 0);
+		vertVelocity = -PLAYER_DOUBLE_JUMP_SPEED;
+	}
 	
 	/*
 	 * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c
@@ -621,11 +635,11 @@ public class Player {
 	}
 	
 	public boolean getFacingLeft() {
-		return playerFacingLeft;
+		return facingLeft;
 	}
 	
 	public float getRotation() {
-		return playerRotation;
+		return rotation;
 	}
 	
 	public PlayerFrame getPlayerFrame() {
@@ -636,7 +650,7 @@ public class Player {
 		currentAnimationType = type;
 		currentAnimationFrames = HurtboxData.getAnimationFrames(type);
 		currentDuration = HurtboxData.getDuration(type);
-		currentAnimationIsFlipped = playerFacingLeft;
+		currentAnimationIsFlipped = facingLeft;
 		weaponSound.play();
 	}
 	
@@ -645,18 +659,18 @@ public class Player {
 	}
 	
 	public void updateAnimationFramesIfInState(PlayerState state, PlayerState endState) {
-		if (playerState == state) {
+		if (this.state == state) {
 			updateActiveHurtboxes();
 			if (currentAnimationType == AnimationType.AIR_FAIR) {
 				playerSwordRotation += 17;
 			}
 			else if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration < 20) {
 				playerSwordRotation += 16;
-				playerRotation += 16;
+				rotation += 16;
 			}
 			else if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration < 21) {
 				playerSwordRotation -= 14;
-				playerRotation -= 14;
+				rotation -= 14;
 				
 				//paused = true;
 			}
@@ -675,7 +689,7 @@ public class Player {
 			}
 			if (currentAnimationType == AnimationType.AIR_DAIR && stateFrameDuration == 20) {
 				playerSwordVisible = false;
-				playerRotation = 0;
+				rotation = 0;
 			}
 			if (currentAnimationType == AnimationType.AIR_UAIR && stateFrameDuration == 11) {
 				playerFrame = PlayerFrame.CYCLONE;
@@ -685,12 +699,12 @@ public class Player {
 				playerSwordVisible = false;
 			}
 			if (stateFrameDuration == currentDuration) {
-				playerState = endState;
+				this.state = endState;
 				if (currentAnimationType == AnimationType.AIR_DAIR ||
 					currentAnimationType == AnimationType.AIR_UAIR ||
-					state == PlayerState.GROUND_ANIM) {
+					this.state == PlayerState.GROUND_ANIM) {
 					playerFrame = PlayerFrame.STAND;
-					playerRotation = 0;
+					rotation = 0;
 				}
 				activeHurtboxes.clear();
 			}
@@ -730,50 +744,45 @@ public class Player {
 	}
 	
 	private void swingSword() {
-		if (playerState == PlayerState.AIR || playerState == PlayerState.AIR_ANIM) {
+		
+		playerSwordVisible = true;
+		
+		if (state == PlayerState.AIR || state == PlayerState.AIR_ANIM) {
 			setState(PlayerState.AIR_ANIM);
-			boolean isFrontKeyPressed = (playerFacingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
-					|| (!playerFacingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
+			boolean isFrontKeyPressed = (facingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
+					|| (!facingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
 			if (isFrontKeyPressed) {
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
+				swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
 			}
 			else if (Gdx.input.isKeyPressed(Keys.UP)) {
-				loadHurtboxData(AnimationType.AIR_UAIR);
-				playerFrame = PlayerFrame.TWIST;
-				playerSwordVisible = true;
-				playerRotation = 175;
+				swordHelper(AnimationType.AIR_UAIR, PlayerFrame.TWIST, -140);
+				this.rotation = 175;
 				playerFlipSword = true;
-				playerSwordRotation = -140;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-				loadHurtboxData(AnimationType.AIR_DAIR);
-				playerFrame = PlayerFrame.CYCLONE;
-				playerSwordVisible = true;
-				playerSwordRotation = -75;
-				//playerRotating = true;
+				swordHelper(AnimationType.AIR_DAIR, PlayerFrame.CYCLONE, -75);
 			}
 			else {
-				loadHurtboxData(AnimationType.AIR_FAIR);
-				playerFrame = PlayerFrame.RUN_NOARMS;
-				playerSwordVisible = true;
-				playerSwordRotation = -90;
+				swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
 			}
+			
 		}
-		if (playerState == PlayerState.GROUND) {
+		
+		if (state == PlayerState.GROUND) {
 			setState(PlayerState.GROUND_ANIM);
-			loadHurtboxData(AnimationType.AIR_FAIR);
-			playerFrame = PlayerFrame.RUN_NOARMS;
-			playerSwordVisible = true;
-			playerSwordRotation = -90;
+			swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
 		}
+	}
+	
+	private void swordHelper(AnimationType hurtboxData, PlayerFrame frame, float rotation){
+		loadHurtboxData(hurtboxData);
+		this.playerFrame = frame;
+		this.playerSwordRotation = rotation;
 	}
 
 	private void shootLaser() {
 		// TODO: make map.projectiles private?
-		LaserPulse laser = new LaserPulse(this.map, this, !this.playerFacingLeft);
+		LaserPulse laser = new LaserPulse(this.map, this, !this.facingLeft);
 		if (laser.hitbox.ownerProjectile == null) System.out.println("laser hitbox owner is null");
 		map.projectiles.add(laser);
 		this.activeHurtboxRects.add(laser.hitbox);

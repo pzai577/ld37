@@ -161,8 +161,8 @@ public class Map {
     
     public void killPlayer() {
         playerDeaths++;
-        player.playerHorizVelocity = 0;
-        player.playerVertVelocity = 0;
+        player.horizVelocity = 0;
+        player.vertVelocity = 0;
         
         if (currCheckpoint==null) {
             player.position.x = startPos.x;
@@ -216,7 +216,7 @@ public class Map {
     		}
     		if(removeTarget){
     			removeTarget(t);
-				player.playerHasDoubleJump = true;
+				player.hasDoubleJump = true;
 				sounds.targetBreakSound.play();
     		}
     	}
@@ -286,7 +286,7 @@ public class Map {
     
     public void checkLegFinished() {
         if (leg==0) {
-            if (Intersector.overlaps(player.position, startZone) && player.playerState==PlayerState.GROUND) {
+            if (Intersector.overlaps(player.position, startZone) && player.state==PlayerState.GROUND) {
                 //System.out.println("leg 0 finished!");
                 leg++;
                 startDialogue(0);
@@ -295,7 +295,7 @@ public class Map {
             }
         }
         else if (leg==1) {
-            if (Intersector.overlaps(player.position, finishZone) && player.playerState==PlayerState.GROUND) {
+            if (Intersector.overlaps(player.position, finishZone) && player.state==PlayerState.GROUND) {
                 //System.out.println("leg 1 finished!");
                 leg++;
                 startDialogue(1);
@@ -305,7 +305,7 @@ public class Map {
             }
         }
         else if (leg==2) {
-            if (Intersector.overlaps(player.position, startZone) && player.playerState==PlayerState.GROUND) {
+            if (Intersector.overlaps(player.position, startZone) && player.state==PlayerState.GROUND) {
                 leg++;
                 startDialogue(2);
             }
