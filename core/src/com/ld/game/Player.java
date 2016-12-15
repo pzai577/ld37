@@ -110,6 +110,8 @@ public class Player {
         this.playerFrame = PlayerFrame.STAND;
         this.sounds = map.sounds;
     }
+
+//. update code    
     
     public void updateState() {
         
@@ -120,7 +122,7 @@ public class Player {
         if (paused) return;
         
         
-//////  begin movement code        
+    //  begin movement code        
         if (state == PlayerState.AIR || state == PlayerState.AIR_ANIM) {
             updatePlayerAir();
         }
@@ -128,23 +130,21 @@ public class Player {
                 || state == PlayerState.GROUND_PREJUMP) {
             updatePlayerGround();
         }
-        else if (state == PlayerState.WALL_LEFT) {
-            updatePlayerWallLeft();
-        }
-        else if (state == PlayerState.WALL_RIGHT) {
-            updatePlayerWallRight();
-        }
-//////  end movement code
+//        else if (state == PlayerState.WALL_LEFT || state == PlayerState.WALL_RIGHT){
+//            updatePlayerWall();
+//        }
+         else if (state == PlayerState.WALL_LEFT) {
+             updatePlayerWall(Keys.LEFT, Keys.RIGHT);
+         }
+         else if (state == PlayerState.WALL_RIGHT) {
+             updatePlayerWall(Keys.RIGHT, Keys.LEFT);
+         }
+    //  end movement code
         
         
         if(Gdx.input.isKeyJustPressed(Keys.X)) {
             useWeapon();
         }
-        
-//        // shoot laser gun
-//        if(Gdx.input.isKeyJustPressed(Keys.C)) {
-//            shootLaser();
-//        }
         
         // press r to refresh
         if(Gdx.input.isKeyJustPressed(Keys.R)) {
@@ -164,25 +164,20 @@ public class Player {
     }
     
     private void updatePlayerAir(){
+
         if (Gdx.input.isKeyJustPressed(Keys.DOWN) && vertVelocity > 0) {
             fastFalling = true;
         }
+
+        boolean wasInAirAnim = true;
         if (state == PlayerState.AIR) {           
             this.setDirection();
             horizVelocity += inFloat * PLAYER_AIR_INFLUENCE;
             if(inFloat * horizVelocity > PLAYER_AIR_MAX_MOVESPEED) {
                 horizVelocity = inFloat * PLAYER_AIR_MAX_MOVESPEED;
             }
-//            horizVelocity = inFloat * Math.min(inFloat*horizVelocity, PLAYER_AIR_MAX_MOVESPEED);
             horizVelocity *= AIR_FRICTION_SCALING;
-//            
-//            else {
-//                horizVelocity *= AIR_FRICTION_SCALING;
-//            }
-//            System.out.println(horizVelocity);
-        }
-        boolean wasInAirAnim = true;
-        if (state == PlayerState.AIR) {
+
             if (Gdx.input.isKeyJustPressed(Keys.Z) && hasDoubleJump) {
                 this.doubleJump();
             }
@@ -211,12 +206,7 @@ public class Player {
         
         if (bottomCell != null) {
             position.y = (bottomCell.y+1)*collisionLayer.getTileHeight();
-            state = PlayerState.GROUND;
-            rotation = 0;
-            hasDoubleJump = true;
-            playerSwordVisible = false;
-            playerFlipSword = false;
-            sounds.landingSound.play();
+            this.landOnGround();
         }
         
         //update x position of player
@@ -251,10 +241,6 @@ public class Player {
         }
     }
     
-    private void updatePlayerAirAnim() {
-        
-    }
-    
     private void updatePlayerGround(){
         
         this.moveHorizOnGround();
@@ -282,21 +268,13 @@ public class Player {
             if (leftCell != null) {
                 position.x = (leftCell.x+1) * collisionLayer.getTileWidth();
                 if (Gdx.input.isKeyPressed(Keys.UP)) {
-                    vertVelocity = -PLAYER_WALL_SCALE_SPEED;
-                    setState(PlayerState.WALL_LEFT);
-                    playerFrame = PlayerFrame.CLIMB;
-                    playerSwordVisible = false;
-                    playerFlipSword = false;
+                    this.climbWall(PlayerState.WALL_LEFT);
                 }
             }
             else if (rightCell != null) {
                 position.x = (rightCell.x) * collisionLayer.getTileWidth() - PLAYER_WIDTH - 1;
                 if (Gdx.input.isKeyPressed(Keys.UP)) {
-                    vertVelocity = -PLAYER_WALL_SCALE_SPEED;
-                    setState(PlayerState.WALL_RIGHT);
-                    playerFrame = PlayerFrame.CLIMB;
-                    playerSwordVisible = false;
-                    playerFlipSword = false;
+                    this.climbWall(PlayerState.WALL_RIGHT);
                 }
             }
             else if (bottomCell == null) {
@@ -345,6 +323,85 @@ public class Player {
         }
         
         position.x += horizVelocity;
+    }
+
+    private void updatePlayerWall(int left, int right) {
+        
+        if(left == Keys.LEFT)
+            this.faceLeft();
+        else if(left == Keys.RIGHT)
+            this.faceRight();
+        
+        horizVelocity = 0;
+        playerFrame = PlayerFrame.CLIMB;
+
+        if (Gdx.input.isKeyPressed(right)) {
+            if(right == Keys.LEFT)
+                this.faceLeft();
+            else if(right == Keys.RIGHT)
+                this.faceRight();
+            
+            horizVelocity = inFloat * 2 * PLAYER_AIR_INFLUENCE;
+            state = PlayerState.AIR;
+            playerFrame = PlayerFrame.STAND;
+        }
+        else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
+            if(right == Keys.LEFT)
+                this.faceLeft();
+            else if(right == Keys.RIGHT)
+                this.faceRight();
+            
+            horizVelocity = inFloat * PLAYER_AIR_MAX_MOVESPEED;
+            vertVelocity = -6;
+            setState(PlayerState.AIR);
+            playerFrame = PlayerFrame.STAND;
+            fastFalling = false;
+            hasDoubleJump = true;
+            sounds.jumpSound.play();
+        }
+        else if (Gdx.input.isKeyPressed(Keys.UP)) {
+            vertVelocity = (1. - PLAYER_WALL_INFLUENCE) * vertVelocity
+                    + PLAYER_WALL_INFLUENCE * -PLAYER_WALL_SCALE_SPEED;
+            position.y -= vertVelocity;
+        }
+        else {
+            position.y -= vertVelocity;
+            vertVelocity = (1. - WALL_FRICTION) * vertVelocity + WALL_FRICTION * 3;
+        }
+
+        position.x += horizVelocity;
+
+        EnhancedCell bottomCell = getCollidingBottomCell();
+        EnhancedCell topCell = getCollidingTopCell();
+        EnhancedCell forwardCell;
+        if(left == Keys.LEFT)
+            forwardCell = getCollidingLeftCell();
+        else if(left == Keys.RIGHT)
+            forwardCell = getCollidingRightCell();
+        else
+            forwardCell = null;
+        
+        if (bottomCell != null) {
+            position.y = (bottomCell.y+1) * collisionLayer.getTileHeight();
+            state = PlayerState.GROUND;
+            rotation = 0;
+            //playerRotating = false;
+            hasDoubleJump = true;
+            playerSwordVisible = false;
+            playerFlipSword = false;
+        }
+        else if (topCell != null) {
+            if (vertVelocity < 0) {
+                position.y = (topCell.y) * collisionLayer.getTileHeight() - PLAYER_HEIGHT - 1;
+                vertVelocity = 0;
+            }
+        }
+        else if (forwardCell==null) {
+            // TODO: make the player snap to ground?
+            setState(PlayerState.AIR);
+            playerFrame = PlayerFrame.STAND;
+        }
+
     }
     
     private void updatePlayerWallLeft(){
@@ -465,11 +522,10 @@ public class Player {
         stateFrameDuration = 0;
     }
 
-//    public void die() {
-//        isAlive = false;
-//        sounds.deathSound.play();
-//    }
+//. end update code
     
+//. movement actions    
+
     private void setDirection() {
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
             this.faceLeft();
@@ -490,6 +546,10 @@ public class Player {
     private void faceRight() {
         this.facingLeft = false;
         this.inFloat = 1f;
+    }
+
+    private void handleJumpInput() {
+
     }
     
     private void beginGroundJump() {
@@ -528,6 +588,25 @@ public class Player {
         //playerRotatingLeft = (playerHorizVelocity <= 0);
         vertVelocity = -PLAYER_DOUBLE_JUMP_SPEED;
     }
+
+    private void landOnGround() {
+        state = PlayerState.GROUND;
+        rotation = 0;
+        hasDoubleJump = true;
+        playerSwordVisible = false;
+        playerFlipSword = false;
+        sounds.landingSound.play();
+    }
+
+    private void climbWall(PlayerState wallSide) {
+        vertVelocity = -PLAYER_WALL_SCALE_SPEED;
+        setState(wallSide);
+        playerFrame = PlayerFrame.CLIMB;
+        playerSwordVisible = false;
+        playerFlipSword = false;
+    }
+
+//. end movement actions
     
     /*
      * Some collision code adapted from https://www.youtube.com/watch?v=TLZbC9brH1c
