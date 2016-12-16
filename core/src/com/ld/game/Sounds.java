@@ -31,7 +31,7 @@ public class Sounds {
 		
 		landingSound = Gdx.audio.newSound(Gdx.files.internal("land.wav"));
 		
-		dialogueSound = Gdx.audio.newSound(Gdx.files.internal("dialogue.wav"));
+		dialogueSound = Gdx.audio.newSound(Gdx.files.internal("dialogue2.wav"));
 	}
 
 }
