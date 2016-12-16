@@ -168,21 +168,23 @@ public class Player {
         if (Gdx.input.isKeyJustPressed(Keys.DOWN) && vertVelocity > 0) {
             fastFalling = true;
         }
-
+        
+        if (Gdx.input.isKeyJustPressed(Keys.Z) && hasDoubleJump) {
+            this.doubleJump();
+        }
+        
         boolean wasInAirAnim = true;
-        if (state == PlayerState.AIR) {           
+        if (state == PlayerState.AIR) {
+            wasInAirAnim = false;
+            
             this.setDirection();
             horizVelocity += inFloat * PLAYER_AIR_INFLUENCE;
             if(inFloat * horizVelocity > PLAYER_AIR_MAX_MOVESPEED) {
                 horizVelocity = inFloat * PLAYER_AIR_MAX_MOVESPEED;
             }
-            horizVelocity *= AIR_FRICTION_SCALING;
-
-            if (Gdx.input.isKeyJustPressed(Keys.Z) && hasDoubleJump) {
-                this.doubleJump();
-            }
-            wasInAirAnim = false;
+            horizVelocity *= AIR_FRICTION_SCALING;    
         }
+        
         //update y position of player
         if (fastFalling) {
             position.y -= PLAYER_FASTFALL_SPEED;
