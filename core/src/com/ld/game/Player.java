@@ -73,7 +73,7 @@ public class Player {
     public boolean hasDoubleJump = false;
     //private boolean playerRotating = false;
     //private boolean playerRotatingLeft = false;
-    private boolean fastFalling = false;
+    public boolean fastFalling = false;
     
     public boolean playerSwordVisible = false;
     public boolean playerFlipSword = false;
@@ -779,12 +779,7 @@ public class Player {
         
         if (state == PlayerState.AIR || state == PlayerState.AIR_ANIM) {
             setState(PlayerState.AIR_ANIM);
-            boolean isFrontKeyPressed = (facingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
-                    || (!facingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
-            if (isFrontKeyPressed) {
-                swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
-            }
-            else if (Gdx.input.isKeyPressed(Keys.UP)) {
+           if (Gdx.input.isKeyPressed(Keys.UP)) {
                 swordHelper(AnimationType.AIR_UAIR, PlayerFrame.TWIST, -140);
                 this.rotation = 175;
                 playerFlipSword = true;
