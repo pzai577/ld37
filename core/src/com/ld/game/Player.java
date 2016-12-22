@@ -86,6 +86,7 @@ public class Player {
     
     private String weapon;
     private Sound weaponSound;
+    private boolean hasShuriken;
     private Sounds sounds;
     
     private PlayerFrame playerFrame;
@@ -108,6 +109,7 @@ public class Player {
         this.activeHurtboxes = new Array<HurtboxCircle>();
         this.activeHurtboxRects = new Array<HurtboxRectangle>();
         this.playerFrame = PlayerFrame.STAND;
+        this.hasShuriken = true;
         this.sounds = map.sounds;
     }
 
@@ -144,6 +146,10 @@ public class Player {
         
         if(Gdx.input.isKeyJustPressed(Keys.X)) {
             useWeapon();
+        }
+        
+        if(Gdx.input.isKeyJustPressed(Keys.C)) {
+            throwShuriken();
         }
         
         // press r to refresh
@@ -813,10 +819,19 @@ public class Player {
     private void shootLaser() {
         // TODO: make map.projectiles private?
         LaserPulse laser = new LaserPulse(this.map, this, !this.facingLeft);
-        if (laser.hitbox.ownerProjectile == null) System.out.println("laser hitbox owner is null");
         map.projectiles.add(laser);
         this.activeHurtboxRects.add(laser.hitbox);
         weaponSound.play();
+    }
+    
+    private void throwShuriken() {
+        if(this.hasShuriken){
+            this.hasShuriken = false;
+            Shuriken shuriken = new Shuriken(this.map, this, !this.facingLeft);
+            map.projectiles.add(shuriken);
+            this.activeHurtboxRects.add(shuriken.hitbox);
+            weaponSound.play();
+        }
     }
     
     public void removeLaser(HurtboxRectangle rect) {

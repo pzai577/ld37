@@ -59,5 +59,9 @@ public class Projectile {
 		map.projectiles.removeValue(this, true);
 		return;
 	}
+	
+	public void handleWallCollision() {
+	    return;
+	}
 
 }

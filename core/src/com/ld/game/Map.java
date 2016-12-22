@@ -225,7 +225,7 @@ public class Map {
             for (HurtboxRectangle r : hurtboxRects) {
                 if (Intersector.overlaps(r, t) && t.exists) {
                     removeTarget = true;
-                    removeProjectileGivenHurtbox(r);
+                    handleProjectileInteraction(r);
                 }
             }
             if (removeTarget) {
@@ -264,7 +264,7 @@ public class Map {
                 // System.out.println(r);
                 if (Intersector.overlaps(r, cp) && currCheckpoint != cp) {
                     newCheckpoint = true;
-                    removeProjectileGivenHurtbox(r);
+                    handleProjectileInteraction(r);
                 }
             }
             if (newCheckpoint) {
@@ -338,14 +338,20 @@ public class Map {
         }
     }
 
-    public void removeProjectileGivenHurtbox(HurtboxRectangle r) {
+    private void removeProjectileGivenHurtbox(HurtboxRectangle r) {
         if (r.ownerProjectile != null) {// hurtboxOwner should be the projectile
                                         // that owns r
-            // I'm just assuming it's a laser pulse
-            // This is bad coding but we can probably do some instanceof checks
-            // if we have multiple projectile types
-            LaserPulse laser = (LaserPulse) r.ownerProjectile;
+            Projectile laser = r.ownerProjectile;
             laser.destroy();
+        }
+    }
+    
+    private void handleProjectileInteraction(HurtboxRectangle r) {
+        Projectile p = r.ownerProjectile;
+        if (p != null) {// hurtboxOwner should be the projectile that owns r
+            if(p instanceof LaserPulse){
+                p.destroy();
+            }
         }
     }
 
@@ -364,7 +370,7 @@ public class Map {
         for (Projectile proj : projectiles) {
             proj.update();
             if (getEnhancedCell(proj.head.x, proj.head.y) != null) {
-                proj.destroy();
+                proj.handleWallCollision();
             }
         }
         for (int i = 0; i < particles.size; ++i) {

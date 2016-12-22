@@ -87,5 +87,10 @@ public class LaserPulse extends Projectile {
 		super.destroy();
 		player.removeLaser(this.hitbox);
 	}
+	
+	@Override
+	public void handleWallCollision() {
+	    this.destroy();
+	}
 
 }
