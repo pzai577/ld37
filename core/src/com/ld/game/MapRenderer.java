@@ -1,5 +1,7 @@
 package com.ld.game;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,11 +14,15 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 
 public class MapRenderer {
 	static final boolean DEBUG_SHOW_HITBOXES = false;
@@ -26,6 +32,8 @@ public class MapRenderer {
     ShapeRenderer projRenderer;
     ShapeRenderer dialogueBoxRenderer;
     OrthographicCamera cam;
+    int legToRender;
+    Array<Array<Integer>> layersPerLeg; // this has the form [array of layers in first leg, array of layers in second leg, ...]
     
     OrthogonalTiledMapRenderer tileMapRenderer;
     static final float GAME_WIDTH = 1280;
@@ -73,8 +81,41 @@ public class MapRenderer {
         
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
+        legToRender = 0;
+        MapLayers mapLayers = map.tileMap.getLayers();
+        layersPerLeg = new Array<Array<Integer>>();
+        for (int i=0; i<=map.NUM_LEGS; i++) {
+            layersPerLeg.add(new Array<Integer>());
+        }
+
+        for (int i=0; i<mapLayers.getCount(); i++) {
+            // if a layer's name ends in a number, then it only gets added to that leg
+            // otherwise, it gets added to all legs
+            String[] mapNameTokens = mapLayers.get(i).getName().split(" ");
+            if (isDigits(mapNameTokens[mapNameTokens.length-1])) {
+                int layerLeg = Integer.parseInt(mapNameTokens[mapNameTokens.length-1]);
+                layersPerLeg.get(layerLeg).add(i);
+            }
+            else {
+                for (Array<Integer> layers: layersPerLeg) {
+                    layers.add(i);
+                }
+            }
+        }
+        /* prints out map layers and indices for debugging purposes, please leave this in
+        System.out.println("layer info: "+layersPerLeg);
+        for (int i=0; i<mapLayers.getCount(); i++) {
+            System.out.println("layer "+i);
+            MapLayer m = mapLayers.get(i);
+            System.out.println("name: "+m.getName());
+            Iterator<String> keys = m.getProperties().getKeys(); 
+            while (keys.hasNext()) 
+            { 
+                String property = keys.next();
+                System.out.println(property + ": "+m.getProperties().get(property));
+            }
+        }*/
         targetImg = new Texture(Gdx.files.internal("target.png"));
-//        checkpointImg = new Texture(Gdx.files.internal("checkpoint.png"));
         checkpointImg = new Texture(Gdx.files.internal("purplePlat.png"));
         signImg = new Texture(Gdx.files.internal("sign.png"));
 
@@ -127,7 +168,13 @@ public class MapRenderer {
         batch.setProjectionMatrix(cam.combined);
         tileMapRenderer.setView(cam);
         // Draw tilemap
-        tileMapRenderer.render();
+        legToRender = map.leg;
+        if (legToRender==0) legToRender = 1; // assume leg 0 is the same as leg 1
+        Array<Integer> layersToRender = layersPerLeg.get(legToRender);
+        int[] intLayersToRender = new int[layersToRender.size];
+        for (int i=0; i<layersToRender.size; i++) // dumb hacky thing to convert to int[] to pass to render method
+            intLayersToRender[i] = layersToRender.get(i);
+        tileMapRenderer.render(intLayersToRender);
 
         // Draw map objects
         batch.begin();
@@ -301,9 +348,11 @@ public class MapRenderer {
     
     private void drawSigns() {
         for (Sign s: map.signs) {
-            batch.draw(signImg, s.x, s.y, s.width, s.height);
-            if (s.active) {
-                signFont.draw(batch, s.displayText, s.x+(s.width-SIGN_TEXT_WIDTH)/2, s.y+SIGN_TEXT_VERTICAL_DISTANCE, SIGN_TEXT_WIDTH, Align.center, true);
+            if (legToRender==s.leg) {
+                batch.draw(signImg, s.x, s.y, s.width, s.height);
+                if (s.active) {
+                    signFont.draw(batch, s.displayText, s.x+(s.width-SIGN_TEXT_WIDTH)/2, s.y+SIGN_TEXT_VERTICAL_DISTANCE, SIGN_TEXT_WIDTH, Align.center, true);
+                }
             }
         }
     }
@@ -312,5 +361,14 @@ public class MapRenderer {
         for (Particle p : map.particles) {
         	p.render(batch, particleSprites);
         }
+    }
+    
+    private boolean isDigits(String str) {
+        for (char c : str.toCharArray()) {
+            if (c<'0' || c>'9') {
+                return false;
+            }
+        }
+        return true;
     }
 }

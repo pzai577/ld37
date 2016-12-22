@@ -836,4 +836,8 @@ public class Player {
         return activeHurtboxRects;
     }
     
+    public void setCollisionLayer(TiledMapTileLayer collisionLayer) {
+        this.collisionLayer = collisionLayer;
+    }
+    
 }

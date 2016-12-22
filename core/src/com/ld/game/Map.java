@@ -15,11 +15,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Map {
+    static final int NUM_LEGS = 4; //number of legs, not including the thing before the first dialogue
+                                   //sorry, this results in some <=s instead of <s but hopefully it's not too annoying
+    
     public TiledMap tileMap;
     public TiledMapTileLayer collisionLayer;
 
     public float pixelWidth, pixelHeight;
-
+    
     public Player player;
     public Vector2 startPos;
     public Vector2 sageStartPos;
@@ -27,7 +30,7 @@ public class Map {
     public Rectangle startZone;
     public Rectangle finishZone;
     public Array<Target> targets;
-    public Array<Rectangle> deathRects;
+    public Array<Array<Rectangle>> deathRects; // [deathRects in leg 0 (presumably nothing), deathRects in leg 1 (Death Layer 1), deathRects in leg 2 (Death Layer 2), etc...]
     public Array<Projectile> projectiles;
     public Array<Checkpoint> checkpoints;
     public Array<Sign> signs;
@@ -42,7 +45,7 @@ public class Map {
 
     public Map(String levelFile) {
         targets = new Array<Target>();
-        deathRects = new Array<Rectangle>();
+        deathRects = new Array<Array<Rectangle>>();
         projectiles = new Array<Projectile>();
         checkpoints = new Array<Checkpoint>();
         signs = new Array<Sign>();
@@ -53,7 +56,7 @@ public class Map {
         sounds = new Sounds();
 
         tileMap = new TmxMapLoader().load(levelFile);
-        collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer");
+        collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer 1");
         player = new Player(this, collisionLayer);
 
         pixelWidth = tileMap.getProperties().get("width", int.class)
@@ -63,12 +66,7 @@ public class Map {
 
         // this layer contains rectangles that kill you when they overlap you,
         // meant for static hazards
-
-        for (MapObject d : getLayerObjects("Death Layer")) {
-            MapProperties p = d.getProperties();
-            deathRects.add(new Rectangle(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class),
-                    p.get("height", float.class)));
-        }
+        loadDeathRects(deathRects);
 
         for (MapObject cp : getLayerObjects("Checkpoint Layer")) {
             MapProperties p = cp.getProperties();
@@ -113,12 +111,28 @@ public class Map {
         for (MapObject s : getLayerObjects("Sign Layer")) {
             MapProperties p = s.getProperties();
             String signText = p.get("text", String.class);
+            int signLeg;
+            if (p.containsKey("leg")) signLeg = p.get("leg", int.class);
+            else signLeg = 1; // unless if leg is specified, assume it's only on the first leg
             Sign sign = new Sign(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class),
-                    p.get("height", float.class), signText);
+                    p.get("height", float.class), signText, signLeg);
             signs.add(sign);
         }
     }
 
+    // loads the death rectangles per leg into deathRects
+    private void loadDeathRects(Array<Array<Rectangle>> deathRects) {
+        for (int i=0; i<=NUM_LEGS; i++) {
+            Array<Rectangle> layerDeathRects = new Array<Rectangle>();
+            for (MapObject d : getLayerObjects("Death Layer "+i)) {
+                MapProperties p = d.getProperties();
+                layerDeathRects.add(new Rectangle(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class),
+                        p.get("height", float.class)));
+            }
+            deathRects.add(layerDeathRects);
+        }
+    }
+    
     private MapObjects getLayerObjects(String name) {
         MapLayer layer = tileMap.getLayers().get(name);
         if (layer != null) {
@@ -151,7 +165,7 @@ public class Map {
     }
 
     public void checkDeathCollision() {
-        for (Rectangle deathRect : deathRects) {
+        for (Rectangle deathRect : deathRects.get(leg)) { 
             if (player.position.overlaps(deathRect)) {
                 killPlayer();
             }
@@ -287,6 +301,7 @@ public class Map {
     }
 
     public void checkLegFinished() {
+        boolean finished = false;
         if (leg == 0) {
             if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
                 // System.out.println("leg 0 finished!");
@@ -294,6 +309,7 @@ public class Map {
                 startDialogue(0);
 
                 player.setWeapon("sword");
+                finished = true;
             }
         } else if (leg == 1) {
             if (Intersector.overlaps(player.position, finishZone) && player.state == PlayerState.GROUND) {
@@ -303,12 +319,19 @@ public class Map {
                 refreshTargets();
 
                 player.setWeapon("laser");
+                finished = true;
             }
         } else if (leg == 2) {
             if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
                 leg++;
                 startDialogue(2);
+                finished = true;
             }
+        }
+        
+        if (finished) {
+            TiledMapTileLayer newCollisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer "+leg);
+            player.setCollisionLayer(newCollisionLayer);
         }
     }
 
