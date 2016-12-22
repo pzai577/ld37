@@ -464,8 +464,8 @@
   <object id="45" name="death" x="378" y="578" width="7" height="56"/>
   <object id="46" name="death" x="377.5" y="419" width="7" height="54.996"/>
   <object id="47" name="death" x="58" y="354" width="11" height="474"/>
-  <object id="57" name="death" x="1348.76" y="217.435" width="21.0421" height="6.01202"/>
-  <object id="58" name="death" x="1413.39" y="217.435" width="21.0421" height="6.01202"/>
+  <object id="57" name="death" x="1348.76" y="217.435" width="23.2239" height="6.01202"/>
+  <object id="58" name="death" x="1412.3" y="217.435" width="24.3148" height="6.01202"/>
   <object id="59" name="death" x="1627.32" y="509.018" width="26.0521" height="226.453"/>
   <object id="60" name="death" x="1622.31" y="293.587" width="16.0321" height="83.1663"/>
   <object id="61" name="death" x="1406.88" y="455.912" width="8.01603" height="279.559"/>
@@ -491,7 +491,7 @@
  </objectgroup>
  <objectgroup name="Targets Layer">
   <object id="7" name="target" x="2626" y="2232" width="32" height="32"/>
-  <object id="23" name="target" x="2636" y="1397.33" width="32" height="32"/>
+  <object id="23" name="target" x="2715" y="1412.33" width="32" height="32"/>
   <object id="29" name="target" x="1622" y="1451" width="32" height="32"/>
   <object id="30" name="target" x="1433" y="1377" width="32" height="32"/>
   <object id="38" name="target" x="1414" y="1723" width="32" height="32"/>

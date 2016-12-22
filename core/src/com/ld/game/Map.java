@@ -233,6 +233,7 @@ public class Map {
                 player.hasDoubleJump = true;
                 if (player.currentAnimationType == AnimationType.AIR_DAIR) {
                 	player.vertVelocity = Math.min(player.vertVelocity, -5);
+                	player.fastFalling = false;
                 }
                 sounds.targetBreakSound.play();
             }

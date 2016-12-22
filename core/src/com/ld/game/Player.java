@@ -73,7 +73,7 @@ public class Player {
     public boolean hasDoubleJump = false;
     //private boolean playerRotating = false;
     //private boolean playerRotatingLeft = false;
-    private boolean fastFalling = false;
+    public boolean fastFalling = false;
     
     public boolean playerSwordVisible = false;
     public boolean playerFlipSword = false;
@@ -351,6 +351,7 @@ public class Player {
             
             horizVelocity = inFloat * 2 * PLAYER_AIR_INFLUENCE;
             state = PlayerState.AIR;
+            hasDoubleJump = true;
             playerFrame = PlayerFrame.STAND;
         }
         else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
@@ -407,6 +408,7 @@ public class Player {
         else if (forwardCell==null) {
             // TODO: make the player snap to ground?
             setState(PlayerState.AIR);
+            hasDoubleJump = true;
             playerFrame = PlayerFrame.STAND;
         }
 
@@ -780,17 +782,10 @@ public class Player {
     }
     
     private void swingSword() {
-        
-        playerSwordVisible = true;
-        
-        if (state == PlayerState.AIR || state == PlayerState.AIR_ANIM) {
+        if (state == PlayerState.AIR) {
+            playerSwordVisible = true;
             setState(PlayerState.AIR_ANIM);
-            boolean isFrontKeyPressed = (facingLeft && Gdx.input.isKeyPressed(Keys.LEFT))
-                    || (!facingLeft && Gdx.input.isKeyPressed(Keys.RIGHT));
-            if (isFrontKeyPressed) {
-                swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
-            }
-            else if (Gdx.input.isKeyPressed(Keys.UP)) {
+           if (Gdx.input.isKeyPressed(Keys.UP)) {
                 swordHelper(AnimationType.AIR_UAIR, PlayerFrame.TWIST, -140);
                 this.rotation = 175;
                 playerFlipSword = true;
@@ -805,6 +800,7 @@ public class Player {
         }
         
         if (state == PlayerState.GROUND) {
+            playerSwordVisible = true;
             setState(PlayerState.GROUND_ANIM);
             swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
         }
