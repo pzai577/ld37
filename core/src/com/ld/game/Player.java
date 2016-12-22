@@ -78,11 +78,11 @@ public class Player {
     public boolean playerSwordVisible = false;
     public boolean playerFlipSword = false;
     public float playerSwordRotation = 0;
+    public AnimationType currentAnimationType;
     
     private boolean currentAnimationIsFlipped;
     private float[][] currentAnimationFrames;
     private int currentDuration;
-    private AnimationType currentAnimationType;
     
     private String weapon;
     private Sound weaponSound;

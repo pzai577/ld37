@@ -217,6 +217,9 @@ public class Map {
             if (removeTarget) {
                 removeTarget(t);
                 player.hasDoubleJump = true;
+                if (player.currentAnimationType == AnimationType.AIR_DAIR) {
+                	player.vertVelocity = Math.min(player.vertVelocity, -5);
+                }
                 sounds.targetBreakSound.play();
             }
         }
