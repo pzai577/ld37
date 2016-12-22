@@ -345,6 +345,7 @@ public class Player {
             
             horizVelocity = inFloat * 2 * PLAYER_AIR_INFLUENCE;
             state = PlayerState.AIR;
+            hasDoubleJump = true;
             playerFrame = PlayerFrame.STAND;
         }
         else if (Gdx.input.isKeyJustPressed(Keys.Z)) {
@@ -401,6 +402,7 @@ public class Player {
         else if (forwardCell==null) {
             // TODO: make the player snap to ground?
             setState(PlayerState.AIR);
+            hasDoubleJump = true;
             playerFrame = PlayerFrame.STAND;
         }
 
