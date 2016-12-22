@@ -776,10 +776,8 @@ public class Player {
     }
     
     private void swingSword() {
-        
-        playerSwordVisible = true;
-        
-        if (state == PlayerState.AIR || state == PlayerState.AIR_ANIM) {
+        if (state == PlayerState.AIR) {
+            playerSwordVisible = true;
             setState(PlayerState.AIR_ANIM);
            if (Gdx.input.isKeyPressed(Keys.UP)) {
                 swordHelper(AnimationType.AIR_UAIR, PlayerFrame.TWIST, -140);
@@ -796,6 +794,7 @@ public class Player {
         }
         
         if (state == PlayerState.GROUND) {
+            playerSwordVisible = true;
             setState(PlayerState.GROUND_ANIM);
             swordHelper(AnimationType.AIR_FAIR, PlayerFrame.RUN_NOARMS, -90);
         }
