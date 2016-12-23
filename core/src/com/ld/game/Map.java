@@ -192,6 +192,8 @@ public class Map {
         for (Projectile p : projectiles) {
             p.destroy();
         }
+        
+        player.grabShuriken();
     }
 
     public void startDialogue(int i) {
