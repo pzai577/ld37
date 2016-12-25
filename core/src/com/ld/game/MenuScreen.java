@@ -14,6 +14,8 @@ public class MenuScreen extends ScreenAdapter {
     LDGame game;
     BitmapFont titleFont;
     BitmapFont pressFont;
+    BitmapFont pressGrayFont;
+    int currChoice;
     
     public MenuScreen(LDGame game) {
         this.game = game;
@@ -29,9 +31,18 @@ public class MenuScreen extends ScreenAdapter {
         titleFont = generator.generateFont(parameter);
         
         FreeTypeFontParameter pressParameter = new FreeTypeFontParameter();
-        parameter.size = 20;
+        pressParameter.size = 20;
+        pressParameter.color = Color.GREEN;
         pressFont = generator.generateFont(pressParameter);
+        
+        FreeTypeFontParameter pressGrayParameter = new FreeTypeFontParameter();
+        pressGrayParameter.size = 20;
+        pressGrayParameter.color = Color.GRAY;
+        pressGrayFont = generator.generateFont(pressGrayParameter);
+        
         generator.dispose();
+        
+        currChoice = 0;
     }
     
     @Override
@@ -41,11 +52,21 @@ public class MenuScreen extends ScreenAdapter {
         
         game.batch.begin();
         titleFont.draw(game.batch, "UNITED PARCEL SAMURAI", 0, 700, 1280, Align.center, true);
-        pressFont.draw(game.batch, "Press Z to begin.", 0, 300, 1280, Align.center, true);
+        if (currChoice==0) {
+            pressFont.draw(game.batch, "Play the game!", 0, 300, 1280, Align.center, true);
+            pressGrayFont.draw(game.batch, "Speedrun mode", 0, 200, 1280, Align.center, true);
+        }
+        else if (currChoice==1) {
+            pressGrayFont.draw(game.batch, "Play the game!", 0, 300, 1280, Align.center, true);
+            pressFont.draw(game.batch, "Speedrun mode", 0, 200, 1280, Align.center, true);
+        }
         game.batch.end();
         
+        if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.DOWN)) {
+            currChoice = 1-currChoice;
+        }
         if (Gdx.input.isKeyJustPressed(Keys.Z)) {
-            game.setScreen(new GameScreen(game));
+            game.setScreen(new GameScreen(game, currChoice==1));
         }
     }
 }

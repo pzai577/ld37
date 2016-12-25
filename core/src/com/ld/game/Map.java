@@ -40,10 +40,12 @@ public class Map {
     public boolean gameFinished;
     public int playerDeaths;
     Sounds sounds;
+    
+    public boolean speedrunMode;
 
     public Array<Dialogue> dialogues;
 
-    public Map(String levelFile) {
+    public Map(String levelFile, boolean speedrunMode) {
         targets = new Array<Target>();
         deathRects = new Array<Array<Rectangle>>();
         projectiles = new Array<Projectile>();
@@ -55,6 +57,7 @@ public class Map {
         gameFinished = false;
         playerDeaths = 0;
         sounds = new Sounds();
+        this.speedrunMode = speedrunMode;
 
         tileMap = new TmxMapLoader().load(levelFile);
         TiledMapTileLayer collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer 1");
@@ -202,8 +205,13 @@ public class Map {
     }
 
     public void startDialogue(int i) {
-        dialogues.get(i).activate();
-        player.inDialog = true;
+        if (!speedrunMode) {
+            dialogues.get(i).activate();
+            player.inDialog = true;
+        }
+        else {
+            //play sound effect here
+        }
     }
 
     // advances dialogue, returns true if dialogue is still happening, false
@@ -425,10 +433,13 @@ public class Map {
     }
 
     public boolean isGameFinished() {
-        // this is hardcoded which sucks, but I'm not too worried about this
-        if (gameFinished && dialogues.get(4).currentSentence == 8)
-            return true;
-        else
-            return false;
+        if (!speedrunMode) {
+            // this is hardcoded which sucks, but I'm not too worried about this
+            if (gameFinished && dialogues.get(4).currentSentence == 8)
+                return true;
+            else
+                return false;
+        }
+        else return gameFinished;
     }
 }
