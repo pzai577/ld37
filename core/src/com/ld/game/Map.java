@@ -211,8 +211,7 @@ public class Map {
     public boolean advanceDialogue() {
         Dialogue activeDialogue = null;
         for (Dialogue d : dialogues) {
-            if (d.active)
-                activeDialogue = d;
+            if (d.active) activeDialogue = d;
         }
         assert activeDialogue != null;
         activeDialogue.advance();
@@ -354,7 +353,7 @@ public class Map {
                 finished = true;
             }
         } else if (leg==4) {
-            if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
+            if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND && !gameFinished) {
                 startDialogue(4);
                 gameFinished = true;
                 finished = true;
