@@ -9,17 +9,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameScreen extends ScreenAdapter {
     LDGame game;
+    boolean speedrunMode;
     Map map;
     MapRenderer renderer;
     Music music;
     float player_time;
     
-    public GameScreen(LDGame game) {
+    public GameScreen(LDGame game, boolean speedrunMode) {
         this.game = game;
-        
+        this.speedrunMode = speedrunMode;
 //        map = new Map("test_level.tmx");
 //        map = new Map("wide_level.tmx");
-        map = new Map("actual_game_maybe.tmx", false);
+        map = new Map("actual_game_maybe.tmx", speedrunMode);
         renderer = new MapRenderer(map, game.batch);
         
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
