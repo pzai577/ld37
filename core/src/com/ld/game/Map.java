@@ -17,9 +17,8 @@ import com.badlogic.gdx.utils.Array;
 public class Map {
     static final int NUM_LEGS = 4; //number of legs, not including the thing before the first dialogue
                                    //sorry, this results in some <=s instead of <s but hopefully it's not too annoying
-    
+    static final boolean WEAPON_DEBUG = false;
     public TiledMap tileMap;
-    public TiledMapTileLayer collisionLayer;
 
     public float pixelWidth, pixelHeight;
     
@@ -56,8 +55,12 @@ public class Map {
         sounds = new Sounds();
 
         tileMap = new TmxMapLoader().load(levelFile);
-        collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer 1");
+        TiledMapTileLayer collisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer 1");
         player = new Player(this, collisionLayer);
+        
+        if (WEAPON_DEBUG) {
+            player.setWeapon("sword");
+        }
 
         pixelWidth = tileMap.getProperties().get("width", int.class)
                 * tileMap.getProperties().get("tilewidth", int.class);
@@ -155,9 +158,9 @@ public class Map {
      */
 
     public EnhancedCell getEnhancedCell(float x, float y) {
-        int xCoord = (int) (x / collisionLayer.getTileWidth());
-        int yCoord = (int) (y / collisionLayer.getTileHeight());
-        Cell cell = collisionLayer.getCell(xCoord, yCoord);
+        int xCoord = (int) (x / player.collisionLayer.getTileWidth());
+        int yCoord = (int) (y / player.collisionLayer.getTileHeight());
+        Cell cell = player.collisionLayer.getCell(xCoord, yCoord);
         if (cell == null) {
             return null;
         }
@@ -331,13 +334,33 @@ public class Map {
             if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
                 leg++;
                 startDialogue(2);
+                refreshTargets();
+                
+                player.setWeapon("shuriken");
+                finished = true;
+            }
+        } else if (leg==3) {
+            if (Intersector.overlaps(player.position, finishZone) && player.state == PlayerState.GROUND) {
+                // System.out.println("leg 1 finished!");
+                leg++;
+                startDialogue(3);
+                refreshTargets();
+
+                player.setWeapon("nothing");
+                finished = true;
+            }
+        } else if (leg==4) {
+            if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
+                leg++;
+                startDialogue(4);
+                
                 finished = true;
             }
         }
         
         if (finished) {
             TiledMapTileLayer newCollisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer "+leg);
-            player.setCollisionLayer(newCollisionLayer);
+            player.collisionLayer = newCollisionLayer;
         }
     }
 
@@ -393,7 +416,8 @@ public class Map {
     }
 
     public boolean isGameFinished() {
-        if (leg == 3 && dialogues.get(2).currentSentence == 5)
+        // this is hardcoded which sucks, but I'm not too worried about this
+        if (leg == 5 && dialogues.get(4).currentSentence == 8)
             return true;
         else
             return false;

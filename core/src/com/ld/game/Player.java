@@ -94,7 +94,7 @@ public class Player {
     private int stateFrameDuration = 0;
     
     private Map map;
-    private TiledMapTileLayer collisionLayer;
+    public TiledMapTileLayer collisionLayer;
     // TODO: maybe change to Array to avoid excessive garbage collection? only applies for lots of hurtboxes
     private Array<HurtboxCircle> activeHurtboxes;
     private Array<HurtboxRectangle> activeHurtboxRects;
@@ -103,6 +103,7 @@ public class Player {
         paused = false;
         isAlive = true;
         inDialog = false;
+        weapon = "";
         position = new Rectangle(200, 200, PLAYER_WIDTH, PLAYER_HEIGHT);
         this.map = map;
         this.collisionLayer = collisionLayer;
@@ -146,10 +147,6 @@ public class Player {
         
         if(Gdx.input.isKeyJustPressed(Keys.X)) {
             useWeapon();
-        }
-        
-        if(Gdx.input.isKeyJustPressed(Keys.C)) {
-            throwShuriken();
         }
         
         // press r to refresh
@@ -770,6 +767,9 @@ public class Player {
         else if(weapon.equals("laser")) {
             this.weaponSound = sounds.laserSound;
         }
+        else if(weapon.equals("shuriken")) {
+            this.weaponSound = sounds.swordSound;
+        }
     }
     
     private void useWeapon() {
@@ -778,6 +778,12 @@ public class Player {
         }
         else if(weapon.equals("laser")) {
             shootLaser();
+        }
+        else if(weapon.equals("shuriken")) {
+            throwShuriken();
+        }
+        else if(weapon.equals("nothing")) {
+            // nothing, but maybe we can play a beep sound here or something
         }
     }
     
@@ -849,10 +855,6 @@ public class Player {
     
     public Array<HurtboxRectangle> getHurtboxRects() {
         return activeHurtboxRects;
-    }
-    
-    public void setCollisionLayer(TiledMapTileLayer collisionLayer) {
-        this.collisionLayer = collisionLayer;
     }
     
 }

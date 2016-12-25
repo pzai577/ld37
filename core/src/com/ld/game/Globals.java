@@ -26,10 +26,10 @@ public class Globals {
                                              "Oh! That reminds me. I actually also borrowed my brother's laser gun a year ago and haven't given it back. Silly me!",
                                              "are you serious",
                                              "If you could deliver this back to him, I would be eternally grateful. And I'll pay you double.",
-                                             "Hmph, fine, I'll do it. But I really don't appreciate running back and forth like I'm in a video game or something!",
+                                             "...Hmph, fine, I'll do it. But I don't appreciate running back and forth like I'm in a video game or something!",
                                              "Oh, and here's some advice: laser beams travel forever until they hit a wall, a checkpoint, or a black orb.",
                                              "As usual, you get your double jump restored whenever a black orb is destroyed.",
-                                             "Sounds goo-Wait a minute! There's no way I can go back over that bridge area! I refuse to-",
+                                             "Sounds goo...Wait a minute! There's no way I can go back over that bridge area! I refuse to-",
                                              "Have fun!"};
             
     private static int[] dialogue1SpeakerList = {1,0,0,1,0,1,0,0,1,0};
@@ -37,15 +37,50 @@ public class Globals {
     private static String[] dialogue2Text = {"Wow, I can't believe you actually made it back with the laser gun.",
                                              "Thanks, I guess.",
                                              "...",
-                                             "Wait a minute. How did you know I had to return with the gun?",
-                                             "You beat the game!! Congratulations!!!"};
-    private static int[] dialogue2SpeakerList = {0,1,1,1,0};
+                                             "Wait a minute. How did you know I had to return with the gun?!",
+                                             "Oh, did I say that? A mere slip of the tongue. What I really meant to say was, um...",
+                                             "Let's see...",
+                                             "Oh, right! Can you deliver this ninja shuriken to my sister?",
+                                             "I'm going to kill you.",
+                                             "Ha ha ha, you can try, but you'll fail because I'm an NPC.",
+                                             "What are you even talking about? \"NPC\" is a term used only in video gam-",
+                                             "Oh my, will you look at the time? I bet the spike installation crew has already finished by now.",
+                                             "What does that mean??",
+                                             "I paid some people to install some extra spikes in this room while we were talking.",
+                                             "You're not even trying anymore to hide the fact that you just hired me for your personal amusement.",
+                                             "I suppose not."};
+    private static int[] dialogue2SpeakerList = {0,1,1,1,0,0,0,1,0,1,0,1,0,1,0};
+    
+    private static String[] dialogue3Text = {"Here's your stinkin' shuriken, what are you going to make me deliver now?",
+                                             "A boomerang? A slingshot? A PIANO??!!",
+                                             "Actually, I don't have anything for you to deliver. Thanks for your hard work!",
+                                             "...so you're saying...I'm done?",
+                                             "Of course!",
+                                             "I can go home now?",
+                                             "Of course!",
+                                             "Oh, okay. Thanks, I guess. I suppose I'll lea-",
+                                             "Wait.",
+                                             "How do I go back without a weapon?",
+                                             "Not my problem."};
+    private static int[] dialogue3SpeakerList = {1,1,0,1,0,1,0,1,1,1,0};
+    
+    private static String[] dialogue4Text = {"This has been the worst day of my life. I'm going home now to play some video games.",
+                                             "Uh oh.",
+                                             "Why are you looking at me like that?",
+                                             "Son, I hate to break it to you, but...you're in a video game right now.",
+                                             "That's impossible!",
+                                             "Wait...the checkpoints...",
+                                             "....the double jumps.............",
+                                             "NOOOOOOOOOOOOOOOOOO!!!!!!!!!"};
+    private static int[] dialogue4SpeakerList = {1,0,1,0,1,1,1,1};
 
     public static Array<Dialogue> makeDialogue() {
         Array<Dialogue> dialogues = new Array<Dialogue>();
         dialogues.add(new Dialogue(dialogue0Text, dialogue0SpeakerList, "startSage", "player"));
         dialogues.add(new Dialogue(dialogue1Text, dialogue1SpeakerList, "endSage", "player"));
         dialogues.add(new Dialogue(dialogue2Text, dialogue2SpeakerList, "startSage", "player"));
+        dialogues.add(new Dialogue(dialogue3Text, dialogue3SpeakerList, "endSage", "player"));
+        dialogues.add(new Dialogue(dialogue4Text, dialogue4SpeakerList, "startSage", "player"));
         return dialogues;
     }
 }
