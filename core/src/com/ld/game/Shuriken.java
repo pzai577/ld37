@@ -13,6 +13,7 @@ public class Shuriken extends Projectile {
     float speed = 6;
     
     float halfSize = 10;
+    float inRadius = 2;
     float medRadius = 4;
     float outRadius = 14;
     
@@ -65,6 +66,11 @@ public class Shuriken extends Projectile {
         r.triangle(vs3[0]+x, vs3[1]+y, vs3[2]+x, vs3[3]+y, vs3[4]+x, vs3[5]+y);
         float[] vs4 = {medRadius, -medRadius, outRadius, 0, medRadius, medRadius};
         r.triangle(vs4[0]+x, vs4[1]+y, vs4[2]+x, vs4[3]+y, vs4[4]+x, vs4[5]+y);
+        
+        r.rect(inRadius+x, -medRadius+y, medRadius-inRadius, 2*medRadius-inRadius);
+        r.rect(-medRadius+x, -medRadius+inRadius+y, medRadius-inRadius, 2*medRadius-inRadius);
+        r.rect(-medRadius+x, -medRadius+y, 2*medRadius-inRadius, medRadius-inRadius);
+        r.rect(-medRadius+inRadius+x, inRadius+y, 2*medRadius-inRadius, medRadius-inRadius);
         
 //        float[] verticesTranslated = new float[16];
 //        int i=0;
