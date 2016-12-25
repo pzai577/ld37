@@ -43,14 +43,14 @@ public class Globals {
                                              "Wait a minute. How did you know I had to return with the gun?!",
                                              "Oh, did I say that? A mere slip of the tongue. What I really meant to say was, um...",
                                              "Let's see...",
-                                             "Oh, right! Can you deliver this cardboard box to my sister?",
+                                             "Oh, right! Can you deliver this ninja shuriken to my sister?",
                                              "I'm this close to picking you up and throwing you into those spikes over there.",
                                              "Ha ha ha, you can try, but you'll fail because I'm an NPC.",
                                              "What are you even talking about? \"NPC\" is a term used only in video gam-",
                                              "Oh my, will you look at the time? I bet the spike installation crew has already finished by now.",
                                              "What does that mean??",
                                              "I paid some people to install some extra spikes in this room while we were talking.",
-                                             "You're not even trying anymore to hide the fact that you just hired me for your personal amusement.",
+                                             "Now you're not even trying to hide the fact that you just hired me for your personal amusement.",
                                              "I suppose not."};
     private static int[] dialogue2SpeakerList = {0,1,1,1,0,0,0,1,0,1,0,1,0,1,0};
     

@@ -56,7 +56,6 @@ public class GameScreen extends ScreenAdapter {
         renderer.render();
         
         player_time += delta;
-        checkGameCompletion();
         
         if (speedrunMode) {
             timeBatch.begin();
@@ -64,6 +63,8 @@ public class GameScreen extends ScreenAdapter {
             timeFont.draw(timeBatch, "Deaths: "+map.playerDeaths, 50, 700, 900, Align.left, true);
             timeBatch.end();
         }
+        
+        checkGameCompletion();
         
         if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
             game.batch.dispose();

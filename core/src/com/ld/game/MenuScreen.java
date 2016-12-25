@@ -2,6 +2,7 @@ package com.ld.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -17,6 +18,7 @@ public class MenuScreen extends ScreenAdapter {
     BitmapFont pressGrayFont;
     BitmapFont helpFont;
     int currChoice;
+    Sound switchSound;
     
     public MenuScreen(LDGame game) {
         this.game = game;
@@ -42,12 +44,13 @@ public class MenuScreen extends ScreenAdapter {
         pressGrayFont = generator.generateFont(pressGrayParameter);
         
         FreeTypeFontParameter helpParameter = new FreeTypeFontParameter();
-        helpParameter.size = 16;
+        helpParameter.size = 12;
         helpFont = generator.generateFont(helpParameter);
         
         generator.dispose();
         
         currChoice = 0;
+        switchSound = Gdx.audio.newSound(Gdx.files.internal("switch.wav"));
     }
     
     @Override
@@ -70,6 +73,7 @@ public class MenuScreen extends ScreenAdapter {
         game.batch.end();
         
         if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.DOWN)) {
+            switchSound.play();
             currChoice = 1-currChoice;
         }
         if (Gdx.input.isKeyJustPressed(Keys.Z)) {

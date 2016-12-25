@@ -1,5 +1,7 @@
 package com.ld.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
@@ -11,6 +13,7 @@ public class Shuriken extends Projectile {
     Player player;
     
     float speed = 6;
+    boolean inWall = false;
     
     float halfSize = 10;
     float inRadius = 2;
@@ -19,10 +22,13 @@ public class Shuriken extends Projectile {
     
     Color centerColor = Color.BLACK;
     
+    Sound wallSound;
+    Sound pickupSound;
+    
     public Shuriken(Map map, Player player, boolean shootingRight){
         super(map);
         this.player = player;
-        
+
         if(shootingRight){
             this.head = new Vector2(player.position.x + Player.PLAYER_WIDTH+10, player.position.y + 30);
 //            this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, 20, 20), this);
@@ -37,12 +43,16 @@ public class Shuriken extends Projectile {
         }
         
         this.hitbox = new HurtboxRectangle(new Rectangle(this.head.x-halfSize, this.head.y-halfSize, 2*halfSize, 2*halfSize), this);
+        
+        wallSound = Gdx.audio.newSound(Gdx.files.internal("shuriken_wallhit.wav"));
+        pickupSound = Gdx.audio.newSound(Gdx.files.internal("shuriken_pickup.wav"));
     }
     
     @Override
     public void update() {
         super.update();
         if(this.intersectPlayer()){
+            pickupSound.play();
             this.destroy();
             player.grabShuriken();
         }
@@ -99,6 +109,8 @@ public class Shuriken extends Projectile {
     
     @Override
     public void handleWallCollision() {
+        if (!inWall) wallSound.play();
+        inWall = true;
         this.stop();
     }
 

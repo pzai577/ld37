@@ -210,7 +210,7 @@ public class Map {
             player.inDialog = true;
         }
         else {
-            //play sound effect here
+            sounds.legFinishSound.play();
         }
     }
 
