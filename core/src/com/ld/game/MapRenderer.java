@@ -36,8 +36,6 @@ public class MapRenderer {
     Array<Array<Integer>> layersPerLeg; // this has the form [array of layers in first leg, array of layers in second leg, ...]
     
     OrthogonalTiledMapRenderer tileMapRenderer;
-    static final float GAME_WIDTH = 1280;
-    static final float GAME_HEIGHT = 800;
     static final float CAM_SCALE = 1;
     static final float[] CAM_BORDERS = {600f, 600f, 380f, 380f}; // left, right, up, down
 //    static final float LOWER_CAM_BOUNDARY = GAME_HEIGHT/2;
@@ -75,9 +73,9 @@ public class MapRenderer {
         this.batch = batch;
         this.projRenderer = new ShapeRenderer();
         this.dialogueBoxRenderer = new ShapeRenderer();
-        this.cam = new OrthographicCamera(GAME_WIDTH, GAME_HEIGHT);
+        this.cam = new OrthographicCamera(Globals.GAME_WIDTH, Globals.GAME_HEIGHT);
         cam.zoom = CAM_SCALE;
-        this.cam.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
+        this.cam.setToOrtho(false, Globals.GAME_WIDTH, Globals.GAME_HEIGHT);
         
         tileMapRenderer = new OrthogonalTiledMapRenderer(map.tileMap);
 
@@ -230,14 +228,14 @@ public class MapRenderer {
     }
     
     private void moveCamera(){
-    	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + GAME_WIDTH/2 - CAM_BORDERS[1])
-    		cam.position.x = Math.min(map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDERS[1], map.pixelWidth) - GAME_WIDTH/2;
-    	if(map.player.position.x < cam.position.x - GAME_WIDTH/2 + CAM_BORDERS[0])
-    		cam.position.x = Math.max(map.player.position.x - CAM_BORDERS[0], 0) + GAME_WIDTH/2;
-    	if(map.player.position.y + Player.PLAYER_HEIGHT > cam.position.y + GAME_HEIGHT/2 - CAM_BORDERS[2])
-    		cam.position.y = Math.min(map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDERS[2], map.pixelHeight) - GAME_HEIGHT/2;
-    	if(map.player.position.y < cam.position.y - GAME_HEIGHT/2 + CAM_BORDERS[3])
-    		cam.position.y = Math.max(map.player.position.y - CAM_BORDERS[3], 0) + GAME_HEIGHT/2;
+    	if(map.player.position.x + Player.PLAYER_WIDTH > cam.position.x + Globals.GAME_WIDTH/2 - CAM_BORDERS[1])
+    		cam.position.x = Math.min(map.player.position.x + Player.PLAYER_WIDTH + CAM_BORDERS[1], map.pixelWidth) - Globals.GAME_WIDTH/2;
+    	if(map.player.position.x < cam.position.x - Globals.GAME_WIDTH/2 + CAM_BORDERS[0])
+    		cam.position.x = Math.max(map.player.position.x - CAM_BORDERS[0], 0) + Globals.GAME_WIDTH/2;
+    	if(map.player.position.y + Player.PLAYER_HEIGHT > cam.position.y + Globals.GAME_HEIGHT/2 - CAM_BORDERS[2])
+    		cam.position.y = Math.min(map.player.position.y + Player.PLAYER_HEIGHT + CAM_BORDERS[2], map.pixelHeight) - Globals.GAME_HEIGHT/2;
+    	if(map.player.position.y < cam.position.y - Globals.GAME_HEIGHT/2 + CAM_BORDERS[3])
+    		cam.position.y = Math.max(map.player.position.y - CAM_BORDERS[3], 0) + Globals.GAME_HEIGHT/2;
     }
     
     private void drawPlayer() {
@@ -347,11 +345,13 @@ public class MapRenderer {
     }
     
     private void drawSigns() {
-        for (Sign s: map.signs) {
-            if (legToRender==s.leg) {
-                batch.draw(signImg, s.x, s.y, s.width, s.height);
-                if (s.active) {
-                    signFont.draw(batch, s.displayText, s.x+(s.width-SIGN_TEXT_WIDTH)/2, s.y+SIGN_TEXT_VERTICAL_DISTANCE, SIGN_TEXT_WIDTH, Align.center, true);
+        if (!map.speedrunMode) {
+            for (Sign s: map.signs) {
+                if (legToRender==s.leg) {
+                    batch.draw(signImg, s.x, s.y, s.width, s.height);
+                    if (s.active) {
+                        signFont.draw(batch, s.displayText, s.x+(s.width-SIGN_TEXT_WIDTH)/2, s.y+SIGN_TEXT_VERTICAL_DISTANCE, SIGN_TEXT_WIDTH, Align.center, true);
+                    }
                 }
             }
         }

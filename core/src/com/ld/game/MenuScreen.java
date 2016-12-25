@@ -15,6 +15,7 @@ public class MenuScreen extends ScreenAdapter {
     BitmapFont titleFont;
     BitmapFont pressFont;
     BitmapFont pressGrayFont;
+    BitmapFont helpFont;
     int currChoice;
     
     public MenuScreen(LDGame game) {
@@ -40,6 +41,10 @@ public class MenuScreen extends ScreenAdapter {
         pressGrayParameter.color = Color.GRAY;
         pressGrayFont = generator.generateFont(pressGrayParameter);
         
+        FreeTypeFontParameter helpParameter = new FreeTypeFontParameter();
+        helpParameter.size = 16;
+        helpFont = generator.generateFont(helpParameter);
+        
         generator.dispose();
         
         currChoice = 0;
@@ -51,15 +56,17 @@ public class MenuScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         game.batch.begin();
+        // yay for hardcoded numbers!
         titleFont.draw(game.batch, "UNITED PARCEL SAMURAI", 0, 700, 1280, Align.center, true);
         if (currChoice==0) {
-            pressFont.draw(game.batch, "Play the game!", 0, 300, 1280, Align.center, true);
-            pressGrayFont.draw(game.batch, "Speedrun mode", 0, 200, 1280, Align.center, true);
+            pressFont.draw(game.batch, "Play the game!", 0, 400, 1280, Align.center, true);
+            pressGrayFont.draw(game.batch, "Speedrun mode", 0, 350, 1280, Align.center, true);
         }
         else if (currChoice==1) {
-            pressGrayFont.draw(game.batch, "Play the game!", 0, 300, 1280, Align.center, true);
-            pressFont.draw(game.batch, "Speedrun mode", 0, 200, 1280, Align.center, true);
+            pressGrayFont.draw(game.batch, "Play the game!", 0, 400, 1280, Align.center, true);
+            pressFont.draw(game.batch, "Speedrun mode", 0, 350, 1280, Align.center, true);
         }
+        helpFont.draw(game.batch, "(up/down to switch options, press Z to select)", 0, 200, 1280, Align.center, true);
         game.batch.end();
         
         if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyJustPressed(Keys.DOWN)) {

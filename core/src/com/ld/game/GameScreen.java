@@ -5,7 +5,12 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.utils.Align;
 
 public class GameScreen extends ScreenAdapter {
     LDGame game;
@@ -14,6 +19,9 @@ public class GameScreen extends ScreenAdapter {
     MapRenderer renderer;
     Music music;
     float player_time;
+    
+    BitmapFont timeFont;
+    SpriteBatch timeBatch;
     
     public GameScreen(LDGame game, boolean speedrunMode) {
         this.game = game;
@@ -28,6 +36,14 @@ public class GameScreen extends ScreenAdapter {
         //music.play();
         
         player_time = 0;
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("PixelFJVerdana12pt.ttf"));
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = 20;
+        timeFont = generator.generateFont(parameter);
+        generator.dispose();
+        
+        timeBatch = new SpriteBatch();
     }
     
     @Override
@@ -41,6 +57,13 @@ public class GameScreen extends ScreenAdapter {
         
         player_time += delta;
         checkGameCompletion();
+        
+        if (speedrunMode) {
+            timeBatch.begin();
+            timeFont.draw(timeBatch, "Time: "+String.format("%.2f", player_time), 50, 750, 900, Align.left, true);
+            timeFont.draw(timeBatch, "Deaths: "+map.playerDeaths, 50, 700, 900, Align.left, true);
+            timeBatch.end();
+        }
         
         if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
             game.batch.dispose();

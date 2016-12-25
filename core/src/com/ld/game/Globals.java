@@ -3,6 +3,9 @@ package com.ld.game;
 import com.badlogic.gdx.utils.Array;
 
 public class Globals {
+    public static final float GAME_WIDTH = 1280;
+    public static final float GAME_HEIGHT = 800; 
+    
     public static String SAGE_TEXT = "Thanks for agreeing to deliver this sword to my brother.\n"
             + "It should be pretty easy, since he just lives at the other end of this room. \n"
             + "I placed some signs along the way to help you. Good luck!";
