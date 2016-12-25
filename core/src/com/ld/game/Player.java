@@ -149,6 +149,10 @@ public class Player {
             useWeapon();
         }
         
+        /*if(Gdx.input.isKeyJustPressed(Keys.C)) { //shuriken testing code
+            throwShuriken();
+        }*/
+        
         // press r to refresh
         if(Gdx.input.isKeyJustPressed(Keys.R)) {
             map.killPlayer();

@@ -12,7 +12,7 @@ public class Projectile {
 	public HurtboxRectangle hitbox;
 	public Vector2 head;
 	
-	private Map map;
+	protected Map map;
 	
 	protected float horizVelocity;
 	protected float vertVelocity;

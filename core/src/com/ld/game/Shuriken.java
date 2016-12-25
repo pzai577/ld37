@@ -14,6 +14,7 @@ public class Shuriken extends Projectile {
     
     float speed = 6;
     boolean inWall = false;
+    boolean shootingRight;
     
     float halfSize = 10;
     float inRadius = 2;
@@ -28,7 +29,7 @@ public class Shuriken extends Projectile {
     public Shuriken(Map map, Player player, boolean shootingRight){
         super(map);
         this.player = player;
-
+        this.shootingRight = shootingRight;
         if(shootingRight){
             this.head = new Vector2(player.position.x + Player.PLAYER_WIDTH+10, player.position.y + 30);
 //            this.hitbox = new HurtboxRectangle(new Rectangle(player.position.x + Player.PLAYER_WIDTH, player.position.y + 20, 20, 20), this);
@@ -110,6 +111,14 @@ public class Shuriken extends Projectile {
     @Override
     public void handleWallCollision() {
         if (!inWall) wallSound.play();
+        EnhancedCell wallCell = map.getEnhancedCell(head.x, head.y);
+        if (shootingRight) {
+            head.x = (wallCell.x)*map.player.collisionLayer.getTileWidth() - halfSize;
+        }
+        else {
+            head.x = (wallCell.x+1)*map.player.collisionLayer.getTileWidth() + halfSize;
+        }
+        hitbox = new HurtboxRectangle(new Rectangle(head.x-halfSize, head.y-halfSize, 2*halfSize, 2*halfSize), this);
         inWall = true;
         this.stop();
     }
