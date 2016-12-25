@@ -23,7 +23,7 @@ public class Map {
     public float pixelWidth, pixelHeight;
     
     public Player player;
-    public Vector2 startPos;
+    public Vector2 defaultPos;
     public Vector2 sageStartPos;
     public Vector2 sageEndPos;
     public Rectangle startZone;
@@ -97,9 +97,9 @@ public class Map {
             MapProperties p = l.getProperties();
             String name = l.getName();
             if (name.equals("start")) {
-                startPos = new Vector2(p.get("x", float.class), p.get("y", float.class));
-                player.position.x = startPos.x;
-                player.position.y = startPos.y;
+                defaultPos = new Vector2(p.get("x", float.class), p.get("y", float.class));
+                player.position.x = defaultPos.x;
+                player.position.y = defaultPos.y;
             } else if (name.equals("startZone")) {
                 startZone = new Rectangle(p.get("x", float.class), p.get("y", float.class), p.get("width", float.class),
                         p.get("height", float.class));
@@ -183,8 +183,8 @@ public class Map {
         player.vertVelocity = 0;
 
         if (currCheckpoint == null) {
-            player.position.x = startPos.x;
-            player.position.y = startPos.y;
+            player.position.x = defaultPos.x;
+            player.position.y = defaultPos.y;
         } else {
             player.position.x = currCheckpoint.x;
             player.position.y = currCheckpoint.y;
@@ -330,6 +330,8 @@ public class Map {
 
                 player.setWeapon("laser");
                 finished = true;
+                
+                defaultPos = new Vector2(finishZone.x, finishZone.y);
             }
         } else if (leg == 2) {
             if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
@@ -339,6 +341,8 @@ public class Map {
                 
                 player.setWeapon("shuriken");
                 finished = true;
+                
+                defaultPos = new Vector2(startZone.x, startZone.y);
             }
         } else if (leg==3) {
             if (Intersector.overlaps(player.position, finishZone) && player.state == PlayerState.GROUND) {
@@ -351,6 +355,8 @@ public class Map {
                 }
                 player.setWeapon("nothing");
                 finished = true;
+                
+                defaultPos = new Vector2(finishZone.x, finishZone.y);
             }
         } else if (leg==4) {
             if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND && !gameFinished) {
@@ -363,6 +369,7 @@ public class Map {
         if (finished) {
             TiledMapTileLayer newCollisionLayer = (TiledMapTileLayer) tileMap.getLayers().get("Collision Tile Layer "+leg);
             player.collisionLayer = newCollisionLayer;
+            currCheckpoint = null;
         }
     }
 

@@ -35,10 +35,10 @@ public class CreditsScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         game.batch.begin();
-        creditsFont.draw(game.batch, "Thanks for playing\nUnited Parcel Samurai!\nYour time:\n"+time+" seconds.\nNumber of deaths:\n"+deaths, 640-TEXT_WIDTH/2, TEXT_VERT, TEXT_WIDTH, Align.center, true);
+        creditsFont.draw(game.batch, "Thanks for playing\nUnited Parcel Samurai!\nYour time:\n"+time+" seconds.\nNumber of deaths:\n"+deaths+"\n\nPress space to return to menu.", 640-TEXT_WIDTH/2, TEXT_VERT, TEXT_WIDTH, Align.center, true);
         game.batch.end();
         
-        if (Gdx.input.isKeyJustPressed(Keys.Z)) {
+        if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
             game.setScreen(new MenuScreen(game));
         }
     }

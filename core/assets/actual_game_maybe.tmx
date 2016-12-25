@@ -900,7 +900,7 @@
  <objectgroup name="Locations Layer">
   <object id="5" name="start" x="189.817" y="2338.57" width="53" height="54"/>
   <object id="43" name="endSage" x="3057" y="474" width="76" height="71"/>
-  <object id="68" name="finishZone" x="2902" y="456" width="161" height="92"/>
+  <object id="68" name="finishZone" x="2902" y="445" width="161" height="92"/>
   <object id="69" name="startZone" x="114" y="2317" width="166" height="81"/>
   <object id="70" name="startSage" x="71" y="2351" width="55" height="51"/>
  </objectgroup>
@@ -1001,7 +1001,7 @@
     <property name="text" value="What a nice platform! It's almost like this game wants you to finish."/>
    </properties>
   </object>
-  <object id="205" name="sign17" x="2168" y="2368" width="32" height="32">
+  <object id="205" name="sign17" x="2036" y="2369" width="32" height="32">
    <properties>
     <property name="leg" type="int" value="3"/>
     <property name="text" value="SHURIKEN TIP: You only have one shuriken, so you must pick it up each time you throw it."/>
