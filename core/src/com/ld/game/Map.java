@@ -37,6 +37,7 @@ public class Map {
     public Checkpoint currCheckpoint;
     public int leg; // starts at 0 before you activate the starting dialogue, 1
                     // for sword trip, 2 for gun trip, etc.
+    public boolean gameFinished;
     public int playerDeaths;
     Sounds sounds;
 
@@ -51,6 +52,7 @@ public class Map {
         particles = new Array<Particle>();
         dialogues = Globals.makeDialogue();
         leg = 0;
+        gameFinished = false;
         playerDeaths = 0;
         sounds = new Sounds();
 
@@ -353,9 +355,8 @@ public class Map {
             }
         } else if (leg==4) {
             if (Intersector.overlaps(player.position, startZone) && player.state == PlayerState.GROUND) {
-                leg++;
                 startDialogue(4);
-                
+                gameFinished = true;
                 finished = true;
             }
         }
@@ -419,7 +420,7 @@ public class Map {
 
     public boolean isGameFinished() {
         // this is hardcoded which sucks, but I'm not too worried about this
-        if (leg == 5 && dialogues.get(4).currentSentence == 8)
+        if (gameFinished && dialogues.get(4).currentSentence == 8)
             return true;
         else
             return false;

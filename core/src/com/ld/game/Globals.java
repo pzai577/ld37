@@ -51,8 +51,7 @@ public class Globals {
                                              "I suppose not."};
     private static int[] dialogue2SpeakerList = {0,1,1,1,0,0,0,1,0,1,0,1,0,1,0};
     
-    private static String[] dialogue3Text = {"Here's your stinkin' shuriken, what are you going to make me deliver now?",
-                                             "A boomerang? A slingshot? A PIANO??!!",
+    private static String[] dialogue3Text = {"Here's your stinkin' shuriken, what are you going to make me deliver now? A boomerang? A slingshot? A PIANO??!!",
                                              "Actually, I don't have anything for you to deliver. Thanks for your hard work!",
                                              "...so you're saying...I'm done?",
                                              "Of course!",
@@ -62,7 +61,7 @@ public class Globals {
                                              "Wait.",
                                              "How do I go back without a weapon?",
                                              "Not my problem."};
-    private static int[] dialogue3SpeakerList = {1,1,0,1,0,1,0,1,1,1,0};
+    private static int[] dialogue3SpeakerList = {1,0,1,0,1,0,1,1,1,0};
     
     private static String[] dialogue4Text = {"This has been the worst day of my life. I'm going home now to play some video games.",
                                              "Uh oh.",
