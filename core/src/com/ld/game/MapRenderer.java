@@ -170,6 +170,7 @@ public class MapRenderer {
         // Draw tilemap
         legToRender = map.leg;
         if (legToRender==0) legToRender = 1; // assume leg 0 is the same as leg 1
+        if (legToRender>map.NUM_LEGS) legToRender = map.NUM_LEGS; // hack to prevent the game from crashing when starting the last dialog
         Array<Integer> layersToRender = layersPerLeg.get(legToRender);
         int[] intLayersToRender = new int[layersToRender.size];
         for (int i=0; i<layersToRender.size; i++) // dumb hacky thing to convert to int[] to pass to render method

@@ -753,7 +753,7 @@
   <object id="147" name="death" x="1622.31" y="293.587" width="16.0321" height="83.1663"/>
   <object id="148" name="death" x="1406.88" y="455.912" width="8.01603" height="279.559"/>
   <object id="149" name="death" x="418" y="730" width="856" height="7"/>
-  <object id="150" name="death" x="582" y="444" width="561" height="41"/>
+  <object id="150" name="death" x="580" y="444" width="563" height="41"/>
   <object id="151" name="death" x="415" y="194" width="10" height="55"/>
   <object id="152" name="death" x="416" y="648" width="10" height="53"/>
   <object id="153" name="death" x="415" y="388" width="10" height="117"/>
@@ -789,7 +789,7 @@
   <object id="182" name="death" x="1622.31" y="293.587" width="16.0321" height="83.1663"/>
   <object id="183" name="death" x="1406.88" y="455.912" width="8.01603" height="279.559"/>
   <object id="184" name="death" x="418" y="730" width="856" height="7"/>
-  <object id="185" name="death" x="582" y="444" width="561" height="41"/>
+  <object id="185" name="death" x="580" y="444" width="563" height="41"/>
   <object id="186" name="death" x="415" y="194" width="10" height="55"/>
   <object id="187" name="death" x="416" y="648" width="10" height="53"/>
   <object id="188" name="death" x="415" y="388" width="10" height="117"/>
@@ -823,7 +823,7 @@
   <object id="106" name="death" x="1622.31" y="293.587" width="16.0321" height="83.1663"/>
   <object id="107" name="death" x="1406.88" y="455.912" width="8.01603" height="279.559"/>
   <object id="108" name="death" x="418" y="730" width="856" height="7"/>
-  <object id="109" name="death" x="582" y="444" width="561" height="41"/>
+  <object id="109" name="death" x="579" y="444" width="564" height="41"/>
   <object id="110" name="death" x="415" y="194" width="10" height="55"/>
   <object id="111" name="death" x="416" y="648" width="10" height="53"/>
   <object id="112" name="death" x="415" y="388" width="10" height="117"/>
@@ -857,7 +857,7 @@
   <object id="60" name="death" x="1622.31" y="293.587" width="16.0321" height="83.1663"/>
   <object id="61" name="death" x="1406.88" y="455.912" width="8.01603" height="279.559"/>
   <object id="62" name="death" x="418" y="730" width="856" height="7"/>
-  <object id="63" name="death" x="582" y="444" width="561" height="41"/>
+  <object id="63" name="death" x="580" y="444" width="563" height="41"/>
   <object id="64" name="death" x="415" y="194" width="10" height="55"/>
   <object id="65" name="death" x="416" y="648" width="10" height="53"/>
   <object id="66" name="death" x="415" y="388" width="10" height="117"/>
@@ -979,13 +979,13 @@
   <object id="200" name="sign13" x="1189" y="1218" width="32" height="32">
    <properties>
     <property name="leg" type="int" value="4"/>
-    <property name="text" value="Sorry for not finishing construction earlier, but I wanted to give you the una-bridged version of the game. hehe"/>
+    <property name="text" value="Sorry for not finishing construction earlier, but I wanted to give you the unabridged version of the game. hehe"/>
    </properties>
   </object>
   <object id="201" name="sign14" x="1517" y="835" width="32" height="32">
    <properties>
     <property name="leg" type="int" value="4"/>
-    <property name="text" value="Wow, what convenient timing to finish digging the tunnel!"/>
+    <property name="text" value="Wow, what a convenient time for the tunnel to be finished!"/>
    </properties>
   </object>
   <object id="202" name="sign15" x="2527" y="2273" width="32" height="32">

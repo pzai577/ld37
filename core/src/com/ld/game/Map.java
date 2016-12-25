@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Map {
-    static final int NUM_LEGS = 4; //number of legs, not including the thing before the first dialogue
+    final int NUM_LEGS = 4; //number of legs, not including the thing before the first dialogue
                                    //sorry, this results in some <=s instead of <s but hopefully it's not too annoying
     static final boolean WEAPON_DEBUG = false;
     public TiledMap tileMap;
@@ -345,7 +345,9 @@ public class Map {
                 leg++;
                 startDialogue(3);
                 refreshTargets();
-
+                for (Projectile p : projectiles) {
+                    p.destroy();
+                }
                 player.setWeapon("nothing");
                 finished = true;
             }

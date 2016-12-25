@@ -54,10 +54,11 @@ public class Shuriken extends Projectile {
         this.vertVelocity = 0;
     }
     
-//    @Override
-//    public void destroy() {
-//        super.destroy();
-//    }
+    @Override
+    public void destroy() {
+        player.removeHurtbox(this.hitbox);
+        super.destroy();
+    }
     
     @Override
     public void handleWallCollision() {

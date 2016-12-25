@@ -840,7 +840,7 @@ public class Player {
         this.hasShuriken = true;
     }
     
-    public void removeLaser(HurtboxRectangle rect) {
+    public void removeHurtbox(HurtboxRectangle rect) {
         this.activeHurtboxRects.removeValue(rect, true);
     }
     
